@@ -10,7 +10,7 @@ import io.github.makbn.jlmap.model.*;
  *
  * @author Mehdi Akbarian Rastaghi (@makbn)
  */
-public interface LeafletVectorLayerInt {
+public interface LeafletVectorLayerInt extends LeafletLayer{
 
     /**
      * Adds a polyline to the Leaflet map with the provided array of vertices.

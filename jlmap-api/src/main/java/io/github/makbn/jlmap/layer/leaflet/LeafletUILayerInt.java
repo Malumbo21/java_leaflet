@@ -14,7 +14,7 @@ import io.github.makbn.jlmap.model.JLPopup;
  *
  * @author Mehdi Akbarian Rastaghi (@makbn)
  */
-public interface LeafletUILayerInt {
+public interface LeafletUILayerInt extends LeafletLayer {
 
     /**
      * Adds a marker to the Leaflet map at the specified geographical

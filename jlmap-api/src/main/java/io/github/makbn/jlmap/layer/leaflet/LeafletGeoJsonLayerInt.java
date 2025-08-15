@@ -16,7 +16,7 @@ import java.io.File;
  *
  * @author Mehdi Akbarian Rastaghi (@makbn)
  */
-public interface LeafletGeoJsonLayerInt {
+public interface LeafletGeoJsonLayerInt extends LeafletLayer {
 
     /**
      * Adds a GeoJSON object from a file to the Leaflet map.

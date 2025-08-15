@@ -11,7 +11,7 @@ import io.github.makbn.jlmap.model.JLLatLng;
  *
  * @author Mehdi Akbarian Rastaghi (@makbn)
  */
-public interface LeafletControlLayerInt {
+public interface LeafletControlLayerInt extends LeafletLayer{
 
     /**
      * Increases the zoom of the map by delta 

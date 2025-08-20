@@ -11,20 +11,20 @@ import io.github.makbn.jlmap.model.JLLatLng;
  *
  * @author Mehdi Akbarian Rastaghi (@makbn)
  */
-public interface LeafletControlLayerInt extends LeafletLayer{
+public interface LeafletControlLayerInt extends LeafletLayer {
 
     /**
-     * Increases the zoom of the map by delta 
+     * Increases the zoom of the map by delta
      *
      * @see <a href="https://leafletjs.com/reference.html#map-zoomin">leafletjs.com/reference.html#map-zoomin</a>
      */
     void zoomIn(int delta);
 
     /**
-     * Decreases the zoom of the map by delta 
+     * Decreases the zoom of the map by delta
      *
      * @see <a href="https://leafletjs.com/reference.html#map-zoomout">
-     *     leafletjs.com/reference.html#map-zoomout</a>
+     * leafletjs.com/reference.html#map-zoomout</a>
      */
     void zoomOut(int delta);
 
@@ -32,7 +32,7 @@ public interface LeafletControlLayerInt extends LeafletLayer{
      * Sets the zoom of the map.
      *
      * @see <a href="https://leafletjs.com/reference.html#map-setzoom">
-     *     leafletjs.com/reference.html#map-setzoom</a>
+     * leafletjs.com/reference.html#map-setzoom</a>
      */
     void setZoom(int level);
 
@@ -41,7 +41,7 @@ public interface LeafletControlLayerInt extends LeafletLayer{
      * stationary (e.g. used internally for scroll zoom and double-click zoom)
      *
      * @see <a href="https://leafletjs.com/reference.html#map-setzoomaround">
-     *     leafletjs.com/reference.html#map-setzoomaround</a>
+     * leafletjs.com/reference.html#map-setzoomaround</a>
      */
     void setZoomAround(JLLatLng latLng, int zoom);
 
@@ -52,7 +52,7 @@ public interface LeafletControlLayerInt extends LeafletLayer{
      *
      * @param bounds The geographical bounds to fit.
      * @see <a href="https://leafletjs.com/reference.html#map-fitbounds">
-     *     leafletjs.com/reference.html#map-fitbounds</a>
+     * leafletjs.com/reference.html#map-fitbounds</a>
      */
     void fitBounds(JLBounds bounds);
 
@@ -61,7 +61,7 @@ public interface LeafletControlLayerInt extends LeafletLayer{
      * zoom level possible.
      *
      * @see <a href="https://leafletjs.com/reference.html#map-fitworld">
-     *     leafletjs.com/reference.html#map-fitworld</a>
+     * leafletjs.com/reference.html#map-fitworld</a>
      */
     void fitWorld();
 
@@ -70,7 +70,7 @@ public interface LeafletControlLayerInt extends LeafletLayer{
      *
      * @param latLng The new center of the map.
      * @see <a href="https://leafletjs.com/reference.html#map-panto">
-     *     leafletjs.com/reference.html#map-panto</a>
+     * leafletjs.com/reference.html#map-panto</a>
      */
     void panTo(JLLatLng latLng);
 
@@ -81,7 +81,7 @@ public interface LeafletControlLayerInt extends LeafletLayer{
      * @param latLng The new center of the map.
      * @param zoom   The new zoom level (optional).
      * @see <a href="https://leafletjs.com/reference.html#map-flyto">
-     *     leafletjs.com/reference.html#map-flyto</a>
+     * leafletjs.com/reference.html#map-flyto</a>
      */
     void flyTo(JLLatLng latLng, int zoom);
 
@@ -91,7 +91,7 @@ public interface LeafletControlLayerInt extends LeafletLayer{
      *
      * @param bounds The bounds to fit the map view to.
      * @see <a href="https://leafletjs.com/reference.html#map-flytobounds">
-     *     leafletjs.com/reference.html#map-flytobounds</a>
+     * leafletjs.com/reference.html#map-flytobounds</a>
      */
     void flyToBounds(JLBounds bounds);
 
@@ -100,7 +100,7 @@ public interface LeafletControlLayerInt extends LeafletLayer{
      *
      * @param bounds The geographical bounds to restrict the map view to.
      * @see <a href="https://leafletjs.com/reference.html#map-setmaxbounds">
-     *     leafletjs.com/reference.html#map-setmaxbounds</a>
+     * leafletjs.com/reference.html#map-setmaxbounds</a>
      */
     void setMaxBounds(JLBounds bounds);
 
@@ -109,7 +109,7 @@ public interface LeafletControlLayerInt extends LeafletLayer{
      *
      * @param zoom The minimum zoom level.
      * @see <a href="https://leafletjs.com/reference.html#map-setminzoom">
-     *     leafletjs.com/reference.html#map-setminzoom</a>
+     * leafletjs.com/reference.html#map-setminzoom</a>
      */
     void setMinZoom(int zoom);
 
@@ -118,7 +118,7 @@ public interface LeafletControlLayerInt extends LeafletLayer{
      *
      * @param zoom The maximum zoom level.
      * @see <a href="https://leafletjs.com/reference.html#map-setmaxzoom">
-     *     leafletjs.com/reference.html#map-setmaxzoom</a>
+     * leafletjs.com/reference.html#map-setmaxzoom</a>
      */
     void setMaxZoom(int zoom);
 
@@ -127,7 +127,7 @@ public interface LeafletControlLayerInt extends LeafletLayer{
      *
      * @param bounds The bounds to pan inside.
      * @see <a href="https://leafletjs.com/reference.html#map-paninsidebounds">
-     *     leafletjs.com/reference.html#map-paninsidebounds</a>
+     * leafletjs.com/reference.html#map-paninsidebounds</a>
      */
     void panInsideBounds(JLBounds bounds);
 
@@ -136,7 +136,7 @@ public interface LeafletControlLayerInt extends LeafletLayer{
      *
      * @param latLng The geographical point to make visible.
      * @see <a href="https://leafletjs.com/reference.html#map-paninside">
-     *     leafletjs.com/reference.html#map-paninside</a>
+     * leafletjs.com/reference.html#map-paninside</a>
      */
     void panInside(JLLatLng latLng);
 

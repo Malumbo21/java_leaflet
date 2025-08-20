@@ -39,7 +39,7 @@ public interface LeafletVectorLayerInt extends LeafletLayer{
      *         polyline with the specified identifier was not found.
      */
 
-    boolean removePolyline(int id);
+    boolean removePolyline(String id);
 
     /**
      * Adds a multi-polyline to the Leaflet map with the provided array of arrays of vertices.
@@ -67,7 +67,7 @@ public interface LeafletVectorLayerInt extends LeafletLayer{
      * @return {@code true} if the multi-polyline was successfully removed, {@code false} if the
      *         multi-polyline with the specified identifier was not found.
      */
-    boolean removeMultiPolyline(int id);
+    boolean removeMultiPolyline(String id);
 
     /**
      * Adds a polygon to the Leaflet map with the provided array of arrays of vertices and custom options.
@@ -95,7 +95,7 @@ public interface LeafletVectorLayerInt extends LeafletLayer{
      * @return {@code true} if the polygon was successfully removed, {@code false} if the
      *         polygon with the specified identifier was not found.
      */
-    boolean removePolygon(int id);
+    boolean removePolygon(String id);
 
     /**
      * Adds a circle to the Leaflet map with the provided center coordinates, radius, and custom options.
@@ -122,7 +122,7 @@ public interface LeafletVectorLayerInt extends LeafletLayer{
      * @return {@code true} if the circle was successfully removed, {@code false} if the
      *         circle with the specified identifier was not found.
      */
-    boolean removeCircle(int id);
+    boolean removeCircle(String id);
 
     /**
      * Adds a circle marker to the Leaflet map with the provided center coordinates, radius, and custom options.
@@ -149,6 +149,6 @@ public interface LeafletVectorLayerInt extends LeafletLayer{
      * @return {@code true} if the circle marker was successfully removed, {@code false} if the
      *         circle marker with the specified identifier was not found.
      */
-    boolean removeCircleMarker(int id);
+    boolean removeCircleMarker(String id);
 }
 

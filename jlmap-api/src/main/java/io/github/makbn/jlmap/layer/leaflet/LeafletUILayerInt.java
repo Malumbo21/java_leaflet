@@ -20,9 +20,9 @@ public interface LeafletUILayerInt extends LeafletLayer {
      * Adds a marker to the Leaflet map at the specified geographical
      * coordinates.
      *
-     * @param latLng   The geographical coordinates (latitude and longitude)
-     *                 where the marker should be placed.
-     * @param text     The text content associated with the marker.
+     * @param latLng    The geographical coordinates (latitude and longitude)
+     *                  where the marker should be placed.
+     * @param text      The text content associated with the marker.
      * @param draggable {@code true} if the marker should be draggable,
      *                  {@code false} otherwise.
      * @return The {@link JLMarker} representing the added marker on the map.
@@ -35,9 +35,8 @@ public interface LeafletUILayerInt extends LeafletLayer {
      * @param id The unique identifier of the marker to be removed.
      * @return {@code true} if the marker was successfully removed,
      * {@code false} if the marker with the specified identifier was not found.
-     *
      */
-    boolean removeMarker(int id);
+    boolean removeMarker(String id);
 
     /**
      * Adds a popup to the Leaflet map at the specified geographical
@@ -68,9 +67,9 @@ public interface LeafletUILayerInt extends LeafletLayer {
      *
      * @param id The unique identifier of the popup to be removed.
      * @return {@code true} if the popup was successfully removed,
-     *         {@code false} if the popup with the specified identifier
-     *         was not found.
+     * {@code false} if the popup with the specified identifier
+     * was not found.
      */
-    boolean removePopup(int id);
+    boolean removePopup(String id);
 }
 

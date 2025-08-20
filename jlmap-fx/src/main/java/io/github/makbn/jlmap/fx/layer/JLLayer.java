@@ -15,10 +15,10 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class JLLayer implements LeafletLayer {
-    JLWebEngine engine;
+    JLWebEngine<Object> engine;
     JLMapCallbackHandler callbackHandler;
 
-    protected JLLayer(JLWebEngine engine, JLMapCallbackHandler callbackHandler) {
+    protected JLLayer(JLWebEngine<Object> engine, JLMapCallbackHandler callbackHandler) {
         this.engine = engine;
         this.callbackHandler = callbackHandler;
     }

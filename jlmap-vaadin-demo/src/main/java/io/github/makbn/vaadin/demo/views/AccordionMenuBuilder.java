@@ -3,7 +3,6 @@ package io.github.makbn.vaadin.demo.views;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.accordion.Accordion;
-import com.vaadin.flow.component.accordion.AccordionPanel;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -56,9 +55,7 @@ public class AccordionMenuBuilder {
      */
     public Accordion build() {
         accordion.getChildren().forEach(accordion::remove);
-        menuContents.forEach((name, content) -> {
-            AccordionPanel panel = accordion.add(name, content);
-        });
+        menuContents.forEach(accordion::add);
         return accordion;
     }
 }

@@ -18,7 +18,7 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
 
     JLTransporter transporter;
 
-    public JLVectorLayer(JLWebEngine engine, JLMapCallbackHandler callbackHandler) {
+    public JLVectorLayer(JLWebEngine<Object> engine, JLMapCallbackHandler callbackHandler) {
         super(engine, callbackHandler);
         this.transporter = () -> transport -> {
             // NO-OP

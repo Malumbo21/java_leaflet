@@ -26,7 +26,7 @@ public class JLGeoJsonLayer extends JLLayer implements LeafletGeoJsonLayerInt {
     JLGeoJsonContent fromContent;
     JSObject window;
 
-    public JLGeoJsonLayer(JLWebEngine engine,
+    public JLGeoJsonLayer(JLWebEngine<Object> engine,
                           JLMapCallbackHandler callbackHandler) {
         super(engine, callbackHandler);
         this.fromUrl = new JLGeoJsonURL();

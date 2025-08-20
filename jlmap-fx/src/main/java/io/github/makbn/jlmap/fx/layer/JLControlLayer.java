@@ -12,7 +12,7 @@ import io.github.makbn.jlmap.model.JLLatLng;
  * @author Matt Akbarian  (@makbn)
  */
 public class JLControlLayer extends JLLayer implements LeafletControlLayerInt {
-    public JLControlLayer(JLWebEngine engine,
+    public JLControlLayer(JLWebEngine<Object> engine,
                           JLMapCallbackHandler callbackHandler) {
         super(engine, callbackHandler);
     }

@@ -20,7 +20,7 @@ import lombok.experimental.FieldDefaults;
 public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
     JLTransporter transporter;
 
-    public JLUiLayer(JLWebEngine engine, JLMapCallbackHandler callbackHandler) {
+    public JLUiLayer(JLWebEngine<Object> engine, JLMapCallbackHandler callbackHandler) {
         super(engine, callbackHandler);
         this.transporter = () -> transport -> {
             // NO-OP

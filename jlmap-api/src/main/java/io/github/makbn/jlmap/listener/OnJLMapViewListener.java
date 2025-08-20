@@ -5,7 +5,7 @@ import io.github.makbn.jlmap.listener.event.Event;
 import lombok.NonNull;
 
 
-public interface OnJLMapViewListener {
+public interface OnJLMapViewListener extends OnJLActionListener<JLMapController> {
 
     /**
      * called after the map is fully loaded
@@ -21,41 +21,10 @@ public interface OnJLMapViewListener {
 
     }
 
-    default void onAction(Event event) {
+    void onActionReceived(Event event);
 
-    }
-
-
-    enum Action {
-        /**
-         * zoom level changes continuously
-         */
-        ZOOM,
-        /**
-         * zoom level stats to change
-         */
-        ZOOM_START,
-        /**
-         * zoom leve changes end
-         */
-        ZOOM_END,
-
-        /**
-         * map center changes continuously
-         */
-        MOVE,
-        /**
-         * user starts to move the map
-         */
-        MOVE_START,
-        /**
-         * user ends to move the map
-         */
-        MOVE_END,
-        /**
-         * user click on the map
-         */
-        CLICK
-
+    @Override
+    default void onAction(JLMapController source, Event event) {
+        onActionReceived(event);
     }
 }

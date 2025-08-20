@@ -1,39 +1,37 @@
 package io.github.makbn.jlmap.listener;
 
+import io.github.makbn.jlmap.listener.event.ClickEvent;
+import io.github.makbn.jlmap.listener.event.Event;
+import io.github.makbn.jlmap.listener.event.MoveEvent;
 import io.github.makbn.jlmap.model.JLObject;
 import lombok.Getter;
 
 
-public abstract class OnJLObjectActionListener<T extends JLObject<?>> {
+public interface OnJLObjectActionListener<T extends JLObject<?>> extends OnJLActionListener<T> {
 
-    public abstract void click(T t, Action action);
+    @Deprecated(forRemoval = true)
+    default void click(T t, JLAction action) {
+        // NO-OP
+    }
 
-    public abstract void move(T t, Action action);
+    @Deprecated(forRemoval = true)
+    default void move(T t, JLAction action) {
+        // NO-OP
+    }
 
+    /**
+     * try to override and use {@link #onAction(JLObject, Event)}
+     */
+    @Deprecated(forRemoval = true)
+    void onActionReceived(T t, Event event);
 
-    @Getter
-    public enum Action {
-        /**
-         * Fired when the marker is moved via setLatLng or by dragging.
-         * Old and new coordinates are included in event arguments as oldLatLng,
-         * {@link io.github.makbn.jlmap.model.JLLatLng}.
-         */
-        MOVE("move"),
-        MOVE_START("movestart"),
-        MOVE_END("moveend"),
-        /**
-         * Fired when the user clicks (or taps) the layer.
-         */
-        CLICK("click"),
-        /**
-         * Fired when the user zooms.
-         */
-        ZOOM("zoom");
-
-        final String jsEventName;
-
-        Action(String name) {
-            this.jsEventName = name;
+    @Override
+    default void onAction(T source, Event event) {
+        onActionReceived(source, event);
+        if (event instanceof MoveEvent moveEvent) {
+            move(source, moveEvent.action());
+        } else if (event instanceof ClickEvent clickEvent) {
+            click(source, clickEvent.action());
         }
     }
 }

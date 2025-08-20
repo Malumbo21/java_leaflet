@@ -1,26 +1,47 @@
 package io.github.makbn.jlmap.model;
 
+import io.github.makbn.jlmap.engine.JLTransporter;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 
 /**
  * Used to open popups in certain places of the map.
+ *
  * @author Mehdi Akbarian Rastaghi (@makbn)
  */
 @Getter
-@Setter
-@AllArgsConstructor
-@Builder
 @ToString
-public class JLPopup {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public final class JLPopup extends JLObject<JLPopup> {
     /**
      * id of JLPopup! this is an internal id for JLMap Application and not
      * related to Leaflet!
      */
-    private int id;
-    /** Content of the popup.*/
-    private String text;
-    /** Coordinates of the popup on the map. */
-    private JLLatLng latLng;
-    /** Theming options for JLPopup. all options are not available! */
-    private JLOptions options;
+    String id;
+    /**
+     * Content of the popup.
+     */
+    String text;
+    /**
+     * Coordinates of the popup on the map.
+     */
+    JLLatLng latLng;
+    /**
+     * Theming options for JLPopup. all options are not available!
+     */
+    JLOptions options;
+
+    @Setter
+    @NonFinal
+    JLObject<?> parent;
+
+    @Builder
+    public JLPopup(String id, String text, JLLatLng latLng, JLOptions options, JLTransporter transport) {
+        super(transport);
+        this.id = id;
+        this.text = text;
+        this.latLng = latLng;
+        this.options = options;
+    }
 }

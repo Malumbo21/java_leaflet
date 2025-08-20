@@ -57,4 +57,4 @@ public class JLColor {
     public static final JLColor ORANGE = new JLColor(1.0, 0.5, 0.0);
     public static final JLColor PURPLE = new JLColor(0.5, 0.0, 0.5);
     public static final JLColor GRAY = new JLColor(0.5, 0.5, 0.5);
-} 
+}

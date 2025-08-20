@@ -4,6 +4,7 @@ import io.github.makbn.jlmap.JLProperties;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +23,9 @@ import java.util.stream.Stream;
 @Builder
 @Value
 public class JLMapOption {
+    public static final double DEFAULT_INITIAL_LATITUDE = 0.00;
+    public static final double DEFAULT_INITIAL_LONGITUDE = 0.00;
+    public static final int DEFAULT_INITIAL_ZOOM = 5;
 
     /**
      * The starting geographical coordinates (latitude and longitude)
@@ -31,8 +35,8 @@ public class JLMapOption {
     @Builder.Default
     @NonNull
     JLLatLng startCoordinate = JLLatLng.builder()
-            .lat(0.00)
-            .lng(0.00)
+            .lat(DEFAULT_INITIAL_LATITUDE)
+            .lng(DEFAULT_INITIAL_LONGITUDE)
             .build();
     /**
      * The map type for configuring the map's appearance and behavior.
@@ -72,13 +76,28 @@ public class JLMapOption {
         return mapType.parameters();
     }
 
+    public boolean zoomControlEnabled() {
+        return getAdditionalParameter().stream()
+                .anyMatch(param -> param.key().equals("zoomControl") &&
+                        param.value().equals("true"));
+    }
+
+    public int getInitialZoom() {
+        return getAdditionalParameter().stream()
+                .filter(param -> param.key().equals("initialZoom"))
+                .map(Parameter::value)
+                .mapToInt(Integer::valueOf)
+                .findFirst()
+                .orElse(DEFAULT_INITIAL_ZOOM);
+    }
+
     /**
      * Represents a key-value pair used for additional parameters in the map
      * configuration.
      */
     public record Parameter(String key, String value) {
         @Override
-        public String toString() {
+        public @NotNull String toString() {
             return String.format("%s=%s", key, value);
         }
     }

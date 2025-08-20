@@ -1,5 +1,6 @@
 package io.github.makbn.jlmap.model;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,10 +19,12 @@ public class JLBounds {
     /**
      * the north-east point of the bounds.
      */
+    @SerializedName(value = "_northEast", alternate = "northEast")
     private JLLatLng northEast;
     /**
      * the south-west point of the bounds.
      */
+    @SerializedName(value = "_southWest", alternate = "southWest")
     private JLLatLng southWest;
 
     /**

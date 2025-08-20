@@ -1,34 +1,44 @@
 package io.github.makbn.jlmap.model;
 
+import io.github.makbn.jlmap.engine.JLTransporter;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 /**
  * A class for drawing polygon overlays on the map.
  * Note that points you pass when creating a polygon shouldn't
  * have an additional last point equal to the first one.
+ *
  * @author Mehdi Akbarian Rastaghi (@makbn)
  */
 @Getter
 @Setter
-@AllArgsConstructor
-@Builder
 @ToString
-public class JLPolygon extends JLObject<JLPolygon> {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public final class JLPolygon extends JLObject<JLPolygon> {
     /**
      * id of JLPolygon! this is an internal id for JLMap Application and not
      * related to Leaflet!
      */
-    private int id;
+    String id;
     /**
      * theming options for JLMultiPolyline. all options are not available!
      */
-    private JLOptions options;
+    JLOptions options;
 
     /**
-     * The arrays of latlngs, with the first array representing the outer
+     * The arrays of lat-lng, with the first array representing the outer
      * shape and the other arrays representing holes in the outer shape.
-     * Additionally, you can pass a multi-dimensional array to represent
+     * Additionally, you can pass a multidimensional array to represent
      * a MultiPolygon shape.
      */
-    private JLLatLng[][][] vertices;
+    JLLatLng[][][] vertices;
+
+    @Builder
+    public JLPolygon(String id, JLOptions options, JLLatLng[][][] vertices, JLTransporter transport) {
+        super(transport);
+        this.id = id;
+        this.options = options;
+        this.vertices = vertices;
+    }
 }

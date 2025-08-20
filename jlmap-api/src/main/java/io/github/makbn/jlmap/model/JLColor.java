@@ -6,15 +6,16 @@ import lombok.NoArgsConstructor;
 
 /**
  * Color abstraction for map styling.
+ *
  * @author Matt Akbarian  (@makbn)
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class JLColor {
-    private double red;
-    private double green;
-    private double blue;
+    private double redParameter;
+    private double greenParameter;
+    private double blueParameter;
     private double opacity;
 
     public JLColor(double red, double green, double blue) {
@@ -23,17 +24,19 @@ public class JLColor {
 
     /**
      * Converts the color to a hex string representation.
+     *
      * @return hex color string (e.g., "#FF0000")
      */
     public String toHexString() {
-        int r = (int) (red * 255);
-        int g = (int) (green * 255);
-        int b = (int) (blue * 255);
+        int r = (int) (redParameter * 255);
+        int g = (int) (greenParameter * 255);
+        int b = (int) (blueParameter * 255);
         return String.format("#%02X%02X%02X", r, g, b);
     }
 
     /**
      * Creates a color from hex string.
+     *
      * @param hex hex color string (e.g., "#FF0000")
      * @return JLColor instance
      */

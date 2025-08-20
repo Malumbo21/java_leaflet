@@ -9,9 +9,7 @@ import io.github.makbn.jlmap.listener.OnJLMapViewListener;
 import io.github.makbn.jlmap.listener.event.ClickEvent;
 import io.github.makbn.jlmap.listener.event.Event;
 import io.github.makbn.jlmap.listener.event.MoveEvent;
-import io.github.makbn.jlmap.model.JLLatLng;
-import io.github.makbn.jlmap.model.JLMarker;
-import io.github.makbn.jlmap.model.JLOptions;
+import io.github.makbn.jlmap.model.*;
 import io.github.makbn.jlmap.vaadin.JLMapView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +97,207 @@ public class HomeView extends HorizontalLayout implements OnJLMapViewListener {
                                         .build(), (Integer) event.get("Radius"),
                                 JLOptions.DEFAULT.toBuilder().draggable(true).build()).setOnActionListener((jlCircle, jlEvent)
                                 -> Notification.show(String.format("Circle '%s' Event: %s", jlCircle, jlEvent)))))
+                
+                // NEW: Circle Marker Demo
+                .item("Draw Circle Marker", e -> DialogBuilder.builder()
+                        .decimalField(LATITUDE)
+                        .decimalField(LONGITUDE)
+                        .numberField("Radius (pixels)")
+                        .get(event -> {
+                            JLCircleMarker circleMarker = mapView.getVectorLayer().addCircleMarker(
+                                    JLLatLng.builder()
+                                            .lat((Double) event.get(LATITUDE))
+                                            .lng((Double) event.get(LONGITUDE))
+                                            .build(), 
+                                    (Integer) event.get("Radius (pixels)"),
+                                    JLOptions.DEFAULT.toBuilder().color(JLColor.RED).build());
+                            circleMarker.setOnActionListener((jlCircleMarker, jlEvent) ->
+                                    Notification.show(String.format("Circle Marker '%s' Event: %s", jlCircleMarker, jlEvent)));
+                        }))
+                
+                // NEW: Simple Polyline Demo
+                .item("Draw Simple Polyline", e -> {
+                    // Create a simple polyline connecting major European cities
+                    JLLatLng[] vertices = {
+                            new JLLatLng(48.864716, 2.349014),  // Paris
+                            new JLLatLng(52.520008, 13.404954), // Berlin
+                            new JLLatLng(41.902783, 12.496366), // Rome
+                            new JLLatLng(40.416775, -3.703790)  // Madrid
+                    };
+                    JLPolyline polyline = mapView.getVectorLayer().addPolyline(vertices, 
+                            JLOptions.DEFAULT.toBuilder().color(JLColor.BLUE).weight(5).build());
+                    polyline.setOnActionListener((jlPolyline, jlEvent) ->
+                            Notification.show(String.format("Polyline '%s' Event: %s", jlPolyline, jlEvent)));
+                    Notification.show("European Cities Route Added!");
+                })
+                
+                // NEW: Custom Polyline Demo
+                .item("Draw Custom Polyline", e -> DialogBuilder.builder()
+                        .decimalField("Start Latitude")
+                        .decimalField("Start Longitude")
+                        .decimalField("Mid Latitude")
+                        .decimalField("Mid Longitude")
+                        .decimalField("End Latitude")
+                        .decimalField("End Longitude")
+                        .get(event -> {
+                            JLLatLng[] vertices = {
+                                    new JLLatLng((Double) event.get("Start Latitude"), (Double) event.get("Start Longitude")),
+                                    new JLLatLng((Double) event.get("Mid Latitude"), (Double) event.get("Mid Longitude")),
+                                    new JLLatLng((Double) event.get("End Latitude"), (Double) event.get("End Longitude"))
+                            };
+                            JLPolyline polyline = mapView.getVectorLayer().addPolyline(vertices,
+                                    JLOptions.DEFAULT.toBuilder().color(JLColor.GREEN).weight(3).build());
+                            polyline.setOnActionListener((jlPolyline, jlEvent) ->
+                                    Notification.show(String.format("Custom Polyline '%s' Event: %s", jlPolyline, jlEvent)));
+                        }))
+                
+                // NEW: Multi-Polyline Demo
+                .item("Draw Multi-Polyline", e -> {
+                    // Create multiple connected routes
+                    JLLatLng[][] routes = {
+                            { // Route 1: Northern Europe
+                                    new JLLatLng(59.334591, 18.063240), // Stockholm
+                                    new JLLatLng(60.169857, 24.938379), // Helsinki
+                                    new JLLatLng(55.676097, 12.568337)  // Copenhagen
+                            },
+                            { // Route 2: Central Europe
+                                    new JLLatLng(50.075538, 14.437800), // Prague
+                                    new JLLatLng(47.497912, 19.040235), // Budapest
+                                    new JLLatLng(48.208174, 16.373819)  // Vienna
+                            }
+                    };
+                    JLMultiPolyline multiPolyline = mapView.getVectorLayer().addMultiPolyline(routes,
+                            JLOptions.DEFAULT.toBuilder().color(JLColor.PURPLE).weight(4).build());
+                    multiPolyline.setOnActionListener((jlMultiPolyline, jlEvent) ->
+                            Notification.show(String.format("Multi-Polyline '%s' Event: %s", jlMultiPolyline, jlEvent)));
+                    Notification.show("Multi-Route Network Added!");
+                })
+                
+                // NEW: Simple Polygon Demo
+                .item("Draw Triangle Polygon", e -> {
+                    // Create a triangle polygon around Paris
+                    JLLatLng[][][] triangleVertices = {{
+                            {
+                                    new JLLatLng(48.864716, 2.349014),   // Paris center
+                                    new JLLatLng(48.874716, 2.339014),   // Northwest
+                                    new JLLatLng(48.854716, 2.339014),   // Southwest
+                                    new JLLatLng(48.864716, 2.349014)    // Close the triangle
+                            }
+                    }};
+                    JLPolygon polygon = mapView.getVectorLayer().addPolygon(triangleVertices,
+                            JLOptions.DEFAULT.toBuilder()
+                                    .color(JLColor.ORANGE)
+                                    .fillColor(JLColor.YELLOW)
+                                    .fillOpacity(0.3)
+                                    .build());
+                    polygon.setOnActionListener((jlPolygon, jlEvent) ->
+                            Notification.show(String.format("Triangle Polygon '%s' Event: %s", jlPolygon, jlEvent)));
+                    Notification.show("Triangle Polygon Added around Paris!");
+                })
+                
+                // NEW: Complex Polygon Demo
+                .item("Draw Custom Polygon", e -> DialogBuilder.builder()
+                        .decimalField("Center Latitude")
+                        .decimalField("Center Longitude")
+                        .decimalField("Size (degrees)")
+                        .get(event -> {
+                            Double centerLat = (Double) event.get("Center Latitude");
+                            Double centerLng = (Double) event.get("Center Longitude");
+                            Double size = (Double) event.get("Size (degrees)");
+                            
+                            // Create a square polygon
+                            JLLatLng[][][] squareVertices = {{
+                                    {
+                                            new JLLatLng(centerLat + size, centerLng - size), // Top-left
+                                            new JLLatLng(centerLat + size, centerLng + size), // Top-right
+                                            new JLLatLng(centerLat - size, centerLng + size), // Bottom-right
+                                            new JLLatLng(centerLat - size, centerLng - size), // Bottom-left
+                                            new JLLatLng(centerLat + size, centerLng - size)  // Close the square
+                                    }
+                            }};
+                            JLPolygon polygon = mapView.getVectorLayer().addPolygon(squareVertices,
+                                    JLOptions.DEFAULT.toBuilder()
+                                            .color(JLColor.RED)
+                                            .fillColor(new JLColor(0.0, 1.0, 1.0)) // CYAN equivalent
+                                            .fillOpacity(0.5)
+                                            .weight(3)
+                                            .build());
+                            polygon.setOnActionListener((jlPolygon, jlEvent) ->
+                                    Notification.show(String.format("Custom Polygon '%s' Event: %s", jlPolygon, jlEvent)));
+                        }))
+                
+                // NEW: Polygon with Hole Demo
+                .item("Draw Polygon with Hole", e -> {
+                    // Create a polygon with a hole (like a donut)
+                    JLLatLng[][][] donutVertices = {{
+                            { // Outer ring
+                                    new JLLatLng(48.874716, 2.329014),
+                                    new JLLatLng(48.874716, 2.369014),
+                                    new JLLatLng(48.854716, 2.369014),
+                                    new JLLatLng(48.854716, 2.329014),
+                                    new JLLatLng(48.874716, 2.329014)
+                            },
+                            { // Inner ring (hole)
+                                    new JLLatLng(48.869716, 2.339014),
+                                    new JLLatLng(48.869716, 2.359014),
+                                    new JLLatLng(48.859716, 2.359014),
+                                    new JLLatLng(48.859716, 2.339014),
+                                    new JLLatLng(48.869716, 2.339014)
+                            }
+                    }};
+                    JLPolygon donutPolygon = mapView.getVectorLayer().addPolygon(donutVertices,
+                            JLOptions.DEFAULT.toBuilder()
+                                    .color(new JLColor(0.0, 0.5, 0.0)) // DARK_GREEN equivalent
+                                    .fillColor(new JLColor(0.5, 1.0, 0.5)) // LIGHT_GREEN equivalent
+                                    .fillOpacity(0.7)
+                                    .weight(2)
+                                    .build());
+                    donutPolygon.setOnActionListener((jlPolygon, jlEvent) ->
+                            Notification.show(String.format("Donut Polygon '%s' Event: %s", jlPolygon, jlEvent)));
+                    Notification.show("Donut-shaped Polygon Added!");
+                })
+                
+                // NEW: Demo All Shapes at Once
+                .item("Demo All Vector Shapes", e -> {
+                    // Add one of each shape type for demonstration
+                    
+                    // Circle
+                    mapView.getVectorLayer().addCircle(
+                            new JLLatLng(48.864716, 2.349014), 5000,
+                            JLOptions.DEFAULT.toBuilder().color(JLColor.BLUE).fillOpacity(0.2).build());
+                    
+                    // Circle Marker
+                    mapView.getVectorLayer().addCircleMarker(
+                            new JLLatLng(48.874716, 2.359014), 10,
+                            JLOptions.DEFAULT.toBuilder().color(JLColor.RED).build());
+                    
+                    // Polyline
+                    JLLatLng[] lineVertices = {
+                            new JLLatLng(48.854716, 2.339014),
+                            new JLLatLng(48.864716, 2.359014)
+                    };
+                    mapView.getVectorLayer().addPolyline(lineVertices,
+                            JLOptions.DEFAULT.toBuilder().color(JLColor.GREEN).weight(3).build());
+                    
+                    // Polygon
+                    JLLatLng[][][] polygonVertices = {{
+                            {
+                                    new JLLatLng(48.869716, 2.344014),
+                                    new JLLatLng(48.869716, 2.354014),
+                                    new JLLatLng(48.859716, 2.354014),
+                                    new JLLatLng(48.859716, 2.344014),
+                                    new JLLatLng(48.869716, 2.344014)
+                            }
+                    }};
+                    mapView.getVectorLayer().addPolygon(polygonVertices,
+                            JLOptions.DEFAULT.toBuilder()
+                                    .color(JLColor.PURPLE)
+                                    .fillColor(JLColor.YELLOW)
+                                    .fillOpacity(0.4)
+                                    .build());
+                    
+                    Notification.show("All vector shapes demonstrated! Check the map.");
+                })
                 .build();
 
         add(accordion);

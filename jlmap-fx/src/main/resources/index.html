@@ -24,7 +24,7 @@
                     let jlId = getJLID(e);
                     let index = findIndex(e);
 
-                    let center = index == -2 ? JSON.stringify({
+                    let center = (index === -2) ? JSON.stringify({
                         "lat": jlmap.getCenter().lat,
                         "lng": jlmap.getCenter().lng
                     }) : JSON.stringify({

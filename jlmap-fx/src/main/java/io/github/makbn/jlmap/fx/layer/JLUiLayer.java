@@ -1,22 +1,30 @@
-package io.github.makbn.jlmap.layer;
+package io.github.makbn.jlmap.fx.layer;
 
 import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.engine.JLTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletUILayerInt;
 import io.github.makbn.jlmap.model.JLLatLng;
 import io.github.makbn.jlmap.model.JLMarker;
 import io.github.makbn.jlmap.model.JLOptions;
 import io.github.makbn.jlmap.model.JLPopup;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
 /**
  * Represents the UI layer on Leaflet map.
  *
  * @author Mehdi Akbarian Rastaghi (@makbn)
  */
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
+    JLTransporter transporter;
 
     public JLUiLayer(JLWebEngine engine, JLMapCallbackHandler callbackHandler) {
         super(engine, callbackHandler);
+        this.transporter = () -> transport -> {
+            // NO-OP
+        };
     }
 
     /**
@@ -30,9 +38,9 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
     public JLMarker addMarker(JLLatLng latLng, String text, boolean draggable) {
         String result = engine.executeScript(String.format("addMarker(%f, %f, '%s', %b)", latLng.getLat(), latLng.getLng(), text, draggable))
                 .toString();
-        int index = Integer.parseInt(result);
-        JLMarker marker = new JLMarker(index, text, latLng);
-        callbackHandler.addJLObject(marker);
+
+        JLMarker marker = new JLMarker(result, text, latLng, transporter);
+        callbackHandler.addJLObject(result, marker);
         return marker;
     }
 
@@ -43,9 +51,9 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
      * @return {{@link Boolean#TRUE}} if removed successfully.
      */
     @Override
-    public boolean removeMarker(int id) {
-        String result = engine.executeScript(String.format("removeMarker(%d)", id)).toString();
-        callbackHandler.remove(JLMarker.class, id);
+    public boolean removeMarker(String id) {
+        String result = engine.executeScript(String.format("removeMarker(%s)", id)).toString();
+        callbackHandler.remove(JLMarker.class, String.valueOf(id));
         return Boolean.parseBoolean(result);
     }
 
@@ -63,8 +71,7 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
         String result = engine.executeScript(String.format("addPopup(%f, %f, \"%s\", %b , %b)", latLng.getLat(), latLng.getLng(), text, options.isCloseButton(), options.isAutoClose()))
                 .toString();
 
-        int index = Integer.parseInt(result);
-        return new JLPopup(index, text, latLng, options);
+        return new JLPopup(result, text, latLng, options, transporter);
     }
 
     /**
@@ -84,8 +91,8 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
      * @return true if removed successfully.
      */
     @Override
-    public boolean removePopup(int id) {
-        String result = engine.executeScript(String.format("removePopup(%d)", id))
+    public boolean removePopup(String id) {
+        String result = engine.executeScript(String.format("removePopup(%s)", id))
                 .toString();
         return Boolean.parseBoolean(result);
     }

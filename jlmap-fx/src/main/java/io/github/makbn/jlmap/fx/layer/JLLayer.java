@@ -1,7 +1,8 @@
-package io.github.makbn.jlmap.layer;
+package io.github.makbn.jlmap.fx.layer;
 
 import io.github.makbn.jlmap.JLMapCallbackHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;
+import io.github.makbn.jlmap.layer.leaflet.LeafletLayer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -13,7 +14,7 @@ import lombok.experimental.FieldDefaults;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PROTECTED)
-public abstract class JLLayer {
+public abstract class JLLayer implements LeafletLayer {
     JLWebEngine engine;
     JLMapCallbackHandler callbackHandler;
 

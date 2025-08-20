@@ -1,8 +1,8 @@
 package io.github.makbn.jlmap.fx.demo;
 
-import io.github.makbn.jlmap.fx.JLMapView;
 import io.github.makbn.jlmap.JLMapController;
 import io.github.makbn.jlmap.JLProperties;
+import io.github.makbn.jlmap.fx.JLMapView;
 import io.github.makbn.jlmap.geojson.JLGeoJsonObject;
 import io.github.makbn.jlmap.listener.OnJLMapViewListener;
 import io.github.makbn.jlmap.listener.OnJLObjectActionListener;
@@ -22,6 +22,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,7 @@ public class LeafletTestJFX extends Application {
         //set listener fo map events
         map.setMapListener(new OnJLMapViewListener() {
             @Override
-            public void mapLoadedSuccessfully(JLMapController mapView) {
+            public void mapLoadedSuccessfully(@NonNull JLMapController mapView) {
                 log.info("map loaded!");
                 addMultiPolyline(map);
                 addPolyline(map);
@@ -98,10 +99,10 @@ public class LeafletTestJFX extends Application {
                 map.getControlLayer().zoomIn(2);
                 map.getControlLayer().zoomOut(1);
 
-
                 JLGeoJsonObject geoJsonObject = map.getGeoJsonLayer()
                         .addFromUrl("https://pkgstore.datahub.io/examples/geojson-tutorial/example/data/db696b3bf628d9a273ca9907adcea5c9/example.geojson");
 
+                log.info("geojson loaded! id: {}", geoJsonObject.getId());
             }
 
             @Override
@@ -110,7 +111,7 @@ public class LeafletTestJFX extends Application {
             }
 
             @Override
-            public void onAction(Event event) {
+            public void onActionReceived(Event event) {
                 if (event instanceof MoveEvent moveEvent) {
                     log.info("move event: {} c: {} \t bounds: {} \t z: {}", moveEvent.action(), moveEvent.center(),
                             moveEvent.bounds(), moveEvent.zoomLevel());
@@ -127,15 +128,10 @@ public class LeafletTestJFX extends Application {
     }
 
     private OnJLObjectActionListener<JLMarker> getListener() {
-        return new OnJLObjectActionListener<JLMarker>() {
+        return new OnJLObjectActionListener<>() {
             @Override
-            public void click(JLMarker object, Action action) {
-                log.info("object click listener for marker:" + object);
-            }
-
-            @Override
-            public void move(JLMarker object, Action action) {
-                log.info("object move listener for marker:" + object);
+            public void onActionReceived(JLMarker jlMarker, Event event) {
+                log.info("object {} event for marker:{}", event.action(), jlMarker);
             }
         };
     }
@@ -197,13 +193,8 @@ public class LeafletTestJFX extends Application {
         };
         map.getVectorLayer().addPolygon(vertices).setOnActionListener(new OnJLObjectActionListener<>() {
             @Override
-            public void click(JLPolygon jlPolygon, Action action) {
-                log.info("object click listener for jlPolygon: {}", jlPolygon);
-            }
-
-            @Override
-            public void move(JLPolygon jlPolygon, Action action) {
-                log.info("object move listener for jlPolygon: {}", jlPolygon);
+            public void onActionReceived(JLPolygon jlPolygon, Event event) {
+                log.info("object {} event for jlPolygon:{}", event.action(), jlPolygon);
             }
         });
     }

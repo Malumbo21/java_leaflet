@@ -3,9 +3,13 @@ package io.github.makbn.jlmap.fx;
 import io.github.makbn.jlmap.JLMapCallbackHandler;
 import io.github.makbn.jlmap.JLMapController;
 import io.github.makbn.jlmap.JLProperties;
-import io.github.makbn.jlmap.fx.engine.JLJavaFXEngine;
 import io.github.makbn.jlmap.engine.JLWebEngine;
-import io.github.makbn.jlmap.layer.*;
+import io.github.makbn.jlmap.fx.engine.JLJavaFXEngine;
+import io.github.makbn.jlmap.fx.layer.JLControlLayer;
+import io.github.makbn.jlmap.fx.layer.JLGeoJsonLayer;
+import io.github.makbn.jlmap.fx.layer.JLUiLayer;
+import io.github.makbn.jlmap.fx.layer.JLVectorLayer;
+import io.github.makbn.jlmap.layer.leaflet.LeafletLayer;
 import io.github.makbn.jlmap.listener.OnJLMapViewListener;
 import io.github.makbn.jlmap.model.JLLatLng;
 import io.github.makbn.jlmap.model.JLMapOption;
@@ -49,11 +53,11 @@ import java.util.stream.Collectors;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class JLMapView extends AnchorPane implements JLMapController {
     JLMapOption mapOption;
-    JLWebEngine jlWebEngine;
+    JLWebEngine<Object> jlWebEngine;
     WebView webView;
     JLMapCallbackHandler jlMapCallbackHandler;
-    @NonFinal
-    HashMap<Class<? extends JLLayer>, JLLayer> layers;
+    HashMap<Class<? extends LeafletLayer>, LeafletLayer> layers;
+
     @NonFinal
     boolean controllerAdded = false;
     @NonFinal
@@ -70,6 +74,7 @@ public class JLMapView extends AnchorPane implements JLMapController {
                 .additionalParameter(Set.of(new JLMapOption.Parameter("zoomControl",
                         Objects.toString(showZoomController))))
                 .build();
+        this.layers = new HashMap<>();
         this.webView = new WebView();
         this.jlWebEngine = new JLJavaFXEngine(webView.getEngine());
         this.jlMapCallbackHandler = new JLMapCallbackHandler(mapListener);
@@ -84,9 +89,9 @@ public class JLMapView extends AnchorPane implements JLMapController {
     private void initialize() {
 
         webView.getEngine().onStatusChangedProperty().addListener((observable, oldValue, newValue)
-                -> log.debug(String.format("Old Value: %s\tNew Value: %s", oldValue, newValue)));
+                -> log.debug("Old Value: {} New Value: {}", oldValue, newValue));
         webView.getEngine().onErrorProperty().addListener((observable, oldValue, newValue)
-                -> log.debug(String.format("Old Value: %s\tNew Value: %s", oldValue, newValue)));
+                -> log.debug("Old Value: {} New Value: {}}", oldValue, newValue));
         webView.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             checkForBrowsing(webView.getEngine());
             if (newValue == Worker.State.FAILED) {
@@ -131,7 +136,7 @@ public class JLMapView extends AnchorPane implements JLMapController {
     private void checkForBrowsing(WebEngine engine) {
         String address =
                 engine.getLoadWorker().getMessage().trim();
-        log.debug("link: " + address);
+        log.debug("link: {}", address);
         if (address.contains("http://") || address.contains("https://")) {
             engine.getLoadWorker().cancel();
             try {
@@ -187,15 +192,12 @@ public class JLMapView extends AnchorPane implements JLMapController {
     }
 
     @Override
-    public HashMap<Class<? extends JLLayer>, JLLayer> getLayers() {
-        if (layers == null) {
-            layers = new HashMap<>();
-
-            layers.put(JLUiLayer.class, new JLUiLayer(jlWebEngine, jlMapCallbackHandler));
-            layers.put(JLVectorLayer.class, new JLVectorLayer(jlWebEngine, jlMapCallbackHandler));
-            layers.put(JLControlLayer.class, new JLControlLayer(jlWebEngine, jlMapCallbackHandler));
-            layers.put(JLGeoJsonLayer.class, new JLGeoJsonLayer(jlWebEngine, jlMapCallbackHandler));
-        }
+    public HashMap<Class<? extends LeafletLayer>, LeafletLayer> getLayers() {
+        layers.clear();
+        layers.put(JLUiLayer.class, new JLUiLayer(jlWebEngine, jlMapCallbackHandler));
+        layers.put(JLVectorLayer.class, new JLVectorLayer(jlWebEngine, jlMapCallbackHandler));
+        layers.put(JLControlLayer.class, new JLControlLayer(jlWebEngine, jlMapCallbackHandler));
+        layers.put(JLGeoJsonLayer.class, new JLGeoJsonLayer(jlWebEngine, jlMapCallbackHandler));
         return layers;
     }
 

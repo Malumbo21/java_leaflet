@@ -1,0 +1,10 @@
+/* Leaflet map below overlays */
+.leaflet-container {
+    position: relative !important;
+    z-index: 0 !important;
+}
+
+/* Vaadin overlays always on top */
+.v-overlay-container {
+    z-index: 3000 !important;
+}

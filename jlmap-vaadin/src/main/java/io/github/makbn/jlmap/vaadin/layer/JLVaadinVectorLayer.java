@@ -6,11 +6,13 @@ import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletVectorLayerInt;
 import io.github.makbn.jlmap.listener.JLAction;
 import io.github.makbn.jlmap.model.*;
-import io.github.makbn.jlmap.model.builder.JLCircleBuilder;
+import io.github.makbn.jlmap.model.builder.*;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -49,8 +51,29 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
      */
     @Override
     public JLPolyline addPolyline(JLLatLng[] vertices, JLOptions options) {
-        // TODO: implement
-        return null;
+        var elementUniqueName = getElementUniqueName(JLPolyline.class, idGenerator.incrementAndGet());
+
+        var polylineBuilder = new JLPolylineBuilder()
+                .setUuid(elementUniqueName)
+                .setTransporter(() -> transport -> {})
+                .withOptions(options)
+                .withCallbacks(jlCallbackBuilder -> {
+                    jlCallbackBuilder.on(JLAction.MOVE);
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                });
+
+        // Add vertices to the builder using the correct method
+        for (JLLatLng vertex : vertices) {
+            polylineBuilder.addLatLng(vertex.getLat(), vertex.getLng());
+        }
+
+        engine.executeScript(polylineBuilder.buildJsElement());
+        var polyline = polylineBuilder.buildJLObject();
+        callbackHandler.addJLObject(elementUniqueName, polyline);
+        return polyline;
     }
 
     /**
@@ -61,8 +84,14 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
      */
     @Override
     public boolean removePolyline(String id) {
-        // TODO: implement
-        return false;
+        try {
+            engine.executeScript(removeLayerWithUUID(id));
+            callbackHandler.remove(JLPolyline.class, id);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage(), e);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -88,8 +117,33 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
     @Override
     public JLMultiPolyline addMultiPolyline(JLLatLng[][] vertices,
                                             JLOptions options) {
-        // TODO implement
-        return null;
+        var elementUniqueName = getElementUniqueName(JLMultiPolyline.class, idGenerator.incrementAndGet());
+
+        var multiPolylineBuilder = new JLMultiPolylineBuilder()
+                .setUuid(elementUniqueName)
+                .setTransporter(() -> transport -> {})
+                .withOptions(options)
+                .withCallbacks(jlCallbackBuilder -> {
+                    jlCallbackBuilder.on(JLAction.MOVE);
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                });
+
+        // Add vertices arrays to the builder using the correct method
+        for (JLLatLng[] vertexArray : vertices) {
+            List<double[]> line = new ArrayList<>();
+            for (JLLatLng vertex : vertexArray) {
+                line.add(new double[]{vertex.getLat(), vertex.getLng()});
+            }
+            multiPolylineBuilder.addLine(line);
+        }
+
+        engine.executeScript(multiPolylineBuilder.buildJsElement());
+        var multiPolyline = multiPolylineBuilder.buildJLObject();
+        callbackHandler.addJLObject(elementUniqueName, multiPolyline);
+        return multiPolyline;
     }
 
     /**
@@ -100,8 +154,14 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
      */
     @Override
     public boolean removeMultiPolyline(String id) {
-        // TODO impleemnt
-        return false;
+        try {
+            engine.executeScript(removeLayerWithUUID(id));
+            callbackHandler.remove(JLMultiPolyline.class, id);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage(), e);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -112,8 +172,35 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
      */
     @Override
     public JLPolygon addPolygon(JLLatLng[][][] vertices, JLOptions options) {
-        // TODO implement
-        return null;
+        var elementUniqueName = getElementUniqueName(JLPolygon.class, idGenerator.incrementAndGet());
+
+        var polygonBuilder = new JLPolygonBuilder()
+                .setUuid(elementUniqueName)
+                .setTransporter(() -> transport -> {})
+                .withOptions(options)
+                .withCallbacks(jlCallbackBuilder -> {
+                    jlCallbackBuilder.on(JLAction.MOVE);
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                });
+
+        // Add vertices arrays to the builder using the correct method
+        for (JLLatLng[][] ringArray : vertices) {
+            List<double[]> group = new ArrayList<>();
+            for (JLLatLng[] ring : ringArray) {
+                for (JLLatLng vertex : ring) {
+                    group.add(new double[]{vertex.getLat(), vertex.getLng()});
+                }
+            }
+            polygonBuilder.addLatLngGroup(group);
+        }
+
+        engine.executeScript(polygonBuilder.buildJsElement());
+        var polygon = polygonBuilder.buildJLObject();
+        callbackHandler.addJLObject(elementUniqueName, polygon);
+        return polygon;
     }
 
     /**
@@ -135,8 +222,14 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
      */
     @Override
     public boolean removePolygon(String id) {
-        // TODO implement
-       return false;
+        try {
+            engine.executeScript(removeLayerWithUUID(id));
+            callbackHandler.remove(JLPolygon.class, id);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage(), e);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -210,8 +303,27 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
     @Override
     public JLCircleMarker addCircleMarker(JLLatLng center, int radius,
                                           JLOptions options) {
-        // TODO impelemnt
-        return null;
+        var elementUniqueName = getElementUniqueName(JLCircleMarker.class, idGenerator.incrementAndGet());
+
+        var circleMarkerBuilder = new JLCircleMarkerBuilder()
+                .setUuid(elementUniqueName)
+                .setLat(center.getLat())
+                .setLng(center.getLng())
+                .setRadius(radius)
+                .setTransporter(() -> transport -> {})
+                .withOptions(options)
+                .withCallbacks(jlCallbackBuilder -> {
+                    jlCallbackBuilder.on(JLAction.MOVE);
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                });
+
+        engine.executeScript(circleMarkerBuilder.buildJsElement());
+        var circleMarker = circleMarkerBuilder.buildJLObject();
+        callbackHandler.addJLObject(elementUniqueName, circleMarker);
+        return circleMarker;
     }
 
     /**
@@ -233,7 +345,13 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
      */
     @Override
     public boolean removeCircleMarker(String id) {
-        // TODO implement
-        return false;
+        try {
+            engine.executeScript(removeLayerWithUUID(id));
+            callbackHandler.remove(JLCircleMarker.class, id);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage(), e);
+            return false;
+        }
+        return true;
     }
 }

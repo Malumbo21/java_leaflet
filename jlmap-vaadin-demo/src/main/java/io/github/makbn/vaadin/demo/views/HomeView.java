@@ -15,6 +15,7 @@ import io.github.makbn.jlmap.model.JLOptions;
 import io.github.makbn.jlmap.vaadin.JLMapView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.util.annotation.NonNull;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -23,10 +24,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Route("")
 public class HomeView extends HorizontalLayout implements OnJLMapViewListener {
-    Logger log = LoggerFactory.getLogger(getClass());
-    private JLMapView mapView;
-
-    AtomicInteger defaultZoomLevel = new AtomicInteger(5);
+    public static final String LATITUDE = "Latitude";
+    public static final String LONGITUDE = "Longitude";
+    private final transient Logger log = LoggerFactory.getLogger(getClass());
+    private final JLMapView mapView;
+    private final AtomicInteger defaultZoomLevel = new AtomicInteger(5);
 
     public HomeView() {
         setSizeFull();
@@ -52,24 +54,24 @@ public class HomeView extends HorizontalLayout implements OnJLMapViewListener {
                         .numberField("Min zoom level")
                         .get(event -> mapView.getControlLayer().setMinZoom((Integer) event.get("Min zoom level"))))
                 .item("Fly to", e -> DialogBuilder.builder()
-                        .decimalField("Latitude")
-                        .decimalField("Longitude")
+                        .decimalField(LATITUDE)
+                        .decimalField(LONGITUDE)
                         .numberField("Zoom level")
                         .get(event -> mapView.getControlLayer().flyTo(
                                 JLLatLng.builder()
-                                        .lat((Double) event.get("Latitude"))
-                                        .lng((Double) event.get("Longitude"))
+                                        .lat((Double) event.get(LATITUDE))
+                                        .lng((Double) event.get(LONGITUDE))
                                         .build(), (Integer) event.get("Zoom level"))))
                 .menu("UI Layer")
                 .item("Add Marker", e ->
                         DialogBuilder.builder()
-                                .decimalField("Latitude")
-                                .decimalField("Longitude")
+                                .decimalField(LATITUDE)
+                                .decimalField(LONGITUDE)
                                 .textField("Text")
                                 .get(event -> {
                                     JLMarker marker = mapView.getUiLayer().addMarker(JLLatLng.builder()
-                                            .lat((Double) event.get("Latitude"))
-                                            .lng((Double) event.get("Longitude"))
+                                            .lat((Double) event.get(LATITUDE))
+                                            .lng((Double) event.get(LONGITUDE))
                                             .build(), (String) event.get("Text"), true);
                                     marker.setOnActionListener((jlMarker, event1) -> {
                                         if (event1 instanceof MoveEvent) {
@@ -79,22 +81,21 @@ public class HomeView extends HorizontalLayout implements OnJLMapViewListener {
                                         }
                                     });
 
-                                    marker.getPopup().setOnActionListener((jlPopup, jlEvent) -> {
-                                        Notification.show(String.format("Mareker's Popup '%s' Event: %s", jlPopup, jlEvent));
-                                    });
+                                    marker.getPopup().setOnActionListener((jlPopup, jlEvent) ->
+                                            Notification.show(String.format("Mareker's Popup '%s' Event: %s", jlPopup, jlEvent))
+                                    );
                                 }))
-                .item("Hide Grid", e -> System.out.println("Grid off"))
                 .menu("Geo Json Layer")
-                .item("Load Data", e -> System.out.println("Loading GeoJSON..."))
+                .item("Load Data", e -> log.info("Loading GeoJSON..."))
                 .menu("Vector Layer")
                 .item("Draw Circle", e -> DialogBuilder.builder()
-                        .decimalField("Latitude")
-                        .decimalField("Longitude")
+                        .decimalField(LATITUDE)
+                        .decimalField(LONGITUDE)
                         .numberField("Radius")
                         .get(event -> mapView.getVectorLayer().addCircle(
                                 JLLatLng.builder()
-                                        .lat((Double) event.get("Latitude"))
-                                        .lng((Double) event.get("Longitude"))
+                                        .lat((Double) event.get(LATITUDE))
+                                        .lng((Double) event.get(LONGITUDE))
                                         .build(), (Integer) event.get("Radius"),
                                 JLOptions.DEFAULT.toBuilder().draggable(true).build()).setOnActionListener((jlCircle, jlEvent)
                                 -> Notification.show(String.format("Circle '%s' Event: %s", jlCircle, jlEvent)))))
@@ -109,14 +110,6 @@ public class HomeView extends HorizontalLayout implements OnJLMapViewListener {
         expand(mapView);
         addMarker();
     }
-
-
-    /**
-     * Creates the control panel with buttons for interacting with the map.
-     *
-     * @return the control panel
-     */
-
 
     /**
      * Adds a marker to the map at the current center.
@@ -145,7 +138,7 @@ public class HomeView extends HorizontalLayout implements OnJLMapViewListener {
      * @param mapController the map controller
      */
     @Override
-    public void mapLoadedSuccessfully(io.github.makbn.jlmap.JLMapController mapController) {
+    public void mapLoadedSuccessfully(@NonNull io.github.makbn.jlmap.JLMapController mapController) {
         log.info("Map loaded successfully");
         Notification.show("Map loaded successfully");
     }

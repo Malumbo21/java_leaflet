@@ -1,20 +1,28 @@
-package io.github.makbn.jlmap.layer;
+package io.github.makbn.jlmap.fx.layer;
 
 import io.github.makbn.jlmap.JLMapCallbackHandler;
-import io.github.makbn.jlmap.JLProperties;
+import io.github.makbn.jlmap.engine.JLTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletVectorLayerInt;
 import io.github.makbn.jlmap.model.*;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
 /**
  * Represents the Vector layer on Leaflet map.
+ *
  * @author Mehdi Akbarian Rastaghi (@makbn)
  */
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
 
-    public JLVectorLayer(JLWebEngine engine,
-                         JLMapCallbackHandler callbackHandler) {
+    JLTransporter transporter;
+
+    public JLVectorLayer(JLWebEngine engine, JLMapCallbackHandler callbackHandler) {
         super(engine, callbackHandler);
+        this.transporter = () -> transport -> {
+            // NO-OP
+        };
     }
 
     /**
@@ -46,9 +54,8 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                                 options.getSmoothFactor()))
                 .toString();
 
-        int index = Integer.parseInt(result);
-        JLPolyline polyline = new JLPolyline(index, options, vertices);
-        callbackHandler.addJLObject(polyline);
+        JLPolyline polyline = new JLPolyline(result, options, vertices, transporter);
+        callbackHandler.addJLObject(result, polyline);
         return polyline;
     }
 
@@ -59,12 +66,12 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      * @return {@link Boolean#TRUE} if removed successfully
      */
     @Override
-    public boolean removePolyline(int id) {
+    public boolean removePolyline(String id) {
         String result = engine.executeScript(
-                String.format("removePolyLine(%d)", id)).toString();
+                String.format("removePolyLine(%s)", id)).toString();
 
-        callbackHandler.remove(JLPolyline.class, id);
-        callbackHandler.remove(JLMultiPolyline.class, id);
+        callbackHandler.remove(JLPolyline.class, String.valueOf(id));
+        callbackHandler.remove(JLMultiPolyline.class, String.valueOf(id));
 
         return Boolean.parseBoolean(result);
     }
@@ -101,9 +108,8 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                                 options.getSmoothFactor()))
                 .toString();
 
-        int index = Integer.parseInt(result);
-        JLMultiPolyline multiPolyline = new JLMultiPolyline(index, options, vertices);
-        callbackHandler.addJLObject(multiPolyline);
+        JLMultiPolyline multiPolyline = new JLMultiPolyline(result, options, vertices, transporter);
+        callbackHandler.addJLObject(String.valueOf(result), multiPolyline);
         return multiPolyline;
     }
 
@@ -114,11 +120,11 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      * @return {@link Boolean#TRUE} if removed successfully
      */
     @Override
-    public boolean removeMultiPolyline(int id) {
+    public boolean removeMultiPolyline(String id) {
         String result = engine.executeScript(
-                String.format("removePolyLine(%d)", id)).toString();
+                String.format("removePolyLine(%s)", id)).toString();
 
-        callbackHandler.remove(JLMultiPolyline.class, id);
+        callbackHandler.remove(JLMultiPolyline.class, String.valueOf(id));
 
         return Boolean.parseBoolean(result);
     }
@@ -141,9 +147,8 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                                 options.getFillOpacity()))
                 .toString();
 
-        int index = Integer.parseInt(result);
-        JLPolygon polygon = new JLPolygon(index, options, vertices);
-        callbackHandler.addJLObject(polygon);
+        JLPolygon polygon = new JLPolygon(result, options, vertices, transporter);
+        callbackHandler.addJLObject(String.valueOf(result), polygon);
         return polygon;
     }
 
@@ -165,11 +170,11 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      * @return {@link Boolean#TRUE} if removed successfully
      */
     @Override
-    public boolean removePolygon(int id) {
+    public boolean removePolygon(String id) {
         String result = engine.executeScript(
-                String.format("removePolygon(%d)", id)).toString();
+                String.format("removePolygon(%s)", id)).toString();
 
-        callbackHandler.remove(JLPolygon.class, id);
+        callbackHandler.remove(JLPolygon.class, String.valueOf(id));
 
         return Boolean.parseBoolean(result);
     }
@@ -193,9 +198,8 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                                 options.getOpacity(), options.getFillOpacity()))
                 .toString();
 
-        int index = Integer.parseInt(result);
-        JLCircle circle = new JLCircle(index, radius, center, options);
-        callbackHandler.addJLObject(circle);
+        JLCircle circle = new JLCircle(result, radius, center, options, transporter);
+        callbackHandler.addJLObject(result, circle);
         return circle;
     }
 
@@ -217,11 +221,11 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      * @return {@link Boolean#TRUE} if removed successfully
      */
     @Override
-    public boolean removeCircle(int id) {
+    public boolean removeCircle(String id) {
         String result = engine.executeScript(
-                String.format("removeCircle(%d)", id)).toString();
+                String.format("removeCircle(%s)", id)).toString();
 
-        callbackHandler.remove(JLCircle.class, id);
+        callbackHandler.remove(JLCircle.class, String.valueOf(id));
 
         return Boolean.parseBoolean(result);
     }
@@ -246,9 +250,8 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                                 options.getOpacity(), options.getFillOpacity()))
                 .toString();
 
-        int index = Integer.parseInt(result);
-        JLCircleMarker circleMarker = new JLCircleMarker(index, radius, center, options);
-        callbackHandler.addJLObject(circleMarker);
+        JLCircleMarker circleMarker = new JLCircleMarker(result, radius, center, options, transporter);
+        callbackHandler.addJLObject(result, circleMarker);
         return circleMarker;
     }
 
@@ -270,11 +273,11 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      * @return {@link Boolean#TRUE} if removed successfully
      */
     @Override
-    public boolean removeCircleMarker(int id) {
+    public boolean removeCircleMarker(String id) {
         String result = engine.executeScript(
-                String.format("removeCircleMarker(%d)", id)).toString();
+                String.format("removeCircleMarker(%s)", id)).toString();
 
-        callbackHandler.remove(JLCircleMarker.class, id);
+        callbackHandler.remove(JLCircleMarker.class, String.valueOf(id));
 
         return Boolean.parseBoolean(result);
     }

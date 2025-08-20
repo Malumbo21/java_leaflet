@@ -1,4 +1,4 @@
-package io.github.makbn.jlmap.layer;
+package io.github.makbn.jlmap.fx.layer;
 
 import io.github.makbn.jlmap.JLMapCallbackHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;

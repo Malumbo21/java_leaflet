@@ -2,10 +2,13 @@ package io.github.makbn.jlmap;
 
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.exception.JLMapNotReadyException;
-import io.github.makbn.jlmap.layer.*;
+import io.github.makbn.jlmap.layer.leaflet.*;
 import io.github.makbn.jlmap.model.JLLatLng;
+import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Mehdi Akbarian Rastaghi (@makbn)
@@ -16,36 +19,36 @@ public interface JLMapController {
 
     void addControllerToDocument();
 
-    HashMap<Class<? extends JLLayer>, JLLayer> getLayers();
+    HashMap<Class<? extends LeafletLayer>, LeafletLayer> getLayers();
 
     /**
      * handle all functions for add/remove layers from UI layer
      *
-     * @return current instance of {{@link JLUiLayer}}
+     * @return current instance of {{@link LeafletLayer}}
      */
-    default JLUiLayer getUiLayer() {
+    default LeafletUILayerInt getUiLayer() {
         checkMapState();
-        return (JLUiLayer) getLayers().get(JLUiLayer.class);
+        return getLayerInternal(LeafletUILayerInt.class);
     }
 
     /**
      * handle all functions for add/remove layers from Vector layer
      *
-     * @return current instance of {{@link JLVectorLayer}}
+     * @return current instance of {{@link LeafletVectorLayerInt}}
      */
-    default JLVectorLayer getVectorLayer() {
+    default LeafletVectorLayerInt getVectorLayer() {
         checkMapState();
-        return (JLVectorLayer) getLayers().get(JLVectorLayer.class);
+        return getLayerInternal(LeafletVectorLayerInt.class);
     }
 
-    default JLControlLayer getControlLayer() {
+    default LeafletControlLayerInt getControlLayer() {
         checkMapState();
-        return (JLControlLayer) getLayers().get(JLControlLayer.class);
+        return getLayerInternal(LeafletControlLayerInt.class);
     }
 
-    default JLGeoJsonLayer getGeoJsonLayer() {
+    default LeafletGeoJsonLayerInt getGeoJsonLayer() {
         checkMapState();
-        return (JLGeoJsonLayer) getLayers().get(JLGeoJsonLayer.class);
+        return getLayerInternal(LeafletGeoJsonLayerInt.class);
     }
 
     /**
@@ -122,5 +125,15 @@ public interface JLMapController {
         if (getJLEngine() == null) {
             throw new JLMapNotReadyException("Map engine is not initialized");
         }
+    }
+
+    private @Nullable <T extends LeafletLayer> T getLayerInternal(@NonNull Class<T> layerClass) {
+        return getLayers().entrySet()
+                .stream()
+                .filter(entry -> layerClass.isAssignableFrom(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .map(layerClass::cast)
+                .findFirst()
+                .orElse(null);
     }
 }

@@ -1,50 +1,48 @@
 package io.github.makbn.jlmap;
 
-import com.google.gson.Gson;
 import io.github.makbn.jlmap.listener.OnJLMapViewListener;
-import io.github.makbn.jlmap.listener.OnJLObjectActionListener;
-import io.github.makbn.jlmap.listener.event.ClickEvent;
-import io.github.makbn.jlmap.listener.event.MoveEvent;
-import io.github.makbn.jlmap.listener.event.ZoomEvent;
+import io.github.makbn.jlmap.listener.event.*;
 import io.github.makbn.jlmap.model.*;
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author Mehdi Akbarian Rastaghi (@makbn)
  */
 @Slf4j
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class JLMapCallbackHandler implements Serializable {
-    private static final String FUNCTION_MOVE = "move";
-    private static final String FUNCTION_CLICK = "click";
-    private static final String FUNCTION_ZOOM = "zoom";
-    private static final String FUNCTION_MOVE_START = "movestart";
-    private static final String FUNCTION_MOVE_END = "moveend";
-    transient OnJLMapViewListener listener;
-    transient HashMap<Class<? extends JLObject<?>>, HashMap<Integer, JLObject<?>>> jlObjects;
-    transient Gson gson;
+public class JLMapCallbackHandler {
+    OnJLMapViewListener listener;
+    HashMap<Class<? extends JLObject<?>>, HashMap<String, JLObject<?>>> jlObjects;
+
     HashMap<String, Class<? extends JLObject<?>>[]> classMap;
+    Set<JLEventHandler> eventHandlers = Set.of(
+            new JLDragEventHandler(),
+            new JLInteractionEventHandler(),
+            new JLStatusChangeEventHandler(),
+            new JLLayerEventHandler()
+    );
 
     public JLMapCallbackHandler(OnJLMapViewListener listener) {
         this.listener = listener;
         this.jlObjects = new HashMap<>();
-        this.gson = new Gson();
         this.classMap = new HashMap<>();
         initClassMap();
     }
 
     @SuppressWarnings("unchecked")
     private void initClassMap() {
-        classMap.put("marker", new Class[]{JLMarker.class});
-        classMap.put("marker_circle", new Class[]{JLCircleMarker.class});
-        classMap.put("polyline", new Class[]{JLPolyline.class, JLMultiPolyline.class});
-        classMap.put("polygon", new Class[]{JLPolygon.class});
+        classMap.put(JLMarker.class.getSimpleName().toLowerCase(), new Class[]{JLMarker.class});
+        classMap.put(JLPopup.class.getSimpleName().toLowerCase(), new Class[]{JLPopup.class});
+        classMap.put(JLCircleMarker.class.getSimpleName().toLowerCase(), new Class[]{JLCircleMarker.class});
+        classMap.put(JLCircle.class.getSimpleName().toLowerCase(), new Class[]{JLCircle.class});
+        classMap.put(JLPolyline.class.getSimpleName().toLowerCase(), new Class[]{JLPolyline.class});
+        classMap.put(JLMultiPolyline.class.getSimpleName().toLowerCase(), new Class[]{JLMultiPolyline.class});
+        classMap.put(JLPolygon.class.getSimpleName().toLowerCase(), new Class[]{JLPolygon.class});
     }
 
     /**
@@ -56,126 +54,61 @@ public class JLMapCallbackHandler implements Serializable {
      * @param param5       additional param
      */
     @SuppressWarnings("all")
-    public void functionCalled(String functionName, Object param1, Object param2,
+    public void functionCalled(Object mapView, String functionName, Object param1, Object param2,
                                Object param3, Object param4, Object param5) {
-        log.debug(String.format("function: %s \tparam1: %s \tparam2: %s " +
-                        "\tparam3: %s param4: %s \tparam5: %s%n"
-                , functionName, param1, param2, param3, param4, param5));
+        log.debug("function: {} param1: {} param2: {} param3: {} param4: {} param5: {}",
+                functionName, param1, param2, param3, param4, param5);
         try {
             //get target class of Leaflet layer in JL Application
             Class<?>[] targetClasses = classMap.get(param1);
-
+            if (targetClasses == null) {
+                targetClasses = classMap.get(param1.toString().replace("jl", ""));
+            }
             //function called by an known class
             if (targetClasses != null) {
                 //one Leaflet class may map to multiple class in JL Application
                 // like ployLine mapped to JLPolyline and JLMultiPolyline
-                for (Class<?> targetClass : targetClasses) {
-                    if (targetClass != null) {
-                        //search for the other JLObject class if available
-                        if (!jlObjects.containsKey(targetClass))
-                            break;
-
-                        JLObject<?> jlObject = jlObjects.get(targetClass)
-                                .get(Integer.parseInt(String.valueOf(param2)));
-
-                        //search for the other JLObject object if available
-                        if (jlObject == null)
-                            break;
-
-                        if (jlObject.getOnActionListener() == null)
-                            return;
-
-                        //call listener and exit loop
-                        if (callListenerOnObject(functionName,
-                                (JLObject<JLObject<?>>) jlObject, param1,
-                                param2, param3, param4, param5))
-                            return;
-                    }
-                }
+                Arrays.stream(targetClasses)
+                        .filter(jlObjects::containsKey)
+                        .map(targetClass -> jlObjects.get(targetClass).get(String.valueOf(param2)))
+                        .filter(Objects::nonNull)
+                        .filter(jlObject -> Objects.nonNull(jlObject.getOnActionListener()))
+                        .forEach(jlObject -> {
+                            eventHandlers.stream()
+                                    .filter(hadler -> hadler.canHandle(functionName))
+                                    .forEach(hadler -> hadler.handle(jlObject, functionName,
+                                            jlObject.getOnActionListener(), param1, param2, param3, param4, param5));
+                        });
             } else if (param1.equals("main_map") && getMapListener().isPresent()) {
-                switch (functionName) {
-                    case FUNCTION_MOVE -> getMapListener()
-                            .get()
-                            .onAction(new MoveEvent(OnJLMapViewListener.Action.MOVE,
-                                    gson.fromJson(String.valueOf(param4), JLLatLng.class),
-                                    gson.fromJson(String.valueOf(param5), JLBounds.class),
-                                    Integer.parseInt(String.valueOf(param3))));
-                    case FUNCTION_MOVE_START -> getMapListener()
-                            .get()
-                            .onAction(new MoveEvent(OnJLMapViewListener.Action.MOVE_START,
-                                    gson.fromJson(String.valueOf(param4), JLLatLng.class),
-                                    gson.fromJson(String.valueOf(param5), JLBounds.class),
-                                    Integer.parseInt(String.valueOf(param3))));
-                    case FUNCTION_MOVE_END -> getMapListener()
-                            .get()
-                            .onAction(new MoveEvent(OnJLMapViewListener.Action.MOVE_END,
-                                    gson.fromJson(String.valueOf(param4), JLLatLng.class),
-                                    gson.fromJson(String.valueOf(param5), JLBounds.class),
-                                    Integer.parseInt(String.valueOf(param3))));
-                    case FUNCTION_CLICK -> getMapListener()
-                            .get()
-                            .onAction(new ClickEvent(gson.fromJson(String.valueOf(param3),
-                                    JLLatLng.class)));
-
-                    case FUNCTION_ZOOM -> getMapListener()
-                            .get()
-                            .onAction(new ZoomEvent(OnJLMapViewListener.Action.ZOOM,
-                                    Integer.parseInt(String.valueOf(param3))));
-                    default -> log.error(functionName + " not implemented!");
-                }
+                eventHandlers.stream()
+                        .filter(hadler -> hadler.canHandle(functionName))
+                        .forEach(hadler -> hadler.handle(mapView, functionName, getMapListener().get(),
+                                param1, param2, param3, param4, param5));
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
 
-    private boolean callListenerOnObject(
-            String functionName, JLObject<JLObject<?>> jlObject, Object... params) {
-        switch (functionName) {
-            case FUNCTION_MOVE -> {
-                jlObject.getOnActionListener()
-                        .move(jlObject, OnJLObjectActionListener.Action.MOVE);
-                return true;
-            }
-            case FUNCTION_MOVE_START -> {
-                jlObject.getOnActionListener()
-                        .move(jlObject, OnJLObjectActionListener.Action.MOVE_START);
-                return true;
-            }
-            case FUNCTION_MOVE_END -> {
-                //update coordinate of the JLObject
-                jlObject.update(FUNCTION_MOVE_END, gson.fromJson(String.valueOf(params[3]), JLLatLng.class));
-                jlObject.getOnActionListener()
-                        .move(jlObject, OnJLObjectActionListener.Action.MOVE_END);
-                return true;
-            }
-            case FUNCTION_CLICK -> {
-                jlObject.getOnActionListener()
-                        .click(jlObject, OnJLObjectActionListener.Action.CLICK);
-                return true;
-            }
-            default -> log.error("{} not implemented!", functionName);
-        }
-        return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void addJLObject(JLObject<?> object) {
+    public void addJLObject(@NonNull String key, @NonNull JLObject<?> object) {
         if (jlObjects.containsKey(object.getClass())) {
             jlObjects.get(object.getClass())
-                    .put(object.getId(), object);
+                    .put(key, object);
         } else {
-            HashMap<Integer, JLObject<?>> map = new HashMap<>();
-            map.put(object.getId(), object);
+            HashMap<String, JLObject<?>> map = new HashMap<>();
+            map.put(key, object);
+            //noinspection unchecked
             jlObjects.put((Class<? extends JLObject<?>>) object.getClass(), map);
         }
     }
 
-    public void remove(Class<? extends JLObject<?>> targetClass, int id) {
+    public void remove(@NonNull Class<? extends JLObject<?>> targetClass, @NonNull String key) {
         if (!jlObjects.containsKey(targetClass))
             return;
-        JLObject<?> object = jlObjects.get(targetClass).remove(id);
-        if (object != null) log.error("{} id: {} removed", targetClass.getSimpleName(), object.getId());
+        JLObject<?> object = jlObjects.get(targetClass).remove(key);
+        if (object != null) {
+            log.error("{} id: {} removed", targetClass.getSimpleName(), object.getId());
+        }
     }
 
     private Optional<OnJLMapViewListener> getMapListener() {

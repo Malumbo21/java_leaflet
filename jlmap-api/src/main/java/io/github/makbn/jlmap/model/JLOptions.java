@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
  * Optional value for theming objects inside the map!
  * Note that all options are not available for all objects!
  * Read more at Leaflet Official Docs.
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Getter
 @Setter

@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 /**
  * Represents the Vector layer on Leaflet map.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {

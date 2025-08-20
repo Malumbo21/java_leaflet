@@ -5,7 +5,7 @@ import lombok.Builder;
 /**
  * JLMap Exception which is thrown when changing the map before it gets ready!
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 public class JLMapNotReadyException extends JLException {
     private static final String MAP_IS_NOT_READY_YET = "Map is not ready yet!";

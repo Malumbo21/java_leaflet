@@ -6,6 +6,9 @@ import io.github.makbn.jlmap.model.JLOptions;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class JLCircleBuilder extends JLObjectBuilder<JLCircle, JLCircleBuilder> {
     double lat;

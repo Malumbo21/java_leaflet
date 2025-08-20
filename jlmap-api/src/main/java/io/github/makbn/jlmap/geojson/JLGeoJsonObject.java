@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 
 /**
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Getter
 @Setter

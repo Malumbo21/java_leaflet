@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
  * Note that points you pass when creating a polygon shouldn't
  * have an additional last point equal to the first one.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Getter
 @Setter

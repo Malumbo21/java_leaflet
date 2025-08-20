@@ -6,6 +6,9 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class JLPopupBuilder extends JLObjectBuilder<JLPopup, JLPopupBuilder> {
     double lat;

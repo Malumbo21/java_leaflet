@@ -10,6 +10,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 abstract class JLObjectBuilder<M extends JLObject<?>, T extends JLObjectBuilder<M, T>> {
     protected String uuid;
     protected JLOptions jlOptions;

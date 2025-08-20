@@ -3,6 +3,9 @@ package io.github.makbn.jlmap.listener.event;
 import io.github.makbn.jlmap.listener.OnJLActionListener;
 import lombok.NonNull;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 public interface JLEventHandler<T> {
 
     void handle(@NonNull T source, @NonNull String functionName, OnJLActionListener<T> listener, Object param1, Object param2,

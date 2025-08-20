@@ -11,6 +11,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 public class JLOptionsBuilder {
 
     private JLOptions jlOptions;

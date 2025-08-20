@@ -10,7 +10,7 @@ import java.util.Objects;
 
 /**
  * Represents a geographical point with a certain latitude and longitude.
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Getter
 @Setter

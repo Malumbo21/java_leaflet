@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 public class LeafletTestJFX extends Application {
     private static final Logger log = LoggerFactory.getLogger(LeafletTestJFX.class);

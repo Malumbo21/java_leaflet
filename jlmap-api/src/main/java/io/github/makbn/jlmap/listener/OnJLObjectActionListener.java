@@ -4,9 +4,10 @@ import io.github.makbn.jlmap.listener.event.ClickEvent;
 import io.github.makbn.jlmap.listener.event.Event;
 import io.github.makbn.jlmap.listener.event.MoveEvent;
 import io.github.makbn.jlmap.model.JLObject;
-import lombok.Getter;
 
-
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 public interface OnJLObjectActionListener<T extends JLObject<?>> extends OnJLActionListener<T> {
 
     @Deprecated(forRemoval = true)

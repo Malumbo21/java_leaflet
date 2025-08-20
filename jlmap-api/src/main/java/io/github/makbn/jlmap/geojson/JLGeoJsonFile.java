@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 /**
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class JLGeoJsonFile extends JLGeoJsonSource<File> {

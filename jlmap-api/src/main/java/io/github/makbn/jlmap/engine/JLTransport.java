@@ -7,6 +7,9 @@ import lombok.NonNull;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 public record JLTransport(JLObject<?> self, String function, Object... params) {
 
     @Override

@@ -8,7 +8,7 @@ import io.github.makbn.jlmap.model.*;
  * Leaflet map. Leaflet is a popular JavaScript library for creating interactive maps, and
  * this interface provides a Java API for working with vector-based layers within Leaflet.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 public interface LeafletVectorLayerInt extends LeafletLayer{
 

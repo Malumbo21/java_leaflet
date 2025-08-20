@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Color abstraction for map styling.
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Data
 @NoArgsConstructor

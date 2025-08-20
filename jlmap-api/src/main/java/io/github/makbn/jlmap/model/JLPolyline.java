@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 /**
  * A class for drawing polyline overlays on the map.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Getter
 @ToString

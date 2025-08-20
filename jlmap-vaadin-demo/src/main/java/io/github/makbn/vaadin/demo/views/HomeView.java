@@ -18,6 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 @Route("")
 public class HomeView extends HorizontalLayout implements OnJLMapViewListener {
     Logger log = LoggerFactory.getLogger(getClass());

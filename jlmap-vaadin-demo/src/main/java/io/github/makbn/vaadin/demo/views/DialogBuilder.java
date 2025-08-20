@@ -11,6 +11,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 public class DialogBuilder {
 
     private final Dialog dialog;

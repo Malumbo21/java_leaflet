@@ -18,7 +18,7 @@ import java.io.File;
 /**
  * Represents the GeoJson (other) layer on Leaflet map.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLVaadinGeoJsonLayer extends JLVaadinLayer implements LeafletGeoJsonLayerInt {

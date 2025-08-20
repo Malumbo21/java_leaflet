@@ -6,6 +6,9 @@ import lombok.NonNull;
 
 import java.util.Optional;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 public class JLJavaFXEngine extends JLWebEngine<Object> {
     private final WebEngine jfxEngine;
 

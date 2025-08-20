@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 /**
  * A class for drawing circle overlays on a map
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Getter
 @ToString

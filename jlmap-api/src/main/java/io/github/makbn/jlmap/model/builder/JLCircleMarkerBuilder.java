@@ -5,6 +5,9 @@ import io.github.makbn.jlmap.model.JLLatLng;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class JLCircleMarkerBuilder extends JLObjectBuilder<JLCircleMarker, JLCircleMarkerBuilder> {
     double lat;

@@ -3,7 +3,7 @@ package io.github.makbn.jlmap.exception;
 import lombok.Builder;
 
 /**
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 public class JLGeoJsonParserException extends JLException {
 

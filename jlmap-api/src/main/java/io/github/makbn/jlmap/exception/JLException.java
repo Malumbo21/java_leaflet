@@ -2,7 +2,7 @@ package io.github.makbn.jlmap.exception;
 
 /**
  * Internal JLMap application's Exception base class.
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 
 public class JLException extends RuntimeException{

@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
 /**
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class JLGeoJsonContent extends JLGeoJsonSource<String> {

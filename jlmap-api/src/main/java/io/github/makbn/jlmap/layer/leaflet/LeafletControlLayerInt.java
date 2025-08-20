@@ -9,7 +9,7 @@ import io.github.makbn.jlmap.model.JLLatLng;
  * for creating interactive maps, and this interface provides a Java API for
  * manipulating the map's zoom level, view, and geographical bounds.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 public interface LeafletControlLayerInt extends LeafletLayer {
 

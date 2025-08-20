@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 /**
  * Vaadin implementation of the JLWebEngine for executing JavaScript in Vaadin components.
  *
- * @author Vaadin Implementation
+ * @author Matt Akbarian  (@makbn)
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLVaadinEngine extends JLWebEngine<PendingJavaScriptResult> {

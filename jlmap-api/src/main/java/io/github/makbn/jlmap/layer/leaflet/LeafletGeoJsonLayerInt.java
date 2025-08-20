@@ -14,7 +14,7 @@ import java.io.File;
  * data from various sources, such as files, URLs, or raw content, as well
  * as the ability to remove GeoJSON objects from the map.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 public interface LeafletGeoJsonLayerInt extends LeafletLayer {
 

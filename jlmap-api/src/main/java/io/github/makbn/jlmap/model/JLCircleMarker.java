@@ -7,7 +7,7 @@ import lombok.experimental.FieldDefaults;
 /**
  * A circle of a fixed size with radius specified in pixels.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Getter
 @ToString

@@ -8,7 +8,7 @@ import lombok.experimental.NonFinal;
 /**
  * Used to open popups in certain places of the map.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Getter
 @ToString

@@ -13,7 +13,7 @@ import lombok.experimental.NonFinal;
 /**
  * Represents basic object classes for interacting with Leaflet
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)

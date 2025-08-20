@@ -16,7 +16,7 @@ import java.util.UUID;
 
 /**
  * Represents the GeoJson (other) layer on Leaflet map.
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 public class JLGeoJsonLayer extends JLLayer implements LeafletGeoJsonLayerInt {
     private static final String MEMBER_PREFIX = "geoJson";

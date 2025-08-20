@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * Represents the basic layer.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)

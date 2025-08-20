@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * This class allows you to specify various map configuration parameters,
  * such as the starting coordinates, map type, and additional parameters.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Builder
 @Value

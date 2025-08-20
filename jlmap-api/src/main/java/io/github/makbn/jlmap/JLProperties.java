@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 public class JLProperties {
     public static final int INIT_MIN_WIDTH = 1024;

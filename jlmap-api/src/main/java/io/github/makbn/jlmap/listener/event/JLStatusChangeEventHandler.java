@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 @Slf4j
 public class JLStatusChangeEventHandler implements JLEventHandler<Object> {
     public static final String FUNCTION_ZOOM = "zoom";

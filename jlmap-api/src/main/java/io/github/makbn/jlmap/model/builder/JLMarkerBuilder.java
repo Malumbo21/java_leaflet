@@ -5,6 +5,9 @@ import io.github.makbn.jlmap.model.JLMarker;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class JLMarkerBuilder extends JLObjectBuilder<JLMarker, JLMarkerBuilder> {
     double lat;

@@ -41,7 +41,7 @@ import java.util.Set;
  * This component implements the JLMapController interface to provide
  * a consistent API across different UI frameworks.
  *
- * @author Vaadin Implementation
+ *  @author Matt Akbarian  (@makbn)
  */
 @Slf4j
 @Tag("jl-map-view")

@@ -11,6 +11,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 public class AccordionMenuBuilder {
 
     private final Accordion accordion;

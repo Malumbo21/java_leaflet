@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLPolylineBuilder extends JLObjectBuilder<JLPolyline, JLPolylineBuilder> {
     List<double[]> latlngs = new ArrayList<>();

@@ -12,7 +12,7 @@ import io.github.makbn.jlmap.model.JLPopup;
  * and this interface provides a Java API for working with user interface
  * elements within Leaflet.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 public interface LeafletUILayerInt extends LeafletLayer {
 

@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 /**
  * Represents the UI layer on Leaflet map.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLUiLayer extends JLLayer implements LeafletUILayerInt {

@@ -12,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLLayerEventHandler implements JLEventHandler<Object> {

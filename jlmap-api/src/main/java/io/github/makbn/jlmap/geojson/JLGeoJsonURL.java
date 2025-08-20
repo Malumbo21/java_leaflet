@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 /**
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 public class JLGeoJsonURL extends JLGeoJsonSource<String> {
 

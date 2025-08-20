@@ -10,7 +10,7 @@ import io.github.makbn.jlmap.model.JLLatLng;
 /**
  * Represents the Control layer on Leaflet map.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 public class JLVaadinControlLayer extends JLVaadinLayer implements LeafletControlLayerInt {
     public JLVaadinControlLayer(JLWebEngine<PendingJavaScriptResult> engine, JLMapCallbackHandler callbackHandler) {

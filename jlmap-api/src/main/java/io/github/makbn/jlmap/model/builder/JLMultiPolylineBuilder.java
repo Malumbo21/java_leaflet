@@ -8,6 +8,9 @@ import lombok.experimental.FieldDefaults;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLMultiPolylineBuilder extends JLObjectBuilder<JLMultiPolyline, JLMultiPolylineBuilder> {
 

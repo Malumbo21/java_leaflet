@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 /**
  * Represents the basic layer.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PROTECTED)

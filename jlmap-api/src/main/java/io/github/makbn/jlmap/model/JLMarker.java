@@ -13,7 +13,7 @@ import lombok.experimental.NonFinal;
 /**
  * JLMarker is used to display clickable/draggable icons on the map!
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Getter
 @EqualsAndHashCode(callSuper = true)

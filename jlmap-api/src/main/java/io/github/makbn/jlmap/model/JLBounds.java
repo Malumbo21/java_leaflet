@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * Represents a rectangular geographical area on a map.
  *
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Getter
 @Setter

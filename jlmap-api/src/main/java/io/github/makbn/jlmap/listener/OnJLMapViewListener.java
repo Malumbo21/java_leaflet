@@ -4,7 +4,9 @@ import io.github.makbn.jlmap.JLMapController;
 import io.github.makbn.jlmap.listener.event.Event;
 import lombok.NonNull;
 
-
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 public interface OnJLMapViewListener extends OnJLActionListener<JLMapController> {
 
     /**

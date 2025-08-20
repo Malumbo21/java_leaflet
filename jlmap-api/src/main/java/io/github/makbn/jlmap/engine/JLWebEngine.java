@@ -5,6 +5,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * @author Matt Akbarian  (@makbn)
+ */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PROTECTED)
 public abstract class JLWebEngine<C> {

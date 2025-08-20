@@ -10,7 +10,7 @@ import lombok.experimental.NonFinal;
 /**
  * The base abstract class for a GeoJSON data source. Implementations of this class are expected
  * to provide functionality for loading and accessing GeoJSON objects.
- * @author Mehdi Akbarian Rastaghi (@makbn)
+ * @author Matt Akbarian  (@makbn)
  *
  * @param <S> source type
  */

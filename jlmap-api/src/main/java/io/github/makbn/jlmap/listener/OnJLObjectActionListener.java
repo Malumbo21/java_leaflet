@@ -10,11 +10,19 @@ import io.github.makbn.jlmap.model.JLObject;
  */
 public interface OnJLObjectActionListener<T extends JLObject<?>> extends OnJLActionListener<T> {
 
+    /**
+     * try to override and use {@link #onAction(JLObject, Event)}
+     * @deprecated this method will be removed with the next minor version
+     */
     @Deprecated(forRemoval = true)
     default void click(T t, JLAction action) {
         // NO-OP
     }
 
+    /**
+     * try to override and use {@link #onAction(JLObject, Event)}
+     * @deprecated this method will be removed with the next minor version
+     */
     @Deprecated(forRemoval = true)
     default void move(T t, JLAction action) {
         // NO-OP
@@ -22,6 +30,7 @@ public interface OnJLObjectActionListener<T extends JLObject<?>> extends OnJLAct
 
     /**
      * try to override and use {@link #onAction(JLObject, Event)}
+     * @deprecated this method added for the transition period and will be removed with the next minor version
      */
     @Deprecated(forRemoval = true)
     void onActionReceived(T t, Event event);

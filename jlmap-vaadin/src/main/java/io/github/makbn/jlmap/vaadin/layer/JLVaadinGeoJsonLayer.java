@@ -22,8 +22,6 @@ import java.io.File;
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLVaadinGeoJsonLayer extends JLVaadinLayer implements LeafletGeoJsonLayerInt {
-    private static final String MEMBER_PREFIX = "geoJson";
-
     JLGeoJsonURL fromUrl;
     JLGeoJsonFile fromFile;
     JLGeoJsonContent fromContent;

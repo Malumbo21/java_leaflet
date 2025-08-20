@@ -128,12 +128,7 @@ public class LeafletTestJFX extends Application {
     }
 
     private OnJLObjectActionListener<JLMarker> getListener() {
-        return new OnJLObjectActionListener<>() {
-            @Override
-            public void onActionReceived(JLMarker jlMarker, Event event) {
-                log.info("object {} event for marker:{}", event.action(), jlMarker);
-            }
-        };
+        return (jlMarker, event) -> log.info("object {} event for marker:{}", event.action(), jlMarker);
     }
 
     private void addMultiPolyline(JLMapView map) {

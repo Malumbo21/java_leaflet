@@ -127,7 +127,7 @@ public interface JLMapController<T> {
         }
     }
 
-    private @Nullable <T extends LeafletLayer> T getLayerInternal(@NonNull Class<T> layerClass) {
+    private @Nullable <M extends LeafletLayer> M getLayerInternal(@NonNull Class<M> layerClass) {
         return getLayers().entrySet()
                 .stream()
                 .filter(entry -> layerClass.isAssignableFrom(entry.getKey()))

@@ -1,5 +1,6 @@
 package io.github.makbn.jlmap.vaadin.layer;
 
+import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import io.github.makbn.jlmap.JLMapCallbackHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletLayer;
@@ -19,11 +20,11 @@ import java.util.UUID;
 
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public abstract class JLVaadinLayer implements LeafletLayer {
-    JLWebEngine engine;
+    JLWebEngine<PendingJavaScriptResult> engine;
     JLMapCallbackHandler callbackHandler;
     String componentSessionId = "_" + UUID.randomUUID().toString().replace("-", "") + "_";
 
-    protected JLVaadinLayer(JLWebEngine engine, JLMapCallbackHandler callbackHandler) {
+    protected JLVaadinLayer(JLWebEngine<PendingJavaScriptResult> engine, JLMapCallbackHandler callbackHandler) {
         this.engine = engine;
         this.callbackHandler = callbackHandler;
     }

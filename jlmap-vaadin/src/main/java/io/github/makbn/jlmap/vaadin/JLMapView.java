@@ -41,7 +41,7 @@ import java.util.Set;
  * This component implements the JLMapController interface to provide
  * a consistent API across different UI frameworks.
  *
- *  @author Matt Akbarian  (@makbn)
+ * @author Matt Akbarian  (@makbn)
  */
 @Slf4j
 @Tag("jl-map-view")
@@ -51,7 +51,7 @@ import java.util.Set;
 @StyleSheet("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css")
 @NpmPackage(value = "@maptiler/leaflet-maptilersdk", version = "4.1.0")
 @JavaScript("https://unpkg.com/leaflet-providers@latest/leaflet-providers.js")
-public class JLMapView extends VerticalLayout implements JLMapController {
+public class JLMapView extends VerticalLayout implements JLMapController<PendingJavaScriptResult> {
     transient JLMapOption mapOption;
     transient JLMapCallbackHandler jlMapCallbackHandler;
     transient JLWebEngine<PendingJavaScriptResult> jlWebEngine;

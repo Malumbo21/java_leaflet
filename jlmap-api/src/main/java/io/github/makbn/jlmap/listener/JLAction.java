@@ -65,7 +65,11 @@ public enum JLAction {
     /**
      * Fired after the layer is removed from a map
      */
-    REMOVE("remove");
+    REMOVE("remove"),
+    /**
+     * Fired when the map is resized.
+     */
+    RESIZE("resize");
 
     String jsEventName;
 }

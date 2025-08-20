@@ -13,9 +13,9 @@ import java.util.Map;
 /**
  * @author Matt Akbarian  (@makbn)
  */
-public interface JLMapController {
+public interface JLMapController<T> {
 
-    JLWebEngine getJLEngine();
+    JLWebEngine<T> getJLEngine();
 
     void addControllerToDocument();
 

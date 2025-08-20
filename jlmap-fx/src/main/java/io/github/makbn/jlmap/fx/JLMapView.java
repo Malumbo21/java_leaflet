@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class JLMapView extends AnchorPane implements JLMapController {
+public class JLMapView extends AnchorPane implements JLMapController<Object> {
     JLMapOption mapOption;
     JLWebEngine<Object> jlWebEngine;
     WebView webView;
@@ -213,7 +213,7 @@ public class JLMapView extends AnchorPane implements JLMapController {
     }
 
     @Override
-    public JLWebEngine getJLEngine() {
+    public JLWebEngine<Object> getJLEngine() {
         return jlWebEngine;
     }
 

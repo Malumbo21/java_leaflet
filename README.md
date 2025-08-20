@@ -295,7 +295,7 @@ The project uses Maven's module-aware compilation. Each module has its own `modu
 - Vaadin Spring Boot Starter
 - Vaadin Core components
 
-## Migration from Version 1.x
+## 🔄 Migration from Version 1.x
 
 If you're migrating from version 1.x:
 
@@ -303,6 +303,8 @@ If you're migrating from version 1.x:
 2. **Package Updates**: Update imports to use the new module structure
 3. **Module Declaration**: Ensure your project has proper module configuration
 4. **Build Configuration**: Update Maven configuration for the new dependencies
+
+**📖 [Complete Migration Guide](MIGRATION_GUIDE.md)** - Detailed step-by-step instructions for migrating from v1.x to v2.0.0
 
 ### Example Migration
 

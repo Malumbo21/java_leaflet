@@ -13,6 +13,8 @@
     <modules>
         <module>jlmap-api</module>
         <module>jlmap-fx</module>
+        <module>jlmap-vaadin</module>
+        <module>jlmap-vaadin-demo</module>
     </modules>
 
     <properties>
@@ -20,7 +22,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>19.0.2.1</javafx.version>
-        <lombok.version>1.18.34</lombok.version>
+        <lombok.version>1.18.38</lombok.version>
     </properties>
 
     <developers>

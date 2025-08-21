@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.model;
 
-import io.github.makbn.jlmap.JLProperties;
+import io.github.makbn.jlmap.map.MapType;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -44,7 +44,7 @@ public class JLMapOption {
      */
     @Builder.Default
     @NonNull
-    JLProperties.MapType mapType = JLProperties.MapType.getDefault();
+    MapType mapType = MapType.getDefault();
 
     /**
      * Converts the map options to a query string format, including both

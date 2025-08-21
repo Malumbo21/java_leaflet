@@ -12,10 +12,10 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import io.github.makbn.jlmap.JLMapCallbackHandler;
 import io.github.makbn.jlmap.JLMapController;
-import io.github.makbn.jlmap.JLProperties;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletLayer;
 import io.github.makbn.jlmap.listener.OnJLMapViewListener;
+import io.github.makbn.jlmap.map.MapType;
 import io.github.makbn.jlmap.model.JLLatLng;
 import io.github.makbn.jlmap.model.JLMapOption;
 import io.github.makbn.jlmap.vaadin.engine.JLVaadinEngine;
@@ -71,7 +71,7 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
      * @param showZoomController whether to show the zoom controller
      */
     @Builder
-    public JLMapView(@NonNull JLProperties.MapType mapType,
+    public JLMapView(@NonNull MapType mapType,
                      @NonNull JLLatLng startCoordinate, boolean showZoomController) {
         super();
         setSizeFull();

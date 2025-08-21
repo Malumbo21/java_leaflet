@@ -20,6 +20,7 @@ module io.github.makbn.jlmap.api {
     exports io.github.makbn.jlmap.listener;
     exports io.github.makbn.jlmap.listener.event;
     exports io.github.makbn.jlmap.model;
+    exports io.github.makbn.jlmap.map;
     exports io.github.makbn.jlmap.model.builder;
     exports io.github.makbn.jlmap.exception;
     exports io.github.makbn.jlmap.geojson;

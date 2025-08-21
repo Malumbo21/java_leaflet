@@ -3,15 +3,15 @@ package io.github.makbn.vaadin.demo.views;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
-import io.github.makbn.jlmap.JLProperties;
 import io.github.makbn.jlmap.listener.OnJLMapViewListener;
 import io.github.makbn.jlmap.listener.event.ClickEvent;
 import io.github.makbn.jlmap.listener.event.Event;
 import io.github.makbn.jlmap.listener.event.MoveEvent;
+import io.github.makbn.jlmap.map.MapType;
 import io.github.makbn.jlmap.model.*;
 import io.github.makbn.jlmap.vaadin.JLMapView;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
         getStyle().set("position", "relative");
         // Create the map view
         mapView = JLMapView.builder()
-                .mapType(JLProperties.MapType.OSM_MAPNIK)
+                .mapType(MapType.OSM_MAPNIK)
                 .startCoordinate(new JLLatLng(48.864716, 2.349014)) // Paris
                 .showZoomController(true)
                 .build();
@@ -86,7 +86,8 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
         Button maxZoom = new Button("Max Zoom", e -> DialogBuilder.builder().numberField("Max zoom level").get(event -> mapView.getControlLayer().setMaxZoom((Integer) event.get("Max zoom level"))));
         Button minZoom = new Button("Min Zoom", e -> DialogBuilder.builder().numberField("Min zoom level").get(event -> mapView.getControlLayer().setMinZoom((Integer) event.get("Min zoom level"))));
         Button flyTo = new Button("Fly to", e -> DialogBuilder.builder().decimalField(LATITUDE).decimalField(LONGITUDE).numberField("Zoom level").get(event -> mapView.getControlLayer().flyTo(JLLatLng.builder().lat((Double) event.get(LATITUDE)).lng((Double) event.get(LONGITUDE)).build(), (Integer) event.get("Zoom level"))));
-        for (Button b : new Button[]{zoomIn, zoomOut, fitWorld, maxZoom, minZoom, flyTo}) b.setClassName(MENU_ITEM_CLASS);
+        for (Button b : new Button[]{zoomIn, zoomOut, fitWorld, maxZoom, minZoom, flyTo})
+            b.setClassName(MENU_ITEM_CLASS);
         menuContent.add(section.apply("Control Layer", new Button[]{zoomIn, zoomOut, fitWorld, maxZoom, minZoom, flyTo}));
 
         // --- UI Layer ---
@@ -161,7 +162,8 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
             mapView.getVectorLayer().addPolygon(polygonVertices, JLOptions.DEFAULT.toBuilder().color(JLColor.PURPLE).fillColor(JLColor.YELLOW).fillOpacity(0.4).build());
             Notification.show("All vector shapes demonstrated! Check the map.");
         });
-        for (Button b : new Button[]{drawCircle, drawCircleMarker, drawSimplePolyline, drawCustomPolyline, drawMultiPolyline, drawTrianglePolygon, drawCustomPolygon, drawPolygonWithHole, demoAllShapes}) b.setClassName(MENU_ITEM_CLASS);
+        for (Button b : new Button[]{drawCircle, drawCircleMarker, drawSimplePolyline, drawCustomPolyline, drawMultiPolyline, drawTrianglePolygon, drawCustomPolygon, drawPolygonWithHole, demoAllShapes})
+            b.setClassName(MENU_ITEM_CLASS);
         menuContent.add(section.apply("Vector Layer", new Button[]{drawCircle, drawCircleMarker, drawSimplePolyline, drawCustomPolyline, drawMultiPolyline, drawTrianglePolygon, drawCustomPolygon, drawPolygonWithHole, demoAllShapes}));
 
         // --- GitHub Footer ---

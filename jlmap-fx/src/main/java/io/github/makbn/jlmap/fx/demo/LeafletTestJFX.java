@@ -10,6 +10,7 @@ import io.github.makbn.jlmap.listener.event.ClickEvent;
 import io.github.makbn.jlmap.listener.event.Event;
 import io.github.makbn.jlmap.listener.event.MoveEvent;
 import io.github.makbn.jlmap.listener.event.ZoomEvent;
+import io.github.makbn.jlmap.map.MapType;
 import io.github.makbn.jlmap.model.JLLatLng;
 import io.github.makbn.jlmap.model.JLMarker;
 import io.github.makbn.jlmap.model.JLOptions;
@@ -37,7 +38,7 @@ public class LeafletTestJFX extends Application {
         //building a new map view
         final JLMapView map = JLMapView
                 .builder()
-                .mapType(JLProperties.MapType.OSM_MAPNIK)
+                .mapType(MapType.OSM_MAPNIK)
                 .showZoomController(true)
                 .startCoordinate(JLLatLng.builder()
                         .lat(51.044)

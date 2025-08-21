@@ -11,6 +11,7 @@ import io.github.makbn.jlmap.fx.layer.JLUiLayer;
 import io.github.makbn.jlmap.fx.layer.JLVectorLayer;
 import io.github.makbn.jlmap.layer.leaflet.LeafletLayer;
 import io.github.makbn.jlmap.listener.OnJLMapViewListener;
+import io.github.makbn.jlmap.map.MapType;
 import io.github.makbn.jlmap.model.JLLatLng;
 import io.github.makbn.jlmap.model.JLMapOption;
 import javafx.animation.Interpolator;
@@ -65,7 +66,7 @@ public class JLMapView extends AnchorPane implements JLMapController<Object> {
     OnJLMapViewListener mapListener;
 
     @Builder
-    public JLMapView(@NonNull JLProperties.MapType mapType,
+    public JLMapView(@NonNull MapType mapType,
                      @NonNull JLLatLng startCoordinate, boolean showZoomController) {
         super();
         this.mapOption = JLMapOption.builder()

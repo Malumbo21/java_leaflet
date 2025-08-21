@@ -31,7 +31,7 @@ This module provides a Vaadin implementation of the Java Leaflet API. It allows 
 ```java
 // Create a map view
 JLMapView mapView = JLMapView.builder()
-        .mapType(JLProperties.MapType.OSM)
+        .JLMapProvider(JLProperties.MapType.OSM)
         .startCoordinate(new JLLatLng(48.864716, 2.349014)) // Paris
         .showZoomController(true)
         .build();
@@ -66,7 +66,7 @@ public class MyView extends VerticalLayout implements OnJLMapViewListener {
     
     public MyView() {
         JLMapView mapView = JLMapView.builder()
-                .mapType(JLProperties.MapType.OSM)
+                .JLMapProvider(JLProperties.MapType.OSM)
                 .startCoordinate(new JLLatLng(48.864716, 2.349014))
                 .showZoomController(true)
                 .build();

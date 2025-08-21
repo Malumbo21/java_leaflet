@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.model;
 
-import io.github.makbn.jlmap.map.MapType;
+import io.github.makbn.jlmap.map.JLMapProvider;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -44,7 +44,7 @@ public class JLMapOption {
      */
     @Builder.Default
     @NonNull
-    MapType mapType = MapType.getDefault();
+    JLMapProvider jlMapProvider = JLMapProvider.getDefault();
 
     /**
      * Converts the map options to a query string format, including both
@@ -58,7 +58,7 @@ public class JLMapOption {
                         getParameters().stream(), additionalParameter.stream())
                 .map(Parameter::toString)
                 .collect(Collectors.joining("&",
-                        String.format("?mapid=%s&", getMapType().name()), ""));
+                        String.format("?mapid=%s&", getJlMapProvider().getName()), ""));
     }
 
     /**
@@ -73,7 +73,7 @@ public class JLMapOption {
      * @return A set of map-specific parameters.
      */
     public Set<Parameter> getParameters() {
-        return mapType.parameters();
+        return getJlMapProvider().getParameters();
     }
 
     public boolean zoomControlEnabled() {

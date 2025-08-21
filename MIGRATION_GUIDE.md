@@ -130,7 +130,7 @@ public class MapExample extends Application {
     public void start(Stage stage) {
         // Create a map view - EXACTLY the same code!
         JLMapView map = JLMapView.builder()
-                .mapType(JLProperties.MapType.OSM_MAPNIK)
+                .jlMapProvider(JLMapProvider.MAP_TILER.parameter(new JLMapOption.Parameter("key", MAP_API_KEY)).build())
                 .startCoordinate(JLLatLng.builder()
                         .lat(51.044)
                         .lng(114.07)
@@ -204,7 +204,7 @@ public class AdvancedMapExample {
     public void setupMap() {
         // EXACTLY the same code!
         JLMapView map = JLMapView.builder()
-                .mapType(JLProperties.MapType.OSM_MAPNIK)
+                .jlMapProvider(JLMapProvider.MAP_TILER.parameter(new JLMapOption.Parameter("key", MAP_API_KEY)).build())
                 .startCoordinate(new JLLatLng(35.63, 51.45))
                 .showZoomController(true)
                 .build();

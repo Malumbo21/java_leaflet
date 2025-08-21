@@ -15,7 +15,7 @@ import io.github.makbn.jlmap.JLMapController;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletLayer;
 import io.github.makbn.jlmap.listener.OnJLMapViewListener;
-import io.github.makbn.jlmap.map.MapType;
+import io.github.makbn.jlmap.map.JLMapProvider;
 import io.github.makbn.jlmap.model.JLLatLng;
 import io.github.makbn.jlmap.model.JLMapOption;
 import io.github.makbn.jlmap.vaadin.engine.JLVaadinEngine;
@@ -66,12 +66,12 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
     /**
      * Creates a new JLMapView with the specified map type, starting coordinates, and zoom controller visibility.
      *
-     * @param mapType            the type of map to display
+     * @param jlMapProvider            the type of map to display
      * @param startCoordinate    the initial center coordinates of the map
      * @param showZoomController whether to show the zoom controller
      */
     @Builder
-    public JLMapView(@NonNull MapType mapType,
+    public JLMapView(@NonNull JLMapProvider jlMapProvider,
                      @NonNull JLLatLng startCoordinate, boolean showZoomController) {
         super();
         setSizeFull();
@@ -83,7 +83,7 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
         setBoxSizing(BoxSizing.CONTENT_BOX);
         this.mapOption = JLMapOption.builder()
                 .startCoordinate(startCoordinate)
-                .mapType(mapType)
+                .jlMapProvider(jlMapProvider)
                 .additionalParameter(Set.of(new JLMapOption.Parameter("zoomControl",
                         Objects.toString(showZoomController))))
                 .build();
@@ -117,14 +117,15 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
                 this.jlMapElement = document.querySelector('jl-map-view');
                 this.map = L.map(this.jlMapElement, {zoomControl: %b}).setView([%s, %s], %d);
                 
-                L.tileLayer('https://api.maptiler.com/maps/aquarelle/256/{z}/{x}/{y}.png?key=rNGhTaIpQWWH7C6QGKzF')
+                L.tileLayer('%s')
                 .addTo(this.map);
                 """;
 
         return call.formatted(mapOption.zoomControlEnabled(),
                 mapOption.getStartCoordinate().getLat(),
                 mapOption.getStartCoordinate().getLng(),
-                mapOption.getInitialZoom());
+                mapOption.getInitialZoom(),
+                mapOption.getJlMapProvider().getMapProviderAddress());
     }
 
     /**

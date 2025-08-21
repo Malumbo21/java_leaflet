@@ -7,11 +7,12 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
+import io.github.makbn.jlmap.JLMapController;
 import io.github.makbn.jlmap.listener.OnJLMapViewListener;
 import io.github.makbn.jlmap.listener.event.ClickEvent;
 import io.github.makbn.jlmap.listener.event.Event;
 import io.github.makbn.jlmap.listener.event.MoveEvent;
-import io.github.makbn.jlmap.map.MapType;
+import io.github.makbn.jlmap.map.JLMapProvider;
 import io.github.makbn.jlmap.model.*;
 import io.github.makbn.jlmap.vaadin.JLMapView;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Route("")
 public class HomeView extends FlexLayout implements OnJLMapViewListener {
+    public static final String MAP_API_KEY = "rNGhTaIpQWWH7C6QGKzF";
     public static final String LATITUDE = "Latitude";
     public static final String LONGITUDE = "Longitude";
     private final transient Logger log = LoggerFactory.getLogger(getClass());
@@ -37,9 +39,9 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
         getStyle().set("position", "relative");
         // Create the map view
         mapView = JLMapView.builder()
-                .mapType(MapType.OSM_MAPNIK)
+                .jlMapProvider(JLMapProvider.MAP_TILER.parameter(new JLMapOption.Parameter("key", MAP_API_KEY)).build())
                 .startCoordinate(new JLLatLng(48.864716, 2.349014)) // Paris
-                .showZoomController(true)
+                .showZoomController(false)
                 .build();
         mapView.setMapViewListener(this);
         mapView.setSizeFull();
@@ -111,11 +113,41 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
         menuContent.add(section.apply("Geo Json Layer", new Button[]{loadGeoJson}));
 
         // --- Vector Layer ---
-        Button drawCircle = new Button("Draw Circle", e -> DialogBuilder.builder().decimalField(LATITUDE).decimalField(LONGITUDE).numberField("Radius").get(event -> mapView.getVectorLayer().addCircle(JLLatLng.builder().lat((Double) event.get(LATITUDE)).lng((Double) event.get(LONGITUDE)).build(), (Integer) event.get("Radius"), JLOptions.DEFAULT.toBuilder().draggable(true).build()).setOnActionListener((jlCircle, jlEvent) -> Notification.show(String.format("Circle '%s' Event: %s", jlCircle, jlEvent)))));
-        Button drawCircleMarker = new Button("Draw Circle Marker", e -> DialogBuilder.builder().decimalField(LATITUDE).decimalField(LONGITUDE).numberField("Radius (pixels)").get(event -> {
-            JLCircleMarker circleMarker = mapView.getVectorLayer().addCircleMarker(JLLatLng.builder().lat((Double) event.get(LATITUDE)).lng((Double) event.get(LONGITUDE)).build(), (Integer) event.get("Radius (pixels)"), JLOptions.DEFAULT.toBuilder().color(JLColor.RED).build());
-            circleMarker.setOnActionListener((jlCircleMarker, jlEvent) -> Notification.show(String.format("Circle Marker '%s' Event: %s", jlCircleMarker, jlEvent)));
-        }));
+        Button drawCircle = new Button("Draw Circle", e ->
+                DialogBuilder.builder()
+                        .decimalField(LATITUDE)
+                        .decimalField(LONGITUDE)
+                        .numberField("Radius").get(event ->
+                                mapView.getVectorLayer()
+                                        .addCircle(JLLatLng.builder()
+                                                        .lat((Double) event.get(LATITUDE))
+                                                        .lng((Double) event.get(LONGITUDE))
+                                                        .build(),
+                                                (Integer) event.get("Radius"),
+                                                JLOptions.DEFAULT.toBuilder().draggable(true).build())
+                                        .setOnActionListener((jlCircle, jlEvent) ->
+                                                Notification.show(String.format("Circle '%s' Event: %s", jlCircle, jlEvent)))));
+
+
+        Button drawCircleMarker = new Button("Draw Circle Marker", e ->
+                DialogBuilder.builder()
+                        .decimalField(LATITUDE)
+                        .decimalField(LONGITUDE)
+                        .numberField("Radius (pixels)")
+                        .get(event -> {
+                            JLCircleMarker circleMarker = mapView.getVectorLayer()
+                                    .addCircleMarker(JLLatLng.builder()
+                                                    .lat((Double) event.get(LATITUDE))
+                                                    .lng((Double) event.get(LONGITUDE))
+                                                    .build(),
+                                            (Integer) event.get("Radius (pixels)"),
+                                            JLOptions.DEFAULT.toBuilder()
+                                                    .color(JLColor.RED)
+                                                    .build());
+
+                            circleMarker.setOnActionListener((jlCircleMarker, jlEvent) ->
+                                    Notification.show(String.format("Circle Marker '%s' Event: %s", jlCircleMarker, jlEvent)));
+                        }));
         Button drawSimplePolyline = new Button("Draw Simple Polyline", e -> {
             JLLatLng[] vertices = {new JLLatLng(48.864716, 2.349014), new JLLatLng(52.520008, 13.404954), new JLLatLng(41.902783, 12.496366), new JLLatLng(40.416775, -3.703790)};
             JLPolyline polyline = mapView.getVectorLayer().addPolyline(vertices, JLOptions.DEFAULT.toBuilder().color(JLColor.BLUE).weight(5).build());
@@ -184,7 +216,7 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
      * @param mapController the map controller
      */
     @Override
-    public void mapLoadedSuccessfully(@NonNull io.github.makbn.jlmap.JLMapController mapController) {
+    public void mapLoadedSuccessfully(@NonNull JLMapController mapController) {
         log.info("Map loaded successfully");
         Notification.show("Map loaded successfully");
     }

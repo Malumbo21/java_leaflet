@@ -103,7 +103,7 @@ public class JavaFXMapExample extends Application {
     public void start(Stage stage) {
         // Create a map view
         JLMapView map = JLMapView.builder()
-                .mapType(JLProperties.MapType.OSM_MAPNIK)
+                .jlMapProvider(JLMapProvider.MAP_TILER.parameter(new JLMapOption.Parameter("key", MAP_API_KEY)).build())
                 .startCoordinate(JLLatLng.builder()
                         .lat(51.044)
                         .lng(114.07)
@@ -143,7 +143,7 @@ public class VaadinMapExample extends VerticalLayout {
         
         // Create a map view
         JLMapView map = JLMapView.builder()
-                .mapType(JLProperties.MapType.OSM_MAPNIK)
+                .jlMapProvider(JLMapProvider.OSM_MAPNIK.build())
                 .startCoordinate(new JLLatLng(48.864716, 2.349014)) // Paris
                 .showZoomController(true)
                 .build();
@@ -261,7 +261,7 @@ mvn package
 
 The project uses Maven's module-aware compilation. Each module has its own `module-info.java` file defining the module structure and dependencies.
 
-## 📦 Module Dependencies
+## Module Dependencies
 
 ### API Module (`jlmap-api`)
 
@@ -295,7 +295,7 @@ The project uses Maven's module-aware compilation. Each module has its own `modu
 - Vaadin Spring Boot Starter
 - Vaadin Core components
 
-## 🔄 Migration from Version 1.x
+## Migration from Version 1.x
 
 If you're migrating from version 1.x:
 
@@ -304,7 +304,7 @@ If you're migrating from version 1.x:
 3. **Module Declaration**: Ensure your project has proper module configuration
 4. **Build Configuration**: Update Maven configuration for the new dependencies
 
-**📖 [Complete Migration Guide](MIGRATION_GUIDE.md)** - Detailed step-by-step instructions for migrating from v1.x to v2.0.0
+** [Complete Migration Guide](MIGRATION_GUIDE.md)** - Detailed step-by-step instructions for migrating from v1.x to v2.0.0
 
 ### Example Migration
 
@@ -334,7 +334,7 @@ If you're migrating from version 1.x:
 </dependency>
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -365,7 +365,7 @@ jar --describe-module --file target/jlmap-vaadin-2.0.0.jar
 
 This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
 
-## 👨‍💻 Author
+## Author
 
 **Matt Akbarian** (@makbn)
 
@@ -402,7 +402,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 - [ ] Animation support
 - [ ] Performance optimizations
 
-## 📚 Additional Resources
+## Additional Resources
 
 - **API Documentation**: See the `jlmap-api` module for core interfaces
 - **JavaFX Examples**: See the `jlmap-fx` module for JavaFX usage

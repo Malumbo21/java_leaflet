@@ -1,6 +1,7 @@
 package io.github.makbn.vaadin.demo.views;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
@@ -19,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.util.annotation.NonNull;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -30,8 +33,21 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
     public static final String LATITUDE = "Latitude";
     public static final String LONGITUDE = "Longitude";
     private final transient Logger log = LoggerFactory.getLogger(getClass());
-    private final JLMapView mapView;
     private final AtomicInteger defaultZoomLevel = new AtomicInteger(5);
+
+    private JLMapView mapView;
+    private JLMapProvider currentProvider;
+    private ComboBox<String> mapProviderComboBox;
+    private static final Map<String, JLMapProvider> PROVIDERS = new LinkedHashMap<>();
+    static {
+        PROVIDERS.put("OSM Mapnik", JLMapProvider.OSM_MAPNIK.build());
+        PROVIDERS.put("OSM German", JLMapProvider.OSM_GERMAN.build());
+        PROVIDERS.put("OSM French", JLMapProvider.OSM_FRENCH.build());
+        PROVIDERS.put("OSM HOT", JLMapProvider.OSM_HOT.build());
+        PROVIDERS.put("OSM Cycle", JLMapProvider.OSM_CYCLE.build());
+        PROVIDERS.put("OpenTopoMap", JLMapProvider.OPEN_TOPO.build());
+        PROVIDERS.put("MapTiler", JLMapProvider.MAP_TILER.parameter(new JLMapOption.Parameter("key", MAP_API_KEY)).build());
+    }
 
     public HomeView() {
         setSizeFull();
@@ -80,6 +96,34 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
             sec.add(items);
             return sec;
         };
+
+        // --- Map Provider Selector ---
+        mapProviderComboBox = new ComboBox<>();
+        mapProviderComboBox.setItems(PROVIDERS.keySet());
+        mapProviderComboBox.setLabel("Map Provider");
+        mapProviderComboBox.setValue("MapTiler");
+        mapProviderComboBox.setWidthFull();
+        mapProviderComboBox.getStyle().set("margin-bottom", "16px");
+        mapProviderComboBox.addValueChangeListener(event -> {
+            String selected = event.getValue();
+            if (selected != null && PROVIDERS.containsKey(selected)) {
+                JLMapProvider provider = PROVIDERS.get(selected);
+                // Remove old mapView
+                remove(mapView);
+                JLMapView newMapView = JLMapView.builder()
+                        .jlMapProvider(provider)
+                        .startCoordinate(new JLLatLng(48.864716, 2.349014))
+                        .showZoomController(false)
+                        .build();
+                newMapView.setMapViewListener(this);
+                newMapView.setSizeFull();
+                addComponentAtIndex(0, newMapView);
+                mapView = newMapView;
+                // Update reference
+                currentProvider = provider;
+            }
+        });
+        menuContent.add(mapProviderComboBox);
 
         // --- Control Layer ---
         Button zoomIn = new Button("Zoom in", e -> mapView.getControlLayer().setZoom(defaultZoomLevel.addAndGet(1)));

@@ -191,4 +191,11 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
     public void setMapViewListener(OnJLMapViewListener listener) {
         this.mapListener = listener;
     }
+
+    /**
+     * @return JLVaadinGeoJsonLayer
+     */
+    public JLVaadinGeoJsonLayer getGeoJsonLayer() {
+        return (JLVaadinGeoJsonLayer) layers.get(JLVaadinGeoJsonLayer.class);
+    }
 }

@@ -17,10 +17,7 @@ import lombok.experimental.NonFinal;
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-public abstract sealed class JLObject<T extends JLObject<?>> permits JLCircle, JLCircleMarker, JLMarker,
-        JLMultiPolyline, JLPolygon, JLPolyline, JLPopup {
-    public static final String REFERENCE_PREFIX = "jl_map_item_";
-
+public abstract sealed class JLObject<T extends JLObject<?>> permits JLCircle, JLCircleMarker, JLGeoJson, JLMarker, JLMultiPolyline, JLPolygon, JLPolyline, JLPopup {
     JLTransporter transport;
 
     @NonFinal

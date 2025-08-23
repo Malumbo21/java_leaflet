@@ -20,9 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.util.annotation.NonNull;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 
 /**
  * @author Matt Akbarian  (@makbn)
@@ -32,13 +35,13 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
     public static final String MAP_API_KEY = "rNGhTaIpQWWH7C6QGKzF";
     public static final String LATITUDE = "Latitude";
     public static final String LONGITUDE = "Longitude";
+    public static final String MENU_ITEM_CLASS = "jlmap-menu-item";
     private final transient Logger log = LoggerFactory.getLogger(getClass());
     private final AtomicInteger defaultZoomLevel = new AtomicInteger(5);
 
     private JLMapView mapView;
-    private JLMapProvider currentProvider;
-    private ComboBox<String> mapProviderComboBox;
     private static final Map<String, JLMapProvider> PROVIDERS = new LinkedHashMap<>();
+
     static {
         PROVIDERS.put("OSM Mapnik", JLMapProvider.OSM_MAPNIK.build());
         PROVIDERS.put("OSM German", JLMapProvider.OSM_GERMAN.build());
@@ -83,7 +86,6 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
         menuContent.getStyle().set("flex-grow", "1");
         menuContent.getStyle().set("overflow-y", "auto");
 
-        final String MENU_ITEM_CLASS = "jlmap-menu-item";
         // Helper to create section
         java.util.function.BiFunction<String, Button[], VerticalLayout> section = (title, items) -> {
             VerticalLayout sec = new VerticalLayout();
@@ -97,66 +99,25 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
             return sec;
         };
 
-        // --- Map Provider Selector ---
-        mapProviderComboBox = new ComboBox<>();
-        mapProviderComboBox.setItems(PROVIDERS.keySet());
-        mapProviderComboBox.setLabel("Map Provider");
-        mapProviderComboBox.setValue("MapTiler");
-        mapProviderComboBox.setWidthFull();
-        mapProviderComboBox.getStyle().set("margin-bottom", "16px");
-        mapProviderComboBox.addValueChangeListener(event -> {
-            String selected = event.getValue();
-            if (selected != null && PROVIDERS.containsKey(selected)) {
-                JLMapProvider provider = PROVIDERS.get(selected);
-                // Remove old mapView
-                remove(mapView);
-                JLMapView newMapView = JLMapView.builder()
-                        .jlMapProvider(provider)
-                        .startCoordinate(new JLLatLng(48.864716, 2.349014))
-                        .showZoomController(false)
-                        .build();
-                newMapView.setMapViewListener(this);
-                newMapView.setSizeFull();
-                addComponentAtIndex(0, newMapView);
-                mapView = newMapView;
-                // Update reference
-                currentProvider = provider;
-            }
-        });
-        menuContent.add(mapProviderComboBox);
+        addTileProviderComponent(menuContent);
+        addCpntrolSection(menuContent, section);
+        addUiSection(menuContent, section);
+        addGeoJsonSection(menuContent, section);
+        addVectorSection(menuContent, section);
 
-        // --- Control Layer ---
-        Button zoomIn = new Button("Zoom in", e -> mapView.getControlLayer().setZoom(defaultZoomLevel.addAndGet(1)));
-        Button zoomOut = new Button("Zoom out", e -> mapView.getControlLayer().setZoom(defaultZoomLevel.addAndGet(-1)));
-        Button fitWorld = new Button("Fit World", e -> mapView.getControlLayer().fitWorld());
-        Button maxZoom = new Button("Max Zoom", e -> DialogBuilder.builder().numberField("Max zoom level").get(event -> mapView.getControlLayer().setMaxZoom((Integer) event.get("Max zoom level"))));
-        Button minZoom = new Button("Min Zoom", e -> DialogBuilder.builder().numberField("Min zoom level").get(event -> mapView.getControlLayer().setMinZoom((Integer) event.get("Min zoom level"))));
-        Button flyTo = new Button("Fly to", e -> DialogBuilder.builder().decimalField(LATITUDE).decimalField(LONGITUDE).numberField("Zoom level").get(event -> mapView.getControlLayer().flyTo(JLLatLng.builder().lat((Double) event.get(LATITUDE)).lng((Double) event.get(LONGITUDE)).build(), (Integer) event.get("Zoom level"))));
-        for (Button b : new Button[]{zoomIn, zoomOut, fitWorld, maxZoom, minZoom, flyTo})
-            b.setClassName(MENU_ITEM_CLASS);
-        menuContent.add(section.apply("Control Layer", new Button[]{zoomIn, zoomOut, fitWorld, maxZoom, minZoom, flyTo}));
+        // --- GitHub Footer ---
+        Anchor githubLink = new Anchor("https://github.com/makbn/java_leaflet", "");
+        githubLink.setTarget("_blank");
+        githubLink.setClassName("jlmap-menu-footer");
+        githubLink.getElement().setProperty("innerHTML", "<span class='jlmap-github-icon' aria-hidden='true'>" +
+                "<svg width='20' height='20' viewBox='0 0 16 16' fill='currentColor' xmlns='http://www.w3.org/2000/svg'><path d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z'/></svg></span> <span>View on GitHub</span>");
 
-        // --- UI Layer ---
-        Button addMarker = new Button("Add Marker", e -> DialogBuilder.builder().decimalField(LATITUDE).decimalField(LONGITUDE).textField("Text").get(event -> {
-            JLMarker marker = mapView.getUiLayer().addMarker(JLLatLng.builder().lat((Double) event.get(LATITUDE)).lng((Double) event.get(LONGITUDE)).build(), (String) event.get("Text"), true);
-            marker.setOnActionListener((jlMarker, event1) -> {
-                if (event1 instanceof MoveEvent) {
-                    Notification.show("Marker moved: " + jlMarker + " -> " + event1.action());
-                } else if (event1 instanceof ClickEvent) {
-                    Notification.show("Marker clicked: " + jlMarker);
-                }
-            });
-            marker.getPopup().setOnActionListener((jlPopup, jlEvent) -> Notification.show(String.format("Mareker's Popup '%s' Event: %s", jlPopup, jlEvent)));
-        }));
-        addMarker.setClassName(MENU_ITEM_CLASS);
-        menuContent.add(section.apply("UI Layer", new Button[]{addMarker}));
+        // Compose menu
+        menuWrapper.add(menuContent, githubLink);
+        add(menuWrapper);
+    }
 
-        // --- Geo Json Layer ---
-        Button loadGeoJson = new Button("Load Data", e -> log.info("Loading GeoJSON..."));
-        loadGeoJson.setClassName(MENU_ITEM_CLASS);
-        menuContent.add(section.apply("Geo Json Layer", new Button[]{loadGeoJson}));
-
-        // --- Vector Layer ---
+    private void addVectorSection(VerticalLayout menuContent, BiFunction<String, Button[], VerticalLayout> section) {
         Button drawCircle = new Button("Draw Circle", e ->
                 DialogBuilder.builder()
                         .decimalField(LATITUDE)
@@ -241,17 +202,97 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
         for (Button b : new Button[]{drawCircle, drawCircleMarker, drawSimplePolyline, drawCustomPolyline, drawMultiPolyline, drawTrianglePolygon, drawCustomPolygon, drawPolygonWithHole, demoAllShapes})
             b.setClassName(MENU_ITEM_CLASS);
         menuContent.add(section.apply("Vector Layer", new Button[]{drawCircle, drawCircleMarker, drawSimplePolyline, drawCustomPolyline, drawMultiPolyline, drawTrianglePolygon, drawCustomPolygon, drawPolygonWithHole, demoAllShapes}));
+    }
 
-        // --- GitHub Footer ---
-        Anchor githubLink = new Anchor("https://github.com/makbn/java_leaflet", "");
-        githubLink.setTarget("_blank");
-        githubLink.setClassName("jlmap-menu-footer");
-        githubLink.getElement().setProperty("innerHTML", "<span class='jlmap-github-icon' aria-hidden='true'>" +
-                "<svg width='20' height='20' viewBox='0 0 16 16' fill='currentColor' xmlns='http://www.w3.org/2000/svg'><path d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z'/></svg></span> <span>View on GitHub</span>");
+    private void addGeoJsonSection(VerticalLayout menuContent, BiFunction<String, Button[], VerticalLayout> section) {
+        //noinspection unchecked
+        Button loadGeoJson = new Button("Load GeoJSON file", e ->
+                DialogBuilder.builder()
+                        .addUpload()
+                        .get(event ->
+                                ((Set<File>) event.get("uploadedFiles")).forEach(mapView.getGeoJsonLayer()::addFromFile)));
 
-        // Compose menu
-        menuWrapper.add(menuContent, githubLink);
-        add(menuWrapper);
+
+        loadGeoJson.setClassName(MENU_ITEM_CLASS);
+
+        Button addUsOutlineGeoJson = new Button("US Outline GeoJSON Url", e -> {
+            try {
+                mapView.getGeoJsonLayer().addFromUrl("https://eric.clst.org/assets/wiki/uploads/Stuff/gz_2010_us_outline_5m.json");
+                Notification.show("US Outline GeoJSON added to map.");
+            } catch (Exception ex) {
+                Notification.show("Failed to load GeoJSON: " + ex.getMessage());
+                log.error("Failed to load GeoJSON", ex);
+            }
+        });
+        addUsOutlineGeoJson.setClassName(MENU_ITEM_CLASS);
+        menuContent.add(section.apply("Geo Json Layer", new Button[]{loadGeoJson, addUsOutlineGeoJson}));
+    }
+
+    private void addUiSection(VerticalLayout menuContent, BiFunction<String, Button[], VerticalLayout> section) {
+        Button addMarker = new Button("Add Marker", e ->
+                DialogBuilder.builder()
+                        .decimalField(LATITUDE)
+                        .decimalField(LONGITUDE)
+                        .textField("Text")
+                        .get(event -> {
+
+                            JLMarker marker = mapView.getUiLayer().addMarker(JLLatLng.builder()
+                                    .lat((Double) event.get(LATITUDE))
+                                    .lng((Double) event.get(LONGITUDE))
+                                    .build(), (String) event.get("Text"), true);
+
+                            marker.setOnActionListener((jlMarker, event1) -> {
+                                if (event1 instanceof MoveEvent) {
+                                    Notification.show("Marker moved: " + jlMarker + " -> " + event1.action());
+                                } else if (event1 instanceof ClickEvent) {
+                                    Notification.show("Marker clicked: " + jlMarker);
+                                }
+                            });
+                            marker.getPopup().setOnActionListener((jlPopup, jlEvent) ->
+                                    Notification.show(String.format("Mareker's Popup '%s' Event: %s", jlPopup, jlEvent)));
+                        }));
+
+        addMarker.setClassName(MENU_ITEM_CLASS);
+        menuContent.add(section.apply("UI Layer", new Button[]{addMarker}));
+    }
+
+    private void addCpntrolSection(VerticalLayout menuContent, BiFunction<String, Button[], VerticalLayout> section) {
+        Button zoomIn = new Button("Zoom in", e -> mapView.getControlLayer().setZoom(defaultZoomLevel.addAndGet(1)));
+        Button zoomOut = new Button("Zoom out", e -> mapView.getControlLayer().setZoom(defaultZoomLevel.addAndGet(-1)));
+        Button fitWorld = new Button("Fit World", e -> mapView.getControlLayer().fitWorld());
+        Button maxZoom = new Button("Max Zoom", e -> DialogBuilder.builder().numberField("Max zoom level").get(event -> mapView.getControlLayer().setMaxZoom((Integer) event.get("Max zoom level"))));
+        Button minZoom = new Button("Min Zoom", e -> DialogBuilder.builder().numberField("Min zoom level").get(event -> mapView.getControlLayer().setMinZoom((Integer) event.get("Min zoom level"))));
+        Button flyTo = new Button("Fly to", e -> DialogBuilder.builder().decimalField(LATITUDE).decimalField(LONGITUDE).numberField("Zoom level").get(event -> mapView.getControlLayer().flyTo(JLLatLng.builder().lat((Double) event.get(LATITUDE)).lng((Double) event.get(LONGITUDE)).build(), (Integer) event.get("Zoom level"))));
+        for (Button b : new Button[]{zoomIn, zoomOut, fitWorld, maxZoom, minZoom, flyTo})
+            b.setClassName(MENU_ITEM_CLASS);
+        menuContent.add(section.apply("Control Layer", new Button[]{zoomIn, zoomOut, fitWorld, maxZoom, minZoom, flyTo}));
+    }
+
+    private void addTileProviderComponent(VerticalLayout menuContent) {
+        ComboBox<String> mapProviderComboBox = new ComboBox<>();
+        mapProviderComboBox.setItems(PROVIDERS.keySet());
+        mapProviderComboBox.setLabel("Map Provider");
+        mapProviderComboBox.setValue("MapTiler");
+        mapProviderComboBox.setWidthFull();
+        mapProviderComboBox.getStyle().set("margin-bottom", "16px");
+        mapProviderComboBox.addValueChangeListener(event -> {
+            String selected = event.getValue();
+            if (selected != null && PROVIDERS.containsKey(selected)) {
+                JLMapProvider provider = PROVIDERS.get(selected);
+                // Remove old mapView
+                remove(mapView);
+                JLMapView newMapView = JLMapView.builder()
+                        .jlMapProvider(provider)
+                        .startCoordinate(new JLLatLng(48.864716, 2.349014))
+                        .showZoomController(false)
+                        .build();
+                newMapView.setMapViewListener(this);
+                newMapView.setSizeFull();
+                addComponentAtIndex(0, newMapView);
+                mapView = newMapView;
+            }
+        });
+        menuContent.add(mapProviderComboBox);
     }
 
     /**

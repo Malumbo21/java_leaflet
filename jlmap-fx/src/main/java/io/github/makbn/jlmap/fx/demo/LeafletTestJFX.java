@@ -3,7 +3,6 @@ package io.github.makbn.jlmap.fx.demo;
 import io.github.makbn.jlmap.JLMapController;
 import io.github.makbn.jlmap.JLProperties;
 import io.github.makbn.jlmap.fx.JLMapView;
-import io.github.makbn.jlmap.geojson.JLGeoJsonObject;
 import io.github.makbn.jlmap.listener.OnJLMapViewListener;
 import io.github.makbn.jlmap.listener.OnJLObjectActionListener;
 import io.github.makbn.jlmap.listener.event.ClickEvent;
@@ -11,10 +10,7 @@ import io.github.makbn.jlmap.listener.event.Event;
 import io.github.makbn.jlmap.listener.event.MoveEvent;
 import io.github.makbn.jlmap.listener.event.ZoomEvent;
 import io.github.makbn.jlmap.map.JLMapProvider;
-import io.github.makbn.jlmap.model.JLLatLng;
-import io.github.makbn.jlmap.model.JLMarker;
-import io.github.makbn.jlmap.model.JLOptions;
-import io.github.makbn.jlmap.model.JLPolygon;
+import io.github.makbn.jlmap.model.*;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -100,7 +96,7 @@ public class LeafletTestJFX extends Application {
                 map.getControlLayer().zoomIn(2);
                 map.getControlLayer().zoomOut(1);
 
-                JLGeoJsonObject geoJsonObject = map.getGeoJsonLayer()
+                JLGeoJson geoJsonObject = map.getGeoJsonLayer()
                         .addFromUrl("https://pkgstore.datahub.io/examples/geojson-tutorial/example/data/db696b3bf628d9a273ca9907adcea5c9/example.geojson");
 
                 log.info("geojson loaded! id: {}", geoJsonObject.getId());

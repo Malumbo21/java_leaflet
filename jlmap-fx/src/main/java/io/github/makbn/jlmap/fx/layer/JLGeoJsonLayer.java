@@ -5,9 +5,9 @@ import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.exception.JLException;
 import io.github.makbn.jlmap.geojson.JLGeoJsonContent;
 import io.github.makbn.jlmap.geojson.JLGeoJsonFile;
-import io.github.makbn.jlmap.geojson.JLGeoJsonObject;
 import io.github.makbn.jlmap.geojson.JLGeoJsonURL;
 import io.github.makbn.jlmap.layer.leaflet.LeafletGeoJsonLayerInt;
+import io.github.makbn.jlmap.model.JLGeoJson;
 import lombok.NonNull;
 import netscape.javascript.JSObject;
 
@@ -16,6 +16,7 @@ import java.util.UUID;
 
 /**
  * Represents the GeoJson (other) layer on Leaflet map.
+ *
  * @author Matt Akbarian  (@makbn)
  */
 public class JLGeoJsonLayer extends JLLayer implements LeafletGeoJsonLayerInt {
@@ -36,39 +37,39 @@ public class JLGeoJsonLayer extends JLLayer implements LeafletGeoJsonLayerInt {
     }
 
     @Override
-    public JLGeoJsonObject addFromFile(@NonNull File file) throws JLException {
+    public JLGeoJson addFromFile(@NonNull File file) throws JLException {
         String json = fromFile.load(file);
         return addGeoJson(json);
     }
 
     @Override
-    public JLGeoJsonObject addFromUrl(@NonNull String url) throws JLException {
+    public JLGeoJson addFromUrl(@NonNull String url) throws JLException {
         String json = fromUrl.load(url);
         return addGeoJson(json);
     }
 
     @Override
-    public JLGeoJsonObject addFromContent(@NonNull String content)
+    public JLGeoJson addFromContent(@NonNull String content)
             throws JLException {
         String json = fromContent.load(content);
         return addGeoJson(json);
     }
 
     @Override
-    public boolean removeGeoJson(@NonNull JLGeoJsonObject object) {
+    public boolean removeGeoJson(@NonNull String id) {
         return Boolean.parseBoolean(engine.executeScript(
-                String.format("removeGeoJson(%d)", object.getId())).toString());
+                String.format("removeGeoJson(%s)", id)).toString());
     }
 
-    private JLGeoJsonObject addGeoJson(String jlGeoJsonObject) {
+    private JLGeoJson addGeoJson(String jlGeoJsonObject) {
         try {
             String identifier = MEMBER_PREFIX + UUID.randomUUID();
             this.window.setMember(identifier, jlGeoJsonObject);
             String returnedId = engine.executeScript(
                     String.format("addGeoJson(\"%s\")", identifier)).toString();
 
-            return JLGeoJsonObject.builder()
-                    .id(Integer.parseInt(returnedId))
+            return JLGeoJson.builder()
+                    .id(returnedId)
                     .geoJsonContent(jlGeoJsonObject)
                     .build();
         } catch (Exception e) {

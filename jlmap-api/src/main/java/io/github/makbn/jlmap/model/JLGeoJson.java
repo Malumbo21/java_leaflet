@@ -1,5 +1,6 @@
-package io.github.makbn.jlmap.geojson;
+package io.github.makbn.jlmap.model;
 
+import io.github.makbn.jlmap.engine.JLTransporter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,13 +14,14 @@ import lombok.experimental.NonFinal;
 @Getter
 @Setter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class JLGeoJsonObject {
+public final class JLGeoJson extends JLObject<JLMarker> {
     @NonFinal
-    int id;
+    String id;
     String geoJsonContent;
 
     @Builder
-    public JLGeoJsonObject(int id, String geoJsonContent) {
+    public JLGeoJson(String id, String geoJsonContent, JLTransporter transport) {
+        super(transport);
         this.id = id;
         this.geoJsonContent = geoJsonContent;
     }

@@ -3,6 +3,7 @@ package io.github.makbn.jlmap.geojson;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import io.github.makbn.jlmap.exception.JLGeoJsonParserException;
+import io.github.makbn.jlmap.model.JLGeoJson;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -26,7 +27,7 @@ public abstract class JLGeoJsonSource<S> {
      * The GeoJSON object loaded from this source.
      */
     @NonFinal
-    JLGeoJsonObject geoJsonObject;
+    JLGeoJson geoJsonObject;
 
     /**
      * Initializes a new instance of {@code JLGeoJsonSource} and sets up the Gson object.

@@ -17,7 +17,7 @@ abstract class JLObjectBuilder<M extends JLObject<?>, T extends JLObjectBuilder<
     protected String uuid;
     protected JLOptions jlOptions;
     @Nullable
-    protected JLTransporter transporter;
+    protected JLTransporter<?> transporter;
     protected final Map<String, Object> options = new LinkedHashMap<>();
     protected final List<String> callbacks = new ArrayList<>();
 
@@ -31,9 +31,9 @@ abstract class JLObjectBuilder<M extends JLObject<?>, T extends JLObjectBuilder<
         return self();
     }
 
-    public T setTransporter(@Nullable JLTransporter transporter) {
-        this.transporter = transporter;
-        return self();
+    @Nullable
+    protected JLTransporter getTransporter() {
+        return transporter;
     }
 
     public T withOptions(@NonNull JLOptions jlOptions) {
@@ -49,6 +49,11 @@ abstract class JLObjectBuilder<M extends JLObject<?>, T extends JLObjectBuilder<
         JLCallbackBuilder cb = new JLCallbackBuilder(getElementType(), getElementVarName());
         config.accept(cb);
         callbacks.addAll(cb.build());
+        return self();
+    }
+
+    public T setTransporter(@Nullable JLTransporter<?> transporter) {
+        this.transporter = transporter;
         return self();
     }
 

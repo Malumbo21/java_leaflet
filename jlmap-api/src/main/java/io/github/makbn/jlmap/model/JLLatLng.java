@@ -1,10 +1,8 @@
 package io.github.makbn.jlmap.model;
 
 import io.github.makbn.jlmap.JLProperties;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.util.Objects;
 
@@ -16,11 +14,12 @@ import java.util.Objects;
 @Setter
 @Builder
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLLatLng {
     /** geographical given latitude in degrees */
-    private final double lat;
+    double lat;
     /** geographical given longitude in degrees */
-    private final double lng;
+    double lng;
 
     /**
      * Calculate distance between two points in latitude and longitude taking

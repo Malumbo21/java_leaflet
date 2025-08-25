@@ -14,15 +14,20 @@ import lombok.experimental.NonFinal;
 @Getter
 @Setter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public final class JLGeoJson extends JLObject<JLMarker> {
+public final class JLGeoJson extends JLObject<JLGeoJson> {
     @NonFinal
     String id;
     String geoJsonContent;
 
     @Builder
-    public JLGeoJson(String id, String geoJsonContent, JLTransporter transport) {
+    public JLGeoJson(String id, String geoJsonContent, JLTransporter<?> transport) {
         super(transport);
         this.id = id;
         this.geoJsonContent = geoJsonContent;
+    }
+
+    @Override
+    public JLGeoJson self() {
+        return this;
     }
 }

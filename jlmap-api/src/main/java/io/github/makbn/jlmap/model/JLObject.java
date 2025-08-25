@@ -1,8 +1,8 @@
 package io.github.makbn.jlmap.model;
 
-import io.github.makbn.jlmap.engine.JLTransport;
 import io.github.makbn.jlmap.engine.JLTransporter;
 import io.github.makbn.jlmap.listener.OnJLObjectActionListener;
+import io.github.makbn.jlmap.model.function.JLFunctionBase;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +17,11 @@ import lombok.experimental.NonFinal;
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-public abstract sealed class JLObject<T extends JLObject<?>> permits JLCircle, JLCircleMarker, JLGeoJson, JLMarker, JLMultiPolyline, JLPolygon, JLPolyline, JLPopup {
-    JLTransporter transport;
+public abstract sealed class JLObject<T extends JLObject<T>> implements JLFunctionBase<T> permits
+        JLCircle, JLCircleMarker, JLGeoJson, JLMarker, JLMultiPolyline, JLPolygon, JLPolyline, JLPopup {
+
+    @Getter(AccessLevel.PROTECTED)
+    JLTransporter<?> transport;
 
     @NonFinal
     OnJLObjectActionListener<T> listener;
@@ -36,10 +39,6 @@ public abstract sealed class JLObject<T extends JLObject<?>> permits JLCircle, J
     }
 
     public abstract String getId();
-
-    public void remove() {
-        transport.clientToServerTransport().accept(new JLTransport(this,"remove", getId()));
-    }
 
     public void update(Object... params) {
 

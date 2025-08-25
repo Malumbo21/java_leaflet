@@ -35,11 +35,16 @@ public final class JLCircle extends JLObject<JLCircle> {
     JLOptions options;
 
     @Builder
-    public JLCircle(String id, double radius, JLLatLng latLng, JLOptions options, JLTransporter transport) {
+    public JLCircle(String id, double radius, JLLatLng latLng, JLOptions options, JLTransporter<?> transport) {
         super(transport);
         this.id = id;
         this.radius = radius;
         this.latLng = latLng;
         this.options = options;
+    }
+
+    @Override
+    public JLCircle self() {
+        return this;
     }
 }

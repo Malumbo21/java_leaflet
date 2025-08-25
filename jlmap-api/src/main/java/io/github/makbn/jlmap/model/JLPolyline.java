@@ -32,10 +32,15 @@ public final class JLPolyline extends JLObject<JLPolyline> {
     JLLatLng[] vertices;
 
     @Builder
-    public JLPolyline(String id, JLOptions options, JLLatLng[] vertices, JLTransporter transport) {
+    public JLPolyline(String id, JLOptions options, JLLatLng[] vertices, JLTransporter<?> transport) {
         super(transport);
         this.id = id;
         this.options = options;
         this.vertices = vertices;
+    }
+
+    @Override
+    public JLPolyline self() {
+        return this;
     }
 }

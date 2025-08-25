@@ -2,6 +2,7 @@ package io.github.makbn.jlmap.vaadin.layer;
 
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.engine.JLTransport;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletUILayerInt;
 import io.github.makbn.jlmap.listener.JLAction;
@@ -11,11 +12,14 @@ import io.github.makbn.jlmap.model.JLOptions;
 import io.github.makbn.jlmap.model.JLPopup;
 import io.github.makbn.jlmap.model.builder.JLMarkerBuilder;
 import io.github.makbn.jlmap.model.builder.JLPopupBuilder;
+import io.github.makbn.jlmap.vaadin.engine.JLVaadinTransporter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 /**
  * Represents the UI layer on Leaflet map.
@@ -48,8 +52,7 @@ public class JLVaadinUiLayer extends JLVaadinLayer implements LeafletUILayerInt 
                 .setLat(latLng.getLat())
                 .setLng(latLng.getLng())
                 .setText(text)
-                .setTransporter(() -> transport -> {
-                })
+                .setTransporter(getTransporter())
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.MOVE);
                     jlCallbackBuilder.on(JLAction.MOVE_START);
@@ -57,10 +60,8 @@ public class JLVaadinUiLayer extends JLVaadinLayer implements LeafletUILayerInt 
                     jlCallbackBuilder.on(JLAction.DRAG);
                     jlCallbackBuilder.on(JLAction.DRAG_START);
                     jlCallbackBuilder.on(JLAction.DRAG_END);
-
                     jlCallbackBuilder.on(JLAction.ADD);
                     jlCallbackBuilder.on(JLAction.REMOVE);
-
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
                 })
@@ -112,8 +113,7 @@ public class JLVaadinUiLayer extends JLVaadinLayer implements LeafletUILayerInt 
                 .setContent(text)
                 .setLat(latLng.getLat())
                 .setLng(latLng.getLng())
-                .setTransporter(() -> transport -> {
-                })
+                .setTransporter(getTransporter())
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.MOVE);
                     jlCallbackBuilder.on(JLAction.ADD);
@@ -152,5 +152,14 @@ public class JLVaadinUiLayer extends JLVaadinLayer implements LeafletUILayerInt 
             return false;
         }
         return true;
+    }
+
+    private @NotNull JLVaadinTransporter getTransporter() {
+        return new JLVaadinTransporter() {
+            @Override
+            public Function<JLTransport, PendingJavaScriptResult> clientToServerTransport() {
+                return transport -> engine.executeScript(transport.function());
+            }
+        };
     }
 }

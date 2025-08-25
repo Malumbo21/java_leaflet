@@ -1,7 +1,10 @@
 package io.github.makbn.jlmap.model;
 
 import io.github.makbn.jlmap.engine.JLTransporter;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 /**
@@ -32,11 +35,16 @@ public final class JLCircleMarker extends JLObject<JLCircleMarker> {
     JLOptions options;
 
     @Builder
-    public JLCircleMarker(String id, double radius, JLLatLng latLng, JLOptions options, JLTransporter transport) {
+    public JLCircleMarker(String id, double radius, JLLatLng latLng, JLOptions options, JLTransporter<?> transport) {
         super(transport);
         this.id = id;
         this.radius = radius;
         this.latLng = latLng;
         this.options = options;
+    }
+
+    @Override
+    public JLCircleMarker self() {
+        return this;
     }
 }

@@ -35,10 +35,15 @@ public final class JLPolygon extends JLObject<JLPolygon> {
     JLLatLng[][][] vertices;
 
     @Builder
-    public JLPolygon(String id, JLOptions options, JLLatLng[][][] vertices, JLTransporter transport) {
+    public JLPolygon(String id, JLOptions options, JLLatLng[][][] vertices, JLTransporter<?> transport) {
         super(transport);
         this.id = id;
         this.options = options;
         this.vertices = vertices;
+    }
+
+    @Override
+    public JLPolygon self() {
+        return this;
     }
 }

@@ -37,11 +37,16 @@ public final class JLPopup extends JLObject<JLPopup> {
     JLObject<?> parent;
 
     @Builder
-    public JLPopup(String id, String text, JLLatLng latLng, JLOptions options, JLTransporter transport) {
+    public JLPopup(String id, String text, JLLatLng latLng, JLOptions options, JLTransporter<?> transport) {
         super(transport);
         this.id = id;
         this.text = text;
         this.latLng = latLng;
         this.options = options;
+    }
+
+    @Override
+    public JLPopup self() {
+        return this;
     }
 }

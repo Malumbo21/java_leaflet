@@ -32,10 +32,15 @@ public final class JLMultiPolyline extends JLObject<JLMultiPolyline> {
     JLLatLng[][] vertices;
 
     @Builder
-    public JLMultiPolyline(String id, JLOptions options, JLLatLng[][] vertices, JLTransporter transport) {
+    public JLMultiPolyline(String id, JLOptions options, JLLatLng[][] vertices, JLTransporter<?> transport) {
         super(transport);
         this.id = id;
         this.options = options;
         this.vertices = vertices;
+    }
+
+    @Override
+    public JLMultiPolyline self() {
+        return this;
     }
 }

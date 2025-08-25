@@ -14,4 +14,8 @@ public class JLException extends RuntimeException {
     public JLException(Throwable cause) {
         super(cause);
     }
+
+    public JLException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

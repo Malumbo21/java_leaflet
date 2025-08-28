@@ -34,18 +34,6 @@ public final class JLMarker extends JLObject<JLMarker> {
      */
     @NonFinal
     JLLatLng latLng;
-    /**
-     * By default, marker images zIndex is set automatically based on its latitude.
-     * Use this option if you want to put the marker on top of all others (or below),
-     * specifying a high value like 1000 (or high negative value, respectively).
-     */
-    @NonFinal
-    int zIndexOffset = 0;
-    /**
-     * The opacity of the marker.
-     */
-    @NonFinal
-    double opacity = 1.0;
 
     @NonFinal
     JLIcon icon;
@@ -84,36 +72,6 @@ public final class JLMarker extends JLObject<JLMarker> {
         getTransport().execute(new JLTransport(this,
                 String.format("this.%s.setLatLng([%f, %f]);", getId(), latLng.getLat(), latLng.getLng())));
         this.latLng = latLng;
-        return this;
-    }
-
-    /**
-     * By default, marker images zIndex is set automatically based on its latitude. Use this option if you want
-     * to put the marker on top of all others (or below), specifying a high value like 1000 (or high
-     * negative value, respectively).
-     * Read more <a href="https://leafletjs.com/reference.html#marker-zindexoffset">here</a>!
-     *
-     * @param offset new zIndex offset of the marker.
-     * @return the current instance of JLMarker.
-     */
-    public JLMarker setZIndexOffset(int offset) {
-        getTransport().execute(new JLTransport(this,
-                String.format("this.%s.setZIndexOffset(%d);", getId(), offset)));
-        this.zIndexOffset = offset;
-        return this;
-    }
-
-    /**
-     * Changes the marker opacity.
-     * Read more <a href="https://leafletjs.com/reference.html#marker-opacity">here</a>!
-     *
-     * @param opacity value between 0.0 and 1.0.
-     * @return the current instance of JLMarker.
-     */
-    public JLMarker setOpacity(double opacity) {
-        getTransport().execute(new JLTransport(this,
-                String.format("this.%s.setOpacity(%f);", getId(), opacity)));
-        this.opacity = opacity;
         return this;
     }
 

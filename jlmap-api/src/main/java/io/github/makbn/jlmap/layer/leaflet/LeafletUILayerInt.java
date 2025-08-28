@@ -1,9 +1,6 @@
 package io.github.makbn.jlmap.layer.leaflet;
 
-import io.github.makbn.jlmap.model.JLLatLng;
-import io.github.makbn.jlmap.model.JLMarker;
-import io.github.makbn.jlmap.model.JLOptions;
-import io.github.makbn.jlmap.model.JLPopup;
+import io.github.makbn.jlmap.model.*;
 
 /**
  * The {@code LeafletUILayerInt} interface defines methods for adding and
@@ -71,5 +68,16 @@ public interface LeafletUILayerInt extends LeafletLayer {
      * was not found.
      */
     boolean removePopup(String id);
+
+    /**
+     * Instantiates an image overlay object given the URL of the image and the geographical bounds it is tied to.
+     * Read more about it on <a href="https://leafletjs.com/reference.html#videooverlay">Leaflet ImageOverlay</a>
+     *
+     * @param bounds   the geographical bounds the image is tied to.
+     * @param imageUrl URL of the image to be used as an overlay. (can be local or remote URL)
+     * @param options  theming options for JLImageOverlay. all options are not available!
+     * @return The {@link JLImageOverlay} representing the added image overlay on the map.
+     */
+    JLImageOverlay addImage(JLBounds bounds, String imageUrl, JLOptions options);
 }
 

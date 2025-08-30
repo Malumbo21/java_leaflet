@@ -110,7 +110,11 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
         }
     }
 
-
+    /**
+     * Generates the JavaScript function call to initialize the map.
+     *
+     * @return the JavaScript initialization string
+     */
     @SuppressWarnings("all")
     private String generateInitializeFunctionCall() {
         String call = """
@@ -141,8 +145,15 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
     }
 
     /**
-     * Called when the map is loaded successfully.
-     * This method is called from JavaScript.
+     * Called when the map is loaded successfully from JavaScript.
+     * Handles events from the client side.
+     *
+     * @param function         the function name
+     * @param jlType           the JL type
+     * @param uuid             the unique identifier
+     * @param additionalParam1 additional parameter 1
+     * @param additionalParam2 additional parameter 2
+     * @param additionalParam3 additional parameter 3
      */
     @ClientCallable
     @SuppressWarnings("unused")
@@ -152,9 +163,7 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
     }
 
     /**
-     * Gets the JLWebEngine used by this map view.
-     *
-     * @return the JLWebEngine
+     * {@inheritDoc}
      */
     @Override
     public JLWebEngine<PendingJavaScriptResult> getJLEngine() {
@@ -162,8 +171,7 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
     }
 
     /**
-     * Adds the controller to the document.
-     * This method is called automatically when the component is attached.
+     * {@inheritDoc}
      */
     @Override
     public void addControllerToDocument() {
@@ -193,6 +201,8 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
     }
 
     /**
+     * Gets the GeoJson layer for this map view.
+     *
      * @return JLVaadinGeoJsonLayer
      */
     public JLVaadinGeoJsonLayer getGeoJsonLayer() {

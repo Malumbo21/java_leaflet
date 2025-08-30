@@ -49,4 +49,12 @@ public abstract class JLVaadinLayer implements LeafletLayer {
             }
         };
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

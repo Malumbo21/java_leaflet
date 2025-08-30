@@ -41,18 +41,27 @@ public class JLVaadinGeoJsonLayer extends JLVaadinLayer implements LeafletGeoJso
         this.idGenerator = new AtomicInteger();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JLGeoJson addFromFile(@NonNull File file) throws JLException {
         String json = fromFile.load(file);
         return addGeoJson(json);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JLGeoJson addFromUrl(@NonNull String url) throws JLException {
         String json = fromUrl.load(url);
         return addGeoJson(json);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public JLGeoJson addFromContent(@NonNull String content)
             throws JLException {
@@ -60,6 +69,9 @@ public class JLVaadinGeoJsonLayer extends JLVaadinLayer implements LeafletGeoJso
         return addGeoJson(json);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean removeGeoJson(@NonNull String id) {
         try {
@@ -72,6 +84,12 @@ public class JLVaadinGeoJsonLayer extends JLVaadinLayer implements LeafletGeoJso
         }
     }
 
+    /**
+     * Adds a GeoJSON object to the map from a JSON string.
+     *
+     * @param geoJson the GeoJSON string
+     * @return the added JLGeoJson object
+     */
     private JLGeoJson addGeoJson(String geoJson) {
         String elementUniqueName = getElementUniqueName(JLGeoJson.class, idGenerator.incrementAndGet());
         JLGeoJsonObjectBuilder builder = new JLGeoJsonObjectBuilder()

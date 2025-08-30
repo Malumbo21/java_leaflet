@@ -8,10 +8,26 @@ import lombok.SneakyThrows;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * JLVaadinTransporter is an abstract implementation of JLTransporter for Vaadin,
+ * handling the conversion of JavaScript results to Java objects using Gson.
+ *
+ * <p>This class is used to bridge between JavaScript execution results (PendingJavaScriptResult)
+ * and Java model objects, providing a generic conversion mechanism for Vaadin-based JLMap integrations.</p>
+ *
+ * @author Matt Akbarian (@makbn)
+ */
 public abstract class JLVaadinTransporter implements JLTransporter<PendingJavaScriptResult> {
 
     Gson gson = new Gson();
 
+    /**
+     * Converts a PendingJavaScriptResult to a Java object of type M using Gson.
+     *
+     * @param result the PendingJavaScriptResult from Vaadin
+     * @param <M>    the type of the result object
+     * @return the converted Java object
+     */
     @Override
     @SneakyThrows
     public <M> M covertResult(PendingJavaScriptResult result) {

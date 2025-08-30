@@ -253,7 +253,23 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
                         }));
 
         addMarker.setClassName(MENU_ITEM_CLASS);
-        menuContent.add(section.apply("UI Layer", new Button[]{addMarker}));
+
+        // --- Add Eiffel Tower Overlay Button ---
+        Button addEiffelOverlay = new Button("Add Eiffel Tower Overlay", e -> {
+            // Eiffel Tower location in Paris
+            double swLat = 47.857, swLng = 3.293; // Southwest corner
+            double neLat = 49.860, neLng = 1.298; // Northeast corner
+            JLBounds bounds = JLBounds.builder()
+                    .southWest(new JLLatLng(swLat, swLng))
+                    .northEast(new JLLatLng(neLat, neLng))
+                    .build();
+            String imageUrl = "https://img.favpng.com/1/24/8/eiffel-tower-eiffel-tower-illustrated-landmark-L5szYqrZ_t.jpg";
+            mapView.getUiLayer().addImage(bounds, imageUrl, JLOptions.DEFAULT);
+            Notification.show("Eiffel Tower overlay added!");
+        });
+        addEiffelOverlay.setClassName(MENU_ITEM_CLASS);
+
+        menuContent.add(section.apply("UI Layer", new Button[]{addMarker, addEiffelOverlay}));
     }
 
     private void addCpntrolSection(VerticalLayout menuContent, BiFunction<String, Button[], VerticalLayout> section) {

@@ -22,6 +22,7 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
         super(engine, callbackHandler);
         this.transporter = () -> transport -> {
             // NO-OP
+            return null;
         };
     }
 

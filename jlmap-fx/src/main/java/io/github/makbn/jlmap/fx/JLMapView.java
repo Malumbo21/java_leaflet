@@ -71,7 +71,7 @@ public class JLMapView extends AnchorPane implements JLMapController<Object> {
         super();
         this.mapOption = JLMapOption.builder()
                 .startCoordinate(startCoordinate)
-                .JLMapProvider(jlMapProvider)
+                .jlMapProvider(jlMapProvider)
                 .additionalParameter(Set.of(new JLMapOption.Parameter("zoomControl",
                         Objects.toString(showZoomController))))
                 .build();

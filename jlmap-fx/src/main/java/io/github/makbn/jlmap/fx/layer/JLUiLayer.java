@@ -4,10 +4,7 @@ import io.github.makbn.jlmap.JLMapCallbackHandler;
 import io.github.makbn.jlmap.engine.JLTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletUILayerInt;
-import io.github.makbn.jlmap.model.JLLatLng;
-import io.github.makbn.jlmap.model.JLMarker;
-import io.github.makbn.jlmap.model.JLOptions;
-import io.github.makbn.jlmap.model.JLPopup;
+import io.github.makbn.jlmap.model.*;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
@@ -24,6 +21,7 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
         super(engine, callbackHandler);
         this.transporter = () -> transport -> {
             // NO-OP
+            return null;
         };
     }
 
@@ -95,5 +93,10 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
         String result = engine.executeScript(String.format("removePopup(%s)", id))
                 .toString();
         return Boolean.parseBoolean(result);
+    }
+
+    @Override
+    public JLImageOverlay addImage(JLBounds bounds, String imageUrl, JLOptions options) {
+        throw new UnsupportedOperationException();
     }
 }

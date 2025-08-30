@@ -2,24 +2,19 @@ package io.github.makbn.jlmap.vaadin.layer;
 
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import io.github.makbn.jlmap.JLMapCallbackHandler;
-import io.github.makbn.jlmap.engine.JLTransport;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletUILayerInt;
 import io.github.makbn.jlmap.listener.JLAction;
-import io.github.makbn.jlmap.model.JLLatLng;
-import io.github.makbn.jlmap.model.JLMarker;
-import io.github.makbn.jlmap.model.JLOptions;
-import io.github.makbn.jlmap.model.JLPopup;
+import io.github.makbn.jlmap.model.*;
+import io.github.makbn.jlmap.model.builder.JLImageOverlayBuilder;
 import io.github.makbn.jlmap.model.builder.JLMarkerBuilder;
 import io.github.makbn.jlmap.model.builder.JLPopupBuilder;
-import io.github.makbn.jlmap.vaadin.engine.JLVaadinTransporter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 /**
  * Represents the UI layer on Leaflet map.
@@ -154,12 +149,24 @@ public class JLVaadinUiLayer extends JLVaadinLayer implements LeafletUILayerInt 
         return true;
     }
 
-    private @NotNull JLVaadinTransporter getTransporter() {
-        return new JLVaadinTransporter() {
-            @Override
-            public Function<JLTransport, PendingJavaScriptResult> clientToServerTransport() {
-                return transport -> engine.executeScript(transport.function());
-            }
-        };
+    @Override
+    public JLImageOverlay addImage(JLBounds bounds, String imageUrl, JLOptions options) {
+        String elementUniqueName = getElementUniqueName(JLPopup.class, idGenerator.incrementAndGet());
+
+        JLImageOverlayBuilder imageBuilder = new JLImageOverlayBuilder()
+                .setUuid(elementUniqueName)
+                .setImageUrl(imageUrl)
+                .setBounds(List.of(new double[]{bounds.getSouthWest().getLat(), bounds.getSouthWest().getLng()},
+                        new double[]{bounds.getNorthEast().getLat(), bounds.getNorthEast().getLng()}))
+                .setTransporter(getTransporter())
+                .withOptions(options)
+                .withCallbacks(jlCallbackBuilder -> {
+
+                });
+
+        engine.executeScript(imageBuilder.buildJsElement());
+        var imageOverlay = imageBuilder.buildJLObject();
+        callbackHandler.addJLObject(elementUniqueName, imageOverlay);
+        return imageOverlay;
     }
 }

@@ -2,6 +2,7 @@ package io.github.makbn.jlmap.vaadin.layer;
 
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLProperties;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletVectorLayerInt;
 import io.github.makbn.jlmap.listener.JLAction;
@@ -55,7 +56,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
 
         var polylineBuilder = new JLPolylineBuilder()
                 .setUuid(elementUniqueName)
-                .setTransporter(() -> transport -> {})
+                .setTransporter(getTransporter())
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.MOVE);
@@ -121,7 +122,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
 
         var multiPolylineBuilder = new JLMultiPolylineBuilder()
                 .setUuid(elementUniqueName)
-                .setTransporter(() -> transport -> {})
+                .setTransporter(getTransporter())
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.MOVE);
@@ -176,7 +177,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
 
         var polygonBuilder = new JLPolygonBuilder()
                 .setUuid(elementUniqueName)
-                .setTransporter(() -> transport -> {})
+                .setTransporter(getTransporter())
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.MOVE);
@@ -249,7 +250,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
                 .setLat(center.getLat())
                 .setLng(center.getLng())
                 .setRadius(radius)
-                .setTransporter(() -> transport -> {})
+                .setTransporter(getTransporter())
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.MOVE);
@@ -265,13 +266,13 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
 
     /**
      * Drawing circle overlays on the map with {@link JLOptions#DEFAULT}
-     * options.
+     * options and {@link JLProperties#DEFAULT_CIRCLE_RADIUS}.
      *
      * @see JLVaadinVectorLayer#addCircle(JLLatLng, int, JLOptions)
      */
     @Override
     public JLCircle addCircle(JLLatLng center) {
-        return addCircle(center, 1000, JLOptions.DEFAULT);
+        return addCircle(center, JLProperties.DEFAULT_CIRCLE_RADIUS, JLOptions.DEFAULT);
     }
 
     /**
@@ -310,7 +311,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
                 .setLat(center.getLat())
                 .setLng(center.getLng())
                 .setRadius(radius)
-                .setTransporter(() -> transport -> {})
+                .setTransporter(getTransporter())
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.MOVE);

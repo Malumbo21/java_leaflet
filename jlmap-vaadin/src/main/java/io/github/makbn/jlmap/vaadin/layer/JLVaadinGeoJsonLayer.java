@@ -75,6 +75,7 @@ public class JLVaadinGeoJsonLayer extends JLVaadinLayer implements LeafletGeoJso
     private JLGeoJson addGeoJson(String geoJson) {
         String elementUniqueName = getElementUniqueName(JLGeoJson.class, idGenerator.incrementAndGet());
         JLGeoJsonObjectBuilder builder = new JLGeoJsonObjectBuilder()
+                .setTransporter(getTransporter())
                 .setUuid(elementUniqueName)
                 .setGeoJson(geoJson);
         engine.executeScript(builder.buildJsElement());

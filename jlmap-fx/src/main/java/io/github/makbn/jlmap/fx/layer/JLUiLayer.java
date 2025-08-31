@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
-    JLTransporter transporter;
+    JLTransporter<Object> transporter;
 
     public JLUiLayer(JLWebEngine<Object> engine, JLMapCallbackHandler callbackHandler) {
         super(engine, callbackHandler);
@@ -95,8 +95,29 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
         return Boolean.parseBoolean(result);
     }
 
+    /**
+     * Adds an image overlay to the map at the specified bounds with the given image URL and options.
+     *
+     * @param bounds   the geographical bounds the image is tied to
+     * @param imageUrl URL of the image to be used as an overlay
+     * @param options  theming options for JLImageOverlay
+     * @return the instance of added {@link JLImageOverlay} on the map
+     */
     @Override
     public JLImageOverlay addImage(JLBounds bounds, String imageUrl, JLOptions options) {
-        throw new UnsupportedOperationException();
+        // Convert options to JS object (simple: only opacity and zIndex for demo)
+        String optionsJs = String.format("{opacity: %f, zIndex: %d}",
+                options.getOpacity(), 1);
+        // Call JS function to add image overlay
+        String result = engine.executeScript(String.format(
+                "addImageOverlay(%s, '%s', %s)", bounds, imageUrl, optionsJs)).toString();
+        JLImageOverlay overlay = JLImageOverlay.builder()
+                .transport(transporter)
+                .options(options)
+                .bounds(bounds)
+                .imageUrl(imageUrl)
+                .build();
+        callbackHandler.addJLObject(result, overlay);
+        return overlay;
     }
 }

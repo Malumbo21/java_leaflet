@@ -120,6 +120,7 @@
     var circleMarkers = [];
     var popups = [];
     var polyLines = []
+    var images = []
     var polygons = []
     var circles = []
 
@@ -211,6 +212,14 @@
         return len - 1;
 
     }
+
+    function addImageOverlay(bounds, imageUrl, options) {
+        let image = L.imageOverlay(imageUrl, bounds, options);
+        image.jlid = 'image';
+        image.addTo(jlFeatureGroup);
+        let len = images.push(image);
+    }
+
 
     function removeCircle(index) {
         let circle = circles[index];

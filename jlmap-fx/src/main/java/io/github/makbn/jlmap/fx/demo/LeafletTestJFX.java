@@ -91,6 +91,17 @@ public class LeafletTestJFX extends Application {
                                 .lng(51.45)
                                 .build(), 30000, JLOptions.DEFAULT);
 
+                // JLImageOverlay demo: Eiffel Tower image over Paris
+                JLBounds eiffelBounds = JLBounds.builder()
+                        .southWest(JLLatLng.builder().lat(47.857).lng(3.293).build())
+                        .northEast(JLLatLng.builder().lat(49.860).lng(1.298).build())
+                        .build();
+                map.getUiLayer().addImage(
+                        eiffelBounds,
+                        "https://img.favpng.com/1/24/8/eiffel-tower-eiffel-tower-illustrated-landmark-L5szYqrZ_t.jpg",
+                        JLOptions.DEFAULT
+                );
+
                 // map zoom functionalities
                 map.getControlLayer().setZoom(5);
                 map.getControlLayer().zoomIn(2);

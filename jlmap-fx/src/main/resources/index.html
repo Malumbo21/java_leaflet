@@ -67,6 +67,8 @@
                     return polygons.findIndex(c => c !== undefined && (e.target === c || e.propagatedFrom === c));
                 case 'marker':
                     return markers.findIndex(c => c !== undefined && (e.target === c || e.propagatedFrom === c));
+                case 'image':
+                    return images.findIndex(c => c !== undefined && (e.target === c || e.propagatedFrom === c));
                 default:
                     return -2;
             }

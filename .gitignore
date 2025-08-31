@@ -6,3 +6,4 @@ application.properties
 /src/main/java/META-INF/
 /src/main/java/io/github/makbn/jlmap/META-INF/
 /src/main/resources/final.geo.json
+**/.DS_Store

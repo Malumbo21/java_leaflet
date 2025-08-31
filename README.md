@@ -3,6 +3,7 @@
 A Java library for integrating Leaflet maps into JavaFX applications with full Java Platform Module System (JPMS) support.
 
 * Current version: **v1.9.5**
+* Next version (Vaadin and JavaFx): **v2.0.0** https://github.com/makbn/java_leaflet/tree/dev/v2.0.0
 
 Project Source Code: https://github.com/makbn/java_leaflet
 

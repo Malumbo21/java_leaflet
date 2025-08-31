@@ -8,4 +8,5 @@ application.properties
 /src/main/resources/final.geo.json
 **/.DS_Store
 jlmap-vaadin/node_modules/
+jlmap-vaadin/src/frontend/generated/
 jlmap-vaadin/package-lock.json

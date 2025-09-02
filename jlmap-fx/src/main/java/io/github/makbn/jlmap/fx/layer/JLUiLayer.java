@@ -5,8 +5,14 @@ import io.github.makbn.jlmap.engine.JLTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletUILayerInt;
 import io.github.makbn.jlmap.model.*;
+import io.github.makbn.jlmap.model.builder.JLImageOverlayBuilder;
+import io.github.makbn.jlmap.model.builder.JLMarkerBuilder;
+import io.github.makbn.jlmap.model.builder.JLPopupBuilder;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents the UI layer on Leaflet map.
@@ -16,9 +22,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
     JLTransporter<Object> transporter;
+    AtomicInteger idGenerator;
 
     public JLUiLayer(JLWebEngine<Object> engine, JLMapCallbackHandler callbackHandler) {
         super(engine, callbackHandler);
+        this.idGenerator = new AtomicInteger();
         this.transporter = () -> transport -> {
             // NO-OP
             return null;
@@ -34,11 +42,22 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
      */
     @Override
     public JLMarker addMarker(JLLatLng latLng, String text, boolean draggable) {
-        String result = engine.executeScript(String.format("addMarker(%f, %f, '%s', %b)", latLng.getLat(), latLng.getLng(), text, draggable))
-                .toString();
+        String elementUniqueName = getElementUniqueName(JLGeoJson.class, idGenerator.incrementAndGet());
+        JLMarkerBuilder markerBuilder = new JLMarkerBuilder()
+                .setUuid(elementUniqueName)
+                .setLat(latLng.getLat())
+                .setLng(latLng.getLng())
+                .setText(text)
+                .setTransporter(transporter)
+                .withCallbacks(jlCallbackBuilder -> {
+                    // TODO: Register all possible callbacks
+                })
+                .withOptions(JLOptions.DEFAULT.toBuilder().draggable(draggable).build());
 
-        JLMarker marker = new JLMarker(result, text, latLng, transporter);
-        callbackHandler.addJLObject(result, marker);
+        engine.executeScript(markerBuilder.buildJsElement());
+        JLMarker marker = markerBuilder.buildJLObject();
+        // TODO: remove this as the callbackHandler should be triggered by JS itself!
+        callbackHandler.addJLObject(elementUniqueName, marker);
         return marker;
     }
 
@@ -50,9 +69,10 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
      */
     @Override
     public boolean removeMarker(String id) {
-        String result = engine.executeScript(String.format("removeMarker(%s)", id)).toString();
-        callbackHandler.remove(JLMarker.class, String.valueOf(id));
-        return Boolean.parseBoolean(result);
+        engine.executeScript(removeLayerWithUUID(id));
+        // TODO: remove this as the callbackHandler should be triggered by JS itself!
+        callbackHandler.remove(JLMarker.class, id);
+        return true;
     }
 
     /**
@@ -66,10 +86,22 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
      */
     @Override
     public JLPopup addPopup(JLLatLng latLng, String text, JLOptions options) {
-        String result = engine.executeScript(String.format("addPopup(%f, %f, \"%s\", %b , %b)", latLng.getLat(), latLng.getLng(), text, options.isCloseButton(), options.isAutoClose()))
-                .toString();
-
-        return new JLPopup(result, text, latLng, options, transporter);
+        String elementUniqueName = getElementUniqueName(JLGeoJson.class, idGenerator.incrementAndGet());
+        JLPopupBuilder popupBuilder = new JLPopupBuilder()
+                .setUuid(elementUniqueName)
+                .setLat(latLng.getLat())
+                .setLng(latLng.getLng())
+                .setContent(text)
+                .withOptions(options)
+                .withCallbacks(jlCallbackBuilder -> {
+                    // TODO: Register all possible callbacks
+                })
+                .setTransporter(transporter);
+        engine.executeScript(popupBuilder.buildJsElement());
+        JLPopup popup = popupBuilder.buildJLObject();
+        // TODO: remove this as the callbackHandler should be triggered by JS itself!
+        callbackHandler.addJLObject(elementUniqueName, popup);
+        return popup;
     }
 
     /**
@@ -90,9 +122,9 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
      */
     @Override
     public boolean removePopup(String id) {
-        String result = engine.executeScript(String.format("removePopup(%s)", id))
-                .toString();
-        return Boolean.parseBoolean(result);
+        engine.executeScript(removeLayerWithUUID(id));
+        callbackHandler.remove(JLPopup.class, id);
+        return true;
     }
 
     /**
@@ -105,19 +137,23 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
      */
     @Override
     public JLImageOverlay addImage(JLBounds bounds, String imageUrl, JLOptions options) {
-        // Convert options to JS object (simple: only opacity and zIndex for demo)
-        String optionsJs = String.format("{opacity: %f, zIndex: %d}",
-                options.getOpacity(), 1);
-        // Call JS function to add image overlay
-        String result = engine.executeScript(String.format(
-                "addImageOverlay(%s, '%s', %s)", bounds, imageUrl, optionsJs)).toString();
-        JLImageOverlay overlay = JLImageOverlay.builder()
-                .transport(transporter)
-                .options(options)
-                .bounds(bounds)
-                .imageUrl(imageUrl)
-                .build();
-        callbackHandler.addJLObject(result, overlay);
+        String elementUniqueName = getElementUniqueName(JLGeoJson.class, idGenerator.incrementAndGet());
+        JLImageOverlayBuilder imageBuilder = new JLImageOverlayBuilder()
+                .setUuid(elementUniqueName)
+                .setImageUrl(imageUrl)
+                .setBounds(List.of(
+                        new double[]{bounds.getSouthWest().getLat(), bounds.getSouthWest().getLng()},
+                        new double[]{bounds.getNorthEast().getLat(), bounds.getNorthEast().getLng()}
+                ))
+                .setTransporter(transporter)
+                .withCallbacks(jlCallbackBuilder -> {
+                    // TODO: Register all possible callbacks
+                })
+                .withOptions(options);
+        engine.executeScript(imageBuilder.buildJsElement());
+        JLImageOverlay overlay = imageBuilder.buildJLObject();
+        // TODO: remove this as the callbackHandler should be triggered by JS itself!
+        callbackHandler.addJLObject(elementUniqueName, overlay);
         return overlay;
     }
 }

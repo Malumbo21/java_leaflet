@@ -20,7 +20,13 @@ public class JLJavaFXEngine extends JLWebEngine<Object> {
     @Override
     public <T> T executeScript(@NonNull String script, @NonNull Class<T> type) {
         return Optional.ofNullable(jfxEngine.executeScript(script))
-                .map(type::cast)
+                .map(result -> {
+                    if (type.isInstance(result)) {
+                        return type.cast(result);
+                    } else {
+                        throw new IllegalArgumentException("Cannot cast result to " + type.getName());
+                    }
+                })
                 .orElse(null);
     }
 

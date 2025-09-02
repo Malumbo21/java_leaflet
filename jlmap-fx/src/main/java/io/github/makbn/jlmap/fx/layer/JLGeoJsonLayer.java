@@ -1,6 +1,7 @@
 package io.github.makbn.jlmap.fx.layer;
 
 import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.engine.JLTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.exception.JLException;
 import io.github.makbn.jlmap.geojson.JLGeoJsonContent;
@@ -8,11 +9,11 @@ import io.github.makbn.jlmap.geojson.JLGeoJsonFile;
 import io.github.makbn.jlmap.geojson.JLGeoJsonURL;
 import io.github.makbn.jlmap.layer.leaflet.LeafletGeoJsonLayerInt;
 import io.github.makbn.jlmap.model.JLGeoJson;
+import io.github.makbn.jlmap.model.builder.JLGeoJsonObjectBuilder;
 import lombok.NonNull;
-import netscape.javascript.JSObject;
 
 import java.io.File;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents the GeoJson (other) layer on Leaflet map.
@@ -20,20 +21,20 @@ import java.util.UUID;
  * @author Matt Akbarian  (@makbn)
  */
 public class JLGeoJsonLayer extends JLLayer implements LeafletGeoJsonLayerInt {
-    private static final String MEMBER_PREFIX = "geoJson";
-    private static final String WINDOW_OBJ = "window";
     JLGeoJsonURL fromUrl;
     JLGeoJsonFile fromFile;
     JLGeoJsonContent fromContent;
-    JSObject window;
+    JLTransporter<Object> transporter;
+    AtomicInteger idGenerator;
 
     public JLGeoJsonLayer(JLWebEngine<Object> engine,
                           JLMapCallbackHandler callbackHandler) {
         super(engine, callbackHandler);
         this.fromUrl = new JLGeoJsonURL();
         this.fromFile = new JLGeoJsonFile();
+        this.idGenerator = new AtomicInteger();
         this.fromContent = new JLGeoJsonContent();
-        this.window = (JSObject) engine.executeScript(WINDOW_OBJ);
+        this.transporter = () -> transport -> null;
     }
 
     @Override
@@ -57,24 +58,24 @@ public class JLGeoJsonLayer extends JLLayer implements LeafletGeoJsonLayerInt {
 
     @Override
     public boolean removeGeoJson(@NonNull String id) {
-        return Boolean.parseBoolean(engine.executeScript(
-                String.format("removeGeoJson(%s)", id)).toString());
+        engine.executeScript(removeLayerWithUUID(id));
+        // TODO: remove this as the callbackHandler should be triggered by JS itself!
+        callbackHandler.remove(JLGeoJson.class, id);
+        return true;
     }
 
-    private JLGeoJson addGeoJson(String jlGeoJsonObject) {
-        try {
-            String identifier = MEMBER_PREFIX + UUID.randomUUID();
-            this.window.setMember(identifier, jlGeoJsonObject);
-            String returnedId = engine.executeScript(
-                    String.format("addGeoJson(\"%s\")", identifier)).toString();
-
-            return JLGeoJson.builder()
-                    .id(returnedId)
-                    .geoJsonContent(jlGeoJsonObject)
-                    .build();
-        } catch (Exception e) {
-            throw new JLException(e);
-        }
-
+    private JLGeoJson addGeoJson(String geoJsonContent) {
+        String elementUniqueName = getElementUniqueName(JLGeoJson.class, idGenerator.incrementAndGet());
+        JLGeoJsonObjectBuilder builder = new JLGeoJsonObjectBuilder()
+                .setUuid(elementUniqueName)
+                .setGeoJson(geoJsonContent)
+                .setTransporter(transporter)
+                .withCallbacks(jlCallbackBuilder -> {
+                    // TODO: add callbacks for remove, add, ... match with Vaadin
+                });
+        engine.executeScript(builder.buildJsElement());
+        JLGeoJson geoJson = builder.buildJLObject();
+        callbackHandler.addJLObject(elementUniqueName, geoJson);
+        return geoJson;
     }
 }

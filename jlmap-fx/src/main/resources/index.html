@@ -98,7 +98,7 @@
     </script>
 </head>
 <body style="margin: 0; background-color: #191a1a;">
-<div id="mapid" style="width: 100%; height: 100%; position: relative; background-color: #191a1a;"
+<div id="jl-map-view" style="width: 100%; height: 100%; position: relative; background-color: #191a1a;"
      class="leaflet-container leaflet-retina leaflet-safari leaflet-fade-anim leaflet-grab leaflet-touch-drag"
      tabindex="0">
     <div class="leaflet-control-container">
@@ -126,10 +126,15 @@
     var polygons = []
     var circles = []
 
-    var jlmap = L.map('mapid', {zoomControl: urlParams.get('zoomControl') === 'true'});
+    this.map = L.map('jl-map-view', {zoomControl: urlParams.get('zoomControl') === 'true'});
+    this.jlMapElement = document.querySelector('#jl-map-view');
+    this.outr_eventHandler = eventHandler;
+    this.jlMapElement.$server = {
+        eventHandler: (e, event_id) => this.outr_eventHandler(e, event_id)
+    };
 
-    jlmap.setView([35.63, 51.45], 3);
-    jlmap.jlid = 'main_map';
+    this.map.setView([35.63, 51.45], 3);
+    this.map.jlid = 'main_map';
 
     var jlFeatureGroup = L.featureGroup().addTo(jlmap);
 
@@ -160,11 +165,11 @@
             .addTo(jlmap);
     }
 
-    jlmap.on('click', e => eventHandler(e, 'click'));
-    jlmap.on('move', e => eventHandler(e, 'move'));
-    jlmap.on('movestart', e => eventHandler(e, 'movestart'));
-    jlmap.on('moveend', e => eventHandler(e, 'moveend'));
-    jlmap.on('zoom', e => eventHandler(e, 'zoom'));
+    this.map.on('click', e => eventHandler(e, 'click'));
+    this.map.on('move', e => eventHandler(e, 'move'));
+    this.map.on('movestart', e => eventHandler(e, 'movestart'));
+    this.map.on('moveend', e => eventHandler(e, 'moveend'));
+    this.map.on('zoom', e => eventHandler(e, 'zoom'));
 
     jlFeatureGroup.on("click", e => eventHandler(e, 'click'));
 

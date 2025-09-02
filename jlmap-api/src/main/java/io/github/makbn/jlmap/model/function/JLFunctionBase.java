@@ -7,16 +7,22 @@ import io.github.makbn.jlmap.model.JLObject;
 public interface JLFunctionBase<T extends JLObject<T>> {
     T self();
 
+
     JLTransporter<?> getTransport();
 
 
     default T remove() {
-        getTransport().execute(new JLTransport(self(), "this.%$1s.remove();"));
+        getTransport().execute(new JLTransport(self(),
+                String.format("%1$s.%2$s.remove()", mapReference(), self().getId())));
         return self();
     }
 
     default String getAttribution() {
         return getTransport().execute(new JLTransport(self(),
-                String.format("return this.%s.getAttribution();", self().getId())));
+                String.format("%1$s.%2$s.getAttribution();", mapReference(), self().getId())));
+    }
+
+    default String mapReference() {
+        return "this";
     }
 }

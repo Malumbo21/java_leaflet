@@ -60,7 +60,7 @@ public interface JLMapController<T> {
     default void setView(JLLatLng latLng) {
         checkMapState();
         getJLEngine()
-                .executeScript(String.format("jlmap.panTo([%f, %f]);",
+                .executeScript(String.format("this.map.panTo([%f, %f]);",
                         latLng.getLat(), latLng.getLng()));
     }
 
@@ -74,19 +74,8 @@ public interface JLMapController<T> {
     default void setView(JLLatLng latLng, int duration) {
         checkMapState();
         getJLEngine()
-                .executeScript(String.format("jlmap.panTo([%f, %f], %d);",
+                .executeScript(String.format("this.map.panTo([%f, %f], %d);",
                         latLng.getLat(), latLng.getLng(), duration));
-    }
-
-    /**
-     * Sets the zoom level of the map.
-     *
-     * @param zoomLevel Represents the zoom level of the map.
-     */
-    default void setZoom(int zoomLevel) {
-        checkMapState();
-        getJLEngine()
-                .executeScript(String.format("jlmap.setZoom(%d);", zoomLevel));
     }
 
     /**
@@ -97,8 +86,19 @@ public interface JLMapController<T> {
     default int getZoom() {
         checkMapState();
         Object result = getJLEngine()
-                .executeScript("jlmap.getZoom();");
+                .executeScript("this.map.getZoom();");
         return Integer.parseInt(result.toString());
+    }
+
+    /**
+     * Sets the zoom level of the map.
+     *
+     * @param zoomLevel Represents the zoom level of the map.
+     */
+    default void setZoom(int zoomLevel) {
+        checkMapState();
+        getJLEngine()
+                .executeScript(String.format("this.map.setZoom(%d);", zoomLevel));
     }
 
     /**
@@ -109,7 +109,7 @@ public interface JLMapController<T> {
     default JLLatLng getCenter() {
         checkMapState();
         Object result = getJLEngine()
-                .executeScript("jlmap.getCenter();");
+                .executeScript("this.map.getCenter();");
         String[] coords = result.toString().split(",");
         double lat = Double.parseDouble(coords[0].trim());
         double lng = Double.parseDouble(coords[1].trim());

@@ -1,12 +1,20 @@
 package io.github.makbn.jlmap.fx.layer;
 
 import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLProperties;
 import io.github.makbn.jlmap.engine.JLTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletVectorLayerInt;
+import io.github.makbn.jlmap.listener.JLAction;
 import io.github.makbn.jlmap.model.*;
+import io.github.makbn.jlmap.model.builder.*;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents the Vector layer on Leaflet map.
@@ -15,11 +23,12 @@ import lombok.experimental.FieldDefaults;
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
-
+    AtomicInteger idGenerator;
     JLTransporter transporter;
 
     public JLVectorLayer(JLWebEngine<Object> engine, JLMapCallbackHandler callbackHandler) {
         super(engine, callbackHandler);
+        this.idGenerator = new AtomicInteger();
         this.transporter = () -> transport -> {
             // NO-OP
             return null;
@@ -46,17 +55,18 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      */
     @Override
     public JLPolyline addPolyline(JLLatLng[] vertices, JLOptions options) {
-        String latlngs = convertJLLatLngToString(vertices);
-        String hexColor = convertColorToString(options.getColor());
-        String result = engine.executeScript(
-                        String.format("addPolyLine(%s, '%s', %d, %b, %f, %f)",
-                                latlngs, hexColor, options.getWeight(),
-                                options.isStroke(), options.getOpacity(),
-                                options.getSmoothFactor()))
-                .toString();
-
-        JLPolyline polyline = new JLPolyline(result, options, vertices, transporter);
-        callbackHandler.addJLObject(result, polyline);
+        String elementUniqueName = getElementUniqueName(JLGeoJson.class, idGenerator.incrementAndGet());
+        JLPolylineBuilder builder = new JLPolylineBuilder()
+                .setUuid(elementUniqueName)
+                .withOptions(options)
+                .addLatLngs(Arrays.stream(vertices).map(latLng -> new double[]{latLng.getLat(), latLng.getLng()}).toList())
+                .withCallbacks(jlCallbackBuilder -> {
+                    //TODO register all possible callbacks
+                })
+                .setTransporter(transporter);
+        engine.executeScript(builder.buildJsElement());
+        JLPolyline polyline = builder.buildJLObject();
+        callbackHandler.addJLObject(elementUniqueName, polyline);
         return polyline;
     }
 
@@ -68,13 +78,11 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      */
     @Override
     public boolean removePolyline(String id) {
-        String result = engine.executeScript(
-                String.format("removePolyLine(%s)", id)).toString();
+        engine.executeScript(removeLayerWithUUID(id));
 
-        callbackHandler.remove(JLPolyline.class, String.valueOf(id));
-        callbackHandler.remove(JLMultiPolyline.class, String.valueOf(id));
-
-        return Boolean.parseBoolean(result);
+        callbackHandler.remove(JLPolyline.class, id);
+        callbackHandler.remove(JLMultiPolyline.class, id);
+        return true;
     }
 
     /**
@@ -98,19 +106,25 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      * @return the added {@link JLMultiPolyline}  to map
      */
     @Override
-    public JLMultiPolyline addMultiPolyline(JLLatLng[][] vertices,
-                                            JLOptions options) {
-        String latlngs = convertJLLatLngToString(vertices);
-        String hexColor = convertColorToString(options.getColor());
-        String result = engine.executeScript(
-                        String.format("addPolyLine(%s, '%s', %d, %b, %f, %f)",
-                                latlngs, hexColor, options.getWeight(),
-                                options.isStroke(), options.getOpacity(),
-                                options.getSmoothFactor()))
-                .toString();
-
-        JLMultiPolyline multiPolyline = new JLMultiPolyline(result, options, vertices, transporter);
-        callbackHandler.addJLObject(String.valueOf(result), multiPolyline);
+    public JLMultiPolyline addMultiPolyline(JLLatLng[][] vertices, JLOptions options) {
+        String elementUniqueName = getElementUniqueName(JLGeoJson.class, idGenerator.incrementAndGet());
+        JLMultiPolylineBuilder builder = new JLMultiPolylineBuilder()
+                .setUuid(elementUniqueName)
+                .withOptions(options)
+                .withCallbacks(jlCallbackBuilder -> {
+                    //TODO register all possible callbacks
+                })
+                .setTransporter(transporter);
+        for (JLLatLng[] group : vertices) {
+            List<double[]> groupList = new ArrayList<>();
+            for (JLLatLng v : group) {
+                groupList.add(new double[]{v.getLat(), v.getLng()});
+            }
+            builder.addLine(groupList);
+        }
+        engine.executeScript(builder.buildJsElement());
+        JLMultiPolyline multiPolyline = builder.buildJLObject();
+        callbackHandler.addJLObject(elementUniqueName, multiPolyline);
         return multiPolyline;
     }
 
@@ -122,12 +136,9 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      */
     @Override
     public boolean removeMultiPolyline(String id) {
-        String result = engine.executeScript(
-                String.format("removePolyLine(%s)", id)).toString();
-
-        callbackHandler.remove(JLMultiPolyline.class, String.valueOf(id));
-
-        return Boolean.parseBoolean(result);
+        engine.executeScript(removeLayerWithUUID(id));
+        callbackHandler.remove(JLMultiPolyline.class, id);
+        return true;
     }
 
     /**
@@ -138,18 +149,26 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      */
     @Override
     public JLPolygon addPolygon(JLLatLng[][][] vertices, JLOptions options) {
-        String latlngs = convertJLLatLngToString(vertices);
-        String hexColor = convertColorToString(options.getColor());
-        String fillHexColor = convertColorToString(options.getFillColor());
-        String result = engine.executeScript(
-                        String.format("addPolygon(%s, '%s', '%s', %d, %b, %b, %f, %f)",
-                                latlngs, hexColor, fillHexColor, options.getWeight(),
-                                options.isStroke(), options.isFill(), options.getOpacity(),
-                                options.getFillOpacity()))
-                .toString();
-
-        JLPolygon polygon = new JLPolygon(result, options, vertices, transporter);
-        callbackHandler.addJLObject(String.valueOf(result), polygon);
+        String elementUniqueName = getElementUniqueName(JLGeoJson.class, idGenerator.incrementAndGet());
+        JLPolygonBuilder builder = new JLPolygonBuilder()
+                .setUuid(elementUniqueName)
+                .withOptions(options)
+                .withCallbacks(jlCallbackBuilder -> {
+                    //TODO register all possible callbacks
+                })
+                .setTransporter(transporter);
+        for (JLLatLng[][] group : vertices) {
+            List<double[]> groupList = new ArrayList<>();
+            for (JLLatLng[] ring : group) {
+                for (JLLatLng v : ring) {
+                    groupList.add(new double[]{v.getLat(), v.getLng()});
+                }
+            }
+            builder.addLatLngGroup(groupList);
+        }
+        engine.executeScript(builder.buildJsElement());
+        JLPolygon polygon = builder.buildJLObject();
+        callbackHandler.addJLObject(elementUniqueName, polygon);
         return polygon;
     }
 
@@ -172,10 +191,9 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      */
     @Override
     public boolean removePolygon(String id) {
-        String result = engine.executeScript(
-                String.format("removePolygon(%s)", id)).toString();
+        String result = engine.executeScript(removeLayerWithUUID(id)).toString();
 
-        callbackHandler.remove(JLPolygon.class, String.valueOf(id));
+        callbackHandler.remove(JLPolygon.class, id);
 
         return Boolean.parseBoolean(result);
     }
@@ -190,17 +208,28 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      */
     @Override
     public JLCircle addCircle(JLLatLng center, int radius, JLOptions options) {
+        // TODO move theses to JLOPtions
         String hexColor = convertColorToString(options.getColor());
         String fillHexColor = convertColorToString(options.getFillColor());
-        String result = engine.executeScript(
-                        String.format("addCircle([%f, %f], %d, '%s', '%s', %d, %b, %b, %f, %f)",
-                                center.getLat(), center.getLng(), radius, hexColor, fillHexColor,
-                                options.getWeight(), options.isStroke(), options.isFill(),
-                                options.getOpacity(), options.getFillOpacity()))
-                .toString();
 
-        JLCircle circle = new JLCircle(result, radius, center, options, transporter);
-        callbackHandler.addJLObject(result, circle);
+        var elementUniqueName = getElementUniqueName(JLCircle.class, idGenerator.incrementAndGet());
+
+        var circleBuilder = new JLCircleBuilder()
+                .setUuid(elementUniqueName)
+                .setLat(center.getLat())
+                .setLng(center.getLng())
+                .setRadius(radius)
+                .setTransporter(transporter)
+                .withOptions(options)
+                .withCallbacks(jlCallbackBuilder -> {
+                    jlCallbackBuilder.on(JLAction.MOVE);
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
+                });
+
+        engine.executeScript(circleBuilder.buildJsElement());
+        var circle = circleBuilder.buildJLObject();
+        callbackHandler.addJLObject(elementUniqueName, circle);
         return circle;
     }
 
@@ -223,10 +252,9 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      */
     @Override
     public boolean removeCircle(String id) {
-        String result = engine.executeScript(
-                String.format("removeCircle(%s)", id)).toString();
+        String result = engine.executeScript(removeLayerWithUUID(id)).toString();
 
-        callbackHandler.remove(JLCircle.class, String.valueOf(id));
+        callbackHandler.remove(JLCircle.class, id);
 
         return Boolean.parseBoolean(result);
     }
@@ -240,19 +268,30 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      * @return the added {@link JLCircleMarker}  to map
      */
     @Override
-    public JLCircleMarker addCircleMarker(JLLatLng center, int radius,
-                                          JLOptions options) {
+    public JLCircleMarker addCircleMarker(JLLatLng center, int radius, JLOptions options) {
+        //TODO mov theses to JLOPtions
         String hexColor = convertColorToString(options.getColor());
         String fillHexColor = convertColorToString(options.getFillColor());
-        String result = engine.executeScript(
-                        String.format("addCircleMarker([%f, %f], %d, '%s', '%s', %d, %b, %b, %f, %f)",
-                                center.getLat(), center.getLng(), radius, hexColor, fillHexColor,
-                                options.getWeight(), options.isStroke(), options.isFill(),
-                                options.getOpacity(), options.getFillOpacity()))
-                .toString();
+        var elementUniqueName = getElementUniqueName(JLCircleMarker.class, idGenerator.incrementAndGet());
 
-        JLCircleMarker circleMarker = new JLCircleMarker(result, radius, center, options, transporter);
-        callbackHandler.addJLObject(result, circleMarker);
+        var circleMarkerBuilder = new JLCircleMarkerBuilder()
+                .setUuid(elementUniqueName)
+                .setLat(center.getLat())
+                .setLng(center.getLng())
+                .setRadius(radius)
+                .setTransporter(transporter)
+                .withOptions(options)
+                .withCallbacks(jlCallbackBuilder -> {
+                    jlCallbackBuilder.on(JLAction.MOVE);
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                });
+
+        engine.executeScript(circleMarkerBuilder.buildJsElement());
+        var circleMarker = circleMarkerBuilder.buildJLObject();
+        callbackHandler.addJLObject(elementUniqueName, circleMarker);
         return circleMarker;
     }
 
@@ -264,7 +303,7 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      */
     @Override
     public JLCircleMarker addCircleMarker(JLLatLng center) {
-        return addCircleMarker(center, 6, JLOptions.DEFAULT);
+        return addCircleMarker(center, JLProperties.DEFAULT_CIRCLE_MARKER_RADIUS, JLOptions.DEFAULT);
     }
 
     /**
@@ -275,10 +314,9 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      */
     @Override
     public boolean removeCircleMarker(String id) {
-        String result = engine.executeScript(
-                String.format("removeCircleMarker(%s)", id)).toString();
+        String result = engine.executeScript(removeLayerWithUUID(id)).toString();
 
-        callbackHandler.remove(JLCircleMarker.class, String.valueOf(id));
+        callbackHandler.remove(JLCircleMarker.class, id);
 
         return Boolean.parseBoolean(result);
     }

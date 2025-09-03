@@ -8,27 +8,34 @@ import java.util.Objects;
 
 /**
  * Represents a geographical point with a certain latitude and longitude.
+ *
  * @author Matt Akbarian  (@makbn)
  */
-@Getter
 @Setter
+@Getter
 @Builder
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@NoArgsConstructor(force = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class JLLatLng {
-    /** geographical given latitude in degrees */
+    /**
+     * geographical given latitude in degrees
+     */
     double lat;
-    /** geographical given longitude in degrees */
+    /**
+     * geographical given longitude in degrees
+     */
     double lng;
 
     /**
      * Calculate distance between two points in latitude and longitude taking
      * into account height difference.Uses Haversine method as its base.
+     *
      * @param dest Destination coordinate {{@link JLLatLng}}
      * @return Distance in Meters
      * @author David George
      */
-    public double distanceTo(JLLatLng dest){
+    public double distanceTo(JLLatLng dest) {
         double latDistance = Math.toRadians(dest.getLat() - lat);
         double lonDistance = Math.toRadians(dest.getLng() - lng);
         double a = Math.sin(latDistance / 2)
@@ -60,7 +67,7 @@ public class JLLatLng {
 
     /**
      *
-     * @param o The given point
+     * @param o         The given point
      * @param maxMargin The margin of error
      * @return Returns true if the given {{@link JLLatLng}} point is at the
      * same position (within a small margin of error).

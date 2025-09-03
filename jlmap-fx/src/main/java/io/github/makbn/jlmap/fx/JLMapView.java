@@ -5,6 +5,7 @@ import io.github.makbn.jlmap.JLMapController;
 import io.github.makbn.jlmap.JLProperties;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.fx.engine.JLJavaFXEngine;
+import io.github.makbn.jlmap.fx.internal.JLFxMapRenderer;
 import io.github.makbn.jlmap.fx.layer.JLControlLayer;
 import io.github.makbn.jlmap.fx.layer.JLGeoJsonLayer;
 import io.github.makbn.jlmap.fx.layer.JLUiLayer;
@@ -37,7 +38,8 @@ import netscape.javascript.JSObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -45,7 +47,6 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Matt Akbarian  (@makbn)
@@ -100,6 +101,8 @@ public class JLMapView extends AnchorPane implements JLMapController<Object> {
             } else if (newValue == Worker.State.SUCCEEDED) {
                 removeMapBlur();
                 addControllerToDocument();
+                webView.getEngine().setOnError(webErrorEvent -> log.error(webErrorEvent.getMessage()));
+                webView.getEngine().setOnAlert(webErrorEvent -> log.error(webErrorEvent.getData()));
 
                 if (mapListener != null) {
                     mapListener.mapLoadedSuccessfully(this);
@@ -112,21 +115,20 @@ public class JLMapView extends AnchorPane implements JLMapController<Object> {
 
         // Note: WebConsoleListener is an internal JavaFX API and not available in the module system
         // Web console logging is disabled for module compatibility
-
         webView.getEngine().getLoadWorker().exceptionProperty().addListener((observableValue, throwable, t1) ->
-                log.error("obeservable valuie: {}, exception: {}", observableValue, t1.toString()));
+                log.error("observable value: {}, exception: {}", observableValue, t1.toString()));
 
         File index = null;
-        try (InputStream in = getClass().getResourceAsStream("/index.html")) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(in)));
+        try {
             index = File.createTempFile("jlmapindex", ".html");
-            Files.write(index.toPath(), reader.lines().collect(Collectors.joining("\n")).getBytes());
+            index.deleteOnExit();
+            Files.write(index.toPath(), new JLFxMapRenderer().render(mapOption).getBytes());
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
 
         webView.getEngine()
-                .load(String.format("file:%s%s", Objects.requireNonNull(index).getAbsolutePath(), mapOption.toQueryString()));
+                .load(String.format("file:%s", Objects.requireNonNull(index).getAbsolutePath()));
 
         setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
         getChildren().add(webView);
@@ -205,11 +207,17 @@ public class JLMapView extends AnchorPane implements JLMapController<Object> {
     public void addControllerToDocument() {
         JSObject window = (JSObject) webView.getEngine().executeScript("window");
         if (!controllerAdded) {
-            window.setMember("app", jlMapCallbackHandler);
+            // passing this to javascript is a security concern, should be reviewed later
+            window.setMember("serverCallback", this);
             log.debug("controller added to js scripts");
             controllerAdded = true;
         }
-        webView.getEngine().setOnError(webErrorEvent -> log.error(webErrorEvent.getMessage()));
+    }
+
+    @SuppressWarnings("unused")
+    public void functionCalled(String functionName, String jlType, String uuid,
+                               String param1, String param2, String param3) {
+        jlMapCallbackHandler.functionCalled(this, functionName, jlType, uuid, param1, param2, param3);
     }
 
     @Override

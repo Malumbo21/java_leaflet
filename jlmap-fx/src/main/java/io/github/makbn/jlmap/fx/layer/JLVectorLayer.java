@@ -321,46 +321,6 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
         return Boolean.parseBoolean(result);
     }
 
-    private String convertJLLatLngToString(JLLatLng[] latLngs) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0; i < latLngs.length; i++) {
-            sb.append("[").append(latLngs[i].getLat()).append(", ")
-                    .append(latLngs[i].getLng()).append("]");
-            if (i < latLngs.length - 1) {
-                sb.append(", ");
-            }
-        }
-        sb.append("]");
-        return sb.toString();
-    }
-
-    private String convertJLLatLngToString(JLLatLng[][] latLngsList) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0; i < latLngsList.length; i++) {
-            sb.append(convertJLLatLngToString(latLngsList[i]));
-            if (i < latLngsList.length - 1) {
-                sb.append(", ");
-            }
-        }
-        sb.append("]");
-        return sb.toString();
-    }
-
-    private String convertJLLatLngToString(JLLatLng[][][] latLngList) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0; i < latLngList.length; i++) {
-            sb.append(convertJLLatLngToString(latLngList[i]));
-            if (i < latLngList.length - 1) {
-                sb.append(", ");
-            }
-        }
-        sb.append("]");
-        return sb.toString();
-    }
-
     private String convertColorToString(JLColor c) {
         return c.toHexString();
     }

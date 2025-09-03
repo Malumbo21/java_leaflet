@@ -20,25 +20,27 @@ import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Matt Akbarian  (@makbn)
  */
+@Slf4j
 public class LeafletTestJFX extends Application {
-    private static final Logger log = LoggerFactory.getLogger(LeafletTestJFX.class);
+
+    public static final String MAP_API_KEY = "rNGhTaIpQWWH7C6QGKzF";
 
     @Override
     public void start(Stage stage) {
         //building a new map view
         final JLMapView map = JLMapView
                 .builder()
-                .jlMapProvider(JLMapProvider.OSM_MAPNIK.build())
+                .jlMapProvider(JLMapProvider.MAP_TILER.parameter(new JLMapOption.Parameter("key", MAP_API_KEY)).build())
+                .startCoordinate(new JLLatLng(48.864716, 2.349014)) // Paris
                 .showZoomController(true)
                 .startCoordinate(JLLatLng.builder()
                         .lat(51.044)
-                        .lng(114.07)
+                        .lng(-114.07)
                         .build())
                 .build();
         //creating a window
@@ -68,10 +70,10 @@ public class LeafletTestJFX extends Application {
                 addPolyline(map);
                 addPolygon(map);
 
-                map.setView(JLLatLng.builder()
+               /* map.setView(JLLatLng.builder()
                         .lng(10)
                         .lat(10)
-                        .build());
+                        .build());*/
                 map.getUiLayer()
                         .addMarker(JLLatLng.builder()
                                 .lat(35.63)
@@ -120,6 +122,7 @@ public class LeafletTestJFX extends Application {
 
             @Override
             public void onActionReceived(Event event) {
+                log.info("onActionReceived!: {}", event);
                 if (event instanceof MoveEvent moveEvent) {
                     log.info("move event: {} c: {} \t bounds: {} \t z: {}", moveEvent.action(), moveEvent.center(),
                             moveEvent.bounds(), moveEvent.zoomLevel());

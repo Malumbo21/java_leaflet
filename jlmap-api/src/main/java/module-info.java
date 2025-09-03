@@ -25,4 +25,6 @@ module io.github.makbn.jlmap.api {
     exports io.github.makbn.jlmap.exception;
     exports io.github.makbn.jlmap.geojson;
     exports io.github.makbn.jlmap.engine;
+
+    opens io.github.makbn.jlmap.model to com.google.gson;
 } 

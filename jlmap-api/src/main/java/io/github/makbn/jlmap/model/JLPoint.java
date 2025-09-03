@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @Builder
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class JLPoint {
     double x;
     double y;

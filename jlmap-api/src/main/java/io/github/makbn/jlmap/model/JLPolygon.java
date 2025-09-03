@@ -1,7 +1,10 @@
 package io.github.makbn.jlmap.model;
 
 import io.github.makbn.jlmap.engine.JLTransporter;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 /**
@@ -12,7 +15,6 @@ import lombok.experimental.FieldDefaults;
  * @author Matt Akbarian  (@makbn)
  */
 @Getter
-@Setter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public final class JLPolygon extends JLObject<JLPolygon> {

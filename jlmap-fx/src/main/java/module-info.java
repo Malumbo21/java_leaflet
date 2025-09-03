@@ -22,6 +22,7 @@ module io.github.makbn.jlmap.fx {
     // Annotations
     requires static org.jetbrains.annotations;
     requires static lombok;
+    requires com.j2html;
 
     // Exports for public API
     exports io.github.makbn.jlmap.fx;

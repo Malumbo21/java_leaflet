@@ -8,8 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The {@code JLMapOption} class represents options for configuring a Leaflet
@@ -45,21 +43,6 @@ public class JLMapOption {
     @Builder.Default
     @NonNull
     JLMapProvider jlMapProvider = JLMapProvider.getDefault();
-
-    /**
-     * Converts the map options to a query string format, including both
-     * map-specific parameters and additional parameters.
-     *
-     * @return The map options as a query string.
-     */
-    @NonNull
-    public String toQueryString() {
-        return Stream.concat(
-                        getParameters().stream(), additionalParameter.stream())
-                .map(Parameter::toString)
-                .collect(Collectors.joining("&",
-                        String.format("?mapid=%s&", getJlMapProvider().getName()), ""));
-    }
 
     /**
      * Additional parameters to include in the map configuration.

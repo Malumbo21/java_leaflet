@@ -59,7 +59,6 @@ public class JLGeoJsonLayer extends JLLayer implements LeafletGeoJsonLayerInt {
     @Override
     public boolean removeGeoJson(@NonNull String id) {
         engine.executeScript(removeLayerWithUUID(id));
-        // TODO: remove this as the callbackHandler should be triggered by JS itself!
         callbackHandler.remove(JLGeoJson.class, id);
         return true;
     }

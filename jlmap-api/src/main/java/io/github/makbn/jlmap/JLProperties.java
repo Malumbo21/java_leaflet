@@ -1,9 +1,12 @@
 package io.github.makbn.jlmap;
 
+import lombok.NoArgsConstructor;
+
 /**
  * @author Matt Akbarian  (@makbn)
  */
-public class JLProperties {
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+public final class JLProperties {
     public static final int INIT_MIN_WIDTH = 1024;
     public static final int INIT_MIN_HEIGHT = 576;
     public static final int EARTH_RADIUS = 6367;
@@ -13,6 +16,4 @@ public class JLProperties {
     public static final int INIT_MIN_WIDTH_STAGE = INIT_MIN_WIDTH;
     public static final int INIT_MIN_HEIGHT_STAGE = INIT_MIN_HEIGHT;
     public static final double START_ANIMATION_RADIUS = 10;
-
-
 }

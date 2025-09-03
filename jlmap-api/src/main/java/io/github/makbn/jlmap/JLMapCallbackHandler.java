@@ -47,22 +47,22 @@ public class JLMapCallbackHandler {
 
     /**
      * @param functionName name of source function from js
-     * @param param1       name of object class
-     * @param param2       id of object
+     * @param jlType       name of object class
+     * @param uuid       id of object
+     * @param param1       additional param
+     * @param param2       additional param
      * @param param3       additional param
-     * @param param4       additional param
-     * @param param5       additional param
      */
     @SuppressWarnings("all")
-    public void functionCalled(Object mapView, String functionName, Object param1, Object param2,
-                               Object param3, Object param4, Object param5) {
-        log.debug("function: {} param1: {} param2: {} param3: {} param4: {} param5: {}",
-                functionName, param1, param2, param3, param4, param5);
+    public void functionCalled(Object mapView, String functionName, Object jlType, Object uuid,
+                               Object param1, Object param2, Object param3) {
+        log.debug("function: {} jlType: {} uuid: {} param1: {} param2: {} param3: {}",
+                functionName, jlType, uuid, param1, param2, param3);
         try {
             //get target class of Leaflet layer in JL Application
-            Class<?>[] targetClasses = classMap.get(param1);
+            Class<?>[] targetClasses = classMap.get(jlType);
             if (targetClasses == null) {
-                targetClasses = classMap.get(param1.toString().replace("jl", ""));
+                targetClasses = classMap.get(jlType.toString().replace("jl", ""));
             }
             //function called by an known class
             if (targetClasses != null) {
@@ -70,20 +70,20 @@ public class JLMapCallbackHandler {
                 // like ployLine mapped to JLPolyline and JLMultiPolyline
                 Arrays.stream(targetClasses)
                         .filter(jlObjects::containsKey)
-                        .map(targetClass -> jlObjects.get(targetClass).get(String.valueOf(param2)))
+                        .map(targetClass -> jlObjects.get(targetClass).get(String.valueOf(uuid)))
                         .filter(Objects::nonNull)
                         .filter(jlObject -> Objects.nonNull(jlObject.getOnActionListener()))
                         .forEach(jlObject -> {
                             eventHandlers.stream()
                                     .filter(hadler -> hadler.canHandle(functionName))
                                     .forEach(hadler -> hadler.handle(jlObject, functionName,
-                                            jlObject.getOnActionListener(), param1, param2, param3, param4, param5));
+                                            jlObject.getOnActionListener(), jlType, uuid, param1, param2, param3));
                         });
-            } else if (param1.equals("main_map") && getMapListener().isPresent()) {
+            } else if (jlType.equals("main_map") && getMapListener().isPresent()) {
                 eventHandlers.stream()
                         .filter(hadler -> hadler.canHandle(functionName))
                         .forEach(hadler -> hadler.handle(mapView, functionName, getMapListener().get(),
-                                param1, param2, param3, param4, param5));
+                                jlType, uuid, param1, param2, param3));
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);

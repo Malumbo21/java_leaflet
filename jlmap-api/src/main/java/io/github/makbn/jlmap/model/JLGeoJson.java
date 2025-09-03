@@ -4,7 +4,6 @@ import io.github.makbn.jlmap.engine.JLTransporter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 
@@ -12,7 +11,6 @@ import lombok.experimental.NonFinal;
  * @author Matt Akbarian  (@makbn)
  */
 @Getter
-@Setter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public final class JLGeoJson extends JLObject<JLGeoJson> {
     @NonFinal

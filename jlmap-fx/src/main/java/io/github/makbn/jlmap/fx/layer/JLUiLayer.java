@@ -4,6 +4,7 @@ import io.github.makbn.jlmap.JLMapCallbackHandler;
 import io.github.makbn.jlmap.engine.JLTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletUILayerInt;
+import io.github.makbn.jlmap.listener.JLAction;
 import io.github.makbn.jlmap.model.*;
 import io.github.makbn.jlmap.model.builder.JLImageOverlayBuilder;
 import io.github.makbn.jlmap.model.builder.JLMarkerBuilder;
@@ -50,7 +51,16 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
                 .setText(text)
                 .setTransporter(transporter)
                 .withCallbacks(jlCallbackBuilder -> {
-                    // TODO: Register all possible callbacks
+                    jlCallbackBuilder.on(JLAction.MOVE);
+                    jlCallbackBuilder.on(JLAction.MOVE_START);
+                    jlCallbackBuilder.on(JLAction.MOVE_END);
+                    jlCallbackBuilder.on(JLAction.DRAG);
+                    jlCallbackBuilder.on(JLAction.DRAG_START);
+                    jlCallbackBuilder.on(JLAction.DRAG_END);
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
                 })
                 .withOptions(JLOptions.DEFAULT.toBuilder().draggable(draggable).build());
 

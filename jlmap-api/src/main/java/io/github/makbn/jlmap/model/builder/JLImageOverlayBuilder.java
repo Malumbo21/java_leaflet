@@ -2,6 +2,7 @@ package io.github.makbn.jlmap.model.builder;
 
 import io.github.makbn.jlmap.model.JLBounds;
 import io.github.makbn.jlmap.model.JLImageOverlay;
+import io.github.makbn.jlmap.model.JLLatLng;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
@@ -20,6 +21,7 @@ public class JLImageOverlayBuilder extends JLObjectBuilder<JLImageOverlay, JLIma
 
     /**
      * Set bounds using two double arrays: [lat, lng] for southwest and northeast corners.
+     * First item is southwest and second is northeast.
      */
     public JLImageOverlayBuilder setBounds(List<double[]> bounds) {
         if (bounds == null || bounds.size() != 2)
@@ -62,10 +64,27 @@ public class JLImageOverlayBuilder extends JLObjectBuilder<JLImageOverlay, JLIma
 
     @Override
     public JLImageOverlay buildJLObject() {
+        // first element is southWest [lat, lng]
+        var southWest = JLLatLng.builder()
+                .lat(bounds.get(0)[0])
+                .lng(bounds.get(0)[1])
+                .build();
+
+        // second element is northEast [lat, lng]
+        var northEast = JLLatLng.builder()
+                .lat(bounds.get(1)[0])
+                .lng(bounds.get(1)[1])
+                .build();
+
+        var jlBounds = JLBounds.builder()
+                .northEast(northEast)
+                .southWest(southWest)
+                .build();
+
         return JLImageOverlay.builder()
                 .id(uuid)
                 .imageUrl(imageUrl)
-                .bounds(JLBounds.builder().build())
+                .bounds(jlBounds)
                 .options(jlOptions)
                 .transport(transporter)
                 .build();

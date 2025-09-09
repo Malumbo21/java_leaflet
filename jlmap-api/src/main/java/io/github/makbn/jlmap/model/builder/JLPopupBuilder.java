@@ -57,20 +57,22 @@ public class JLPopupBuilder extends JLObjectBuilder<JLPopup, JLPopupBuilder> {
                 getElementVarName(),
                 renderOptions(),
                 lat, lng,
-                sanitizeContent(),
+                sanitizeContent(true),
                 getElementVarName(),
                 renderCallbacks());
     }
 
-    private @NotNull String sanitizeContent() {
-        return content != null ? "\"" + content.replace("\"", "\\\"") + "\"" : "\"\"";
+    private @NotNull String sanitizeContent(boolean wrap) {
+        var sanitized = content != null ? content.replace("\"", "\\\"")
+                .replaceAll("<script[^>]*?>.*?</script>", "") : "";
+        return wrap ? "\"" + sanitized + "\"" : sanitized;
     }
 
     @Override
     public JLPopup buildJLObject() {
         return JLPopup.builder()
                 .id(uuid)
-                .text(sanitizeContent())
+                .text(sanitizeContent(false))
                 .latLng(JLLatLng.builder()
                         .lat(lat)
                         .lng(lng)

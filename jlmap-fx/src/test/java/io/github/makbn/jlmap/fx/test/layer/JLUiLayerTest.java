@@ -164,7 +164,7 @@ class JLUiLayerTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).startsWith("JLGeoJson");
-        assertThat(result.getText()).isEqualTo("\"" + text + "\"");
+        assertThat(result.getText()).isEqualTo(text);
     }
 
     @Test
@@ -189,7 +189,7 @@ class JLUiLayerTest {
         assertThat(script).contains("autoClose: false");
 
         assertThat(result).isNotNull();
-        assertThat(result.getText()).isEqualTo("\"" + text + "\"");
+        assertThat(result.getText()).isEqualTo(text);
     }
 
     @Test

@@ -13,8 +13,6 @@ import java.util.Objects;
  */
 @Setter
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(force = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class JLLatLng {
@@ -26,6 +24,12 @@ public class JLLatLng {
      * geographical given longitude in degrees
      */
     double lng;
+
+    @Builder
+    public JLLatLng(double lat, double lng) {
+        this.lat = lat;
+        this.lng = lng;
+    }
 
     /**
      * Calculate distance between two points in latitude and longitude taking

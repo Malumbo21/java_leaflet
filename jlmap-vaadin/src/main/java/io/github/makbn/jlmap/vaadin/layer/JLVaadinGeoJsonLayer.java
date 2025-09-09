@@ -9,7 +9,6 @@ import io.github.makbn.jlmap.geojson.JLGeoJsonFile;
 import io.github.makbn.jlmap.geojson.JLGeoJsonURL;
 import io.github.makbn.jlmap.layer.leaflet.LeafletGeoJsonLayerInt;
 import io.github.makbn.jlmap.model.JLGeoJson;
-import io.github.makbn.jlmap.model.JLPolygon;
 import io.github.makbn.jlmap.model.builder.JLGeoJsonObjectBuilder;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -76,7 +75,7 @@ public class JLVaadinGeoJsonLayer extends JLVaadinLayer implements LeafletGeoJso
     public boolean removeGeoJson(@NonNull String id) {
         try {
             engine.executeScript(removeLayerWithUUID(id));
-            callbackHandler.remove(JLPolygon.class, id);
+            callbackHandler.remove(JLGeoJson.class, id);
             return true;
         } catch (RuntimeException e) {
             log.error(e.getMessage(), e);

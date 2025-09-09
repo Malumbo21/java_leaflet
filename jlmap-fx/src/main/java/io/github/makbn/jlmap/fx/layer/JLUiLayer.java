@@ -66,7 +66,6 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
 
         engine.executeScript(markerBuilder.buildJsElement());
         JLMarker marker = markerBuilder.buildJLObject();
-        // TODO: remove this as the callbackHandler should be triggered by JS itself!
         callbackHandler.addJLObject(elementUniqueName, marker);
         return marker;
     }
@@ -80,7 +79,6 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
     @Override
     public boolean removeMarker(String id) {
         engine.executeScript(removeLayerWithUUID(id));
-        // TODO: remove this as the callbackHandler should be triggered by JS itself!
         callbackHandler.remove(JLMarker.class, id);
         return true;
     }
@@ -104,12 +102,14 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
                 .setContent(text)
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
-                    // TODO: Register all possible callbacks
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
                 })
                 .setTransporter(transporter);
         engine.executeScript(popupBuilder.buildJsElement());
         JLPopup popup = popupBuilder.buildJLObject();
-        // TODO: remove this as the callbackHandler should be triggered by JS itself!
         callbackHandler.addJLObject(elementUniqueName, popup);
         return popup;
     }
@@ -157,7 +157,10 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
                 ))
                 .setTransporter(transporter)
                 .withCallbacks(jlCallbackBuilder -> {
-                    // TODO: Register all possible callbacks
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
                 })
                 .withOptions(options);
         engine.executeScript(imageBuilder.buildJsElement());

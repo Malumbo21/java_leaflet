@@ -61,7 +61,10 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                 .withOptions(options)
                 .addLatLngs(Arrays.stream(vertices).map(latLng -> new double[]{latLng.getLat(), latLng.getLng()}).toList())
                 .withCallbacks(jlCallbackBuilder -> {
-                    //TODO register all possible callbacks
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
                 })
                 .setTransporter(transporter);
         engine.executeScript(builder.buildJsElement());
@@ -112,7 +115,10 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                 .setUuid(elementUniqueName)
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
-                    //TODO register all possible callbacks
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
                 })
                 .setTransporter(transporter);
         for (JLLatLng[] group : vertices) {
@@ -154,7 +160,10 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                 .setUuid(elementUniqueName)
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
-                    //TODO register all possible callbacks
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
                 })
                 .setTransporter(transporter);
         for (JLLatLng[][] group : vertices) {
@@ -225,6 +234,8 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                     jlCallbackBuilder.on(JLAction.MOVE);
                     jlCallbackBuilder.on(JLAction.ADD);
                     jlCallbackBuilder.on(JLAction.REMOVE);
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
                 });
 
         engine.executeScript(circleBuilder.buildJsElement());

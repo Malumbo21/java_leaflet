@@ -23,6 +23,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>19.0.2.1</javafx.version>
         <lombok.version>1.18.38</lombok.version>
+        <jacoco.version>0.8.8</jacoco.version>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/jlmap-fx/target/site/jacoco/jacoco.xml,${project.basedir}/jlmap-vaadin/target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     </properties>
 
     <developers>
@@ -52,6 +57,45 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>9.0.7</version>
+                    <configuration>
+                        <formats>
+                            <format>XML</format>
+                            <format>HTML</format>
+                            <format>SARIF</format>
+                        </formats>
+                        <failBuildOnCVSS>8</failBuildOnCVSS>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
     <distributionManagement>
         <repository>

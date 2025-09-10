@@ -32,7 +32,7 @@
 
     <developers>
         <developer>
-            <name>Mehdi Akbarian Rastaghi</name>
+            <name>Matt Akbarian Rastaghi</name>
             <id>makbn</id>
             <email>mehdi74akbarian@gmail.com</email>
         </developer>
@@ -40,9 +40,9 @@
 
     <licenses>
         <license>
-            <name>GNU General Public License, Version 3.0</name>
-            <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
-            <distribution>repo</distribution>
+            <name>GNU Lesser General Public License (LGPL) Version 2.1 or later</name>
+            <url>https://www.gnu.org/licenses/lgpl-2.1.html</url>
+            <distribution>https://github.com/makbn/java_leaflet</distribution>
         </license>
     </licenses>
 

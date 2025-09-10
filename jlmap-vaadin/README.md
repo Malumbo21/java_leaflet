@@ -84,7 +84,3 @@ public class MyView extends VerticalLayout implements OnJLMapViewListener {
 ## Demo Application
 
 A demo application is included in the `io.github.makbn.jlmap.vaadin.demo` package. You can run it to see the Vaadin implementation in action.
-
-## License
-
-This project is licensed under the GNU General Public License, Version 3.0 - see the LICENSE file for details.

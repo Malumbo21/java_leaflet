@@ -418,7 +418,8 @@ jar --describe-module --file target/jlmap-vaadin-2.0.0.jar
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+Since v2.0.0 This project is licensed under the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1 - see
+the [LICENSE](LICENSE) file for details.
 
 ## Author
 

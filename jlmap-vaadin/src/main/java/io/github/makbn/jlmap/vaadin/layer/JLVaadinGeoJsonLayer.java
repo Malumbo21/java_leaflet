@@ -8,6 +8,7 @@ import io.github.makbn.jlmap.geojson.JLGeoJsonContent;
 import io.github.makbn.jlmap.geojson.JLGeoJsonFile;
 import io.github.makbn.jlmap.geojson.JLGeoJsonURL;
 import io.github.makbn.jlmap.layer.leaflet.LeafletGeoJsonLayerInt;
+import io.github.makbn.jlmap.listener.JLAction;
 import io.github.makbn.jlmap.model.JLGeoJson;
 import io.github.makbn.jlmap.model.builder.JLGeoJsonObjectBuilder;
 import lombok.AccessLevel;
@@ -94,7 +95,13 @@ public class JLVaadinGeoJsonLayer extends JLVaadinLayer implements LeafletGeoJso
         JLGeoJsonObjectBuilder builder = new JLGeoJsonObjectBuilder()
                 .setTransporter(getTransporter())
                 .setUuid(elementUniqueName)
-                .setGeoJson(geoJson);
+                .setGeoJson(geoJson)
+                .withCallbacks(jlCallbackBuilder -> {
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
+                });
         engine.executeScript(builder.buildJsElement());
         var obj = builder.buildJLObject();
         callbackHandler.addJLObject(elementUniqueName, obj);

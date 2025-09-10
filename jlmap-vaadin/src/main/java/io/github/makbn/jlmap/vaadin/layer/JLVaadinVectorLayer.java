@@ -59,7 +59,6 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
                 .setTransporter(getTransporter())
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
-                    jlCallbackBuilder.on(JLAction.MOVE);
                     jlCallbackBuilder.on(JLAction.ADD);
                     jlCallbackBuilder.on(JLAction.REMOVE);
                     jlCallbackBuilder.on(JLAction.CLICK);
@@ -125,7 +124,6 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
                 .setTransporter(getTransporter())
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
-                    jlCallbackBuilder.on(JLAction.MOVE);
                     jlCallbackBuilder.on(JLAction.ADD);
                     jlCallbackBuilder.on(JLAction.REMOVE);
                     jlCallbackBuilder.on(JLAction.CLICK);
@@ -180,7 +178,6 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
                 .setTransporter(getTransporter())
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
-                    jlCallbackBuilder.on(JLAction.MOVE);
                     jlCallbackBuilder.on(JLAction.ADD);
                     jlCallbackBuilder.on(JLAction.REMOVE);
                     jlCallbackBuilder.on(JLAction.CLICK);
@@ -256,6 +253,8 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
                     jlCallbackBuilder.on(JLAction.MOVE);
                     jlCallbackBuilder.on(JLAction.ADD);
                     jlCallbackBuilder.on(JLAction.REMOVE);
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
                 });
 
         engine.executeScript(circleBuilder.buildJsElement());

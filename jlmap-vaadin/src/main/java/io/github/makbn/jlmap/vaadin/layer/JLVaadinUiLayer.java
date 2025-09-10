@@ -110,7 +110,8 @@ public class JLVaadinUiLayer extends JLVaadinLayer implements LeafletUILayerInt 
                 .setLng(latLng.getLng())
                 .setTransporter(getTransporter())
                 .withCallbacks(jlCallbackBuilder -> {
-                    jlCallbackBuilder.on(JLAction.MOVE);
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
                     jlCallbackBuilder.on(JLAction.ADD);
                     jlCallbackBuilder.on(JLAction.REMOVE);
                 }).withOptions(options);
@@ -161,7 +162,10 @@ public class JLVaadinUiLayer extends JLVaadinLayer implements LeafletUILayerInt 
                 .setTransporter(getTransporter())
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
-
+                    jlCallbackBuilder.on(JLAction.CLICK);
+                    jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                    jlCallbackBuilder.on(JLAction.ADD);
+                    jlCallbackBuilder.on(JLAction.REMOVE);
                 });
 
         engine.executeScript(imageBuilder.buildJsElement());

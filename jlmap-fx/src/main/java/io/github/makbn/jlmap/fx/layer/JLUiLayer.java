@@ -165,7 +165,6 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
                 .withOptions(options);
         engine.executeScript(imageBuilder.buildJsElement());
         JLImageOverlay overlay = imageBuilder.buildJLObject();
-        // TODO: remove this as the callbackHandler should be triggered by JS itself!
         callbackHandler.addJLObject(elementUniqueName, overlay);
         return overlay;
     }

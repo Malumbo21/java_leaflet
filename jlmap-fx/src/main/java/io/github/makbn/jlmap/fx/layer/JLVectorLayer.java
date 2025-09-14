@@ -2,7 +2,7 @@ package io.github.makbn.jlmap.fx.layer;
 
 import io.github.makbn.jlmap.JLMapCallbackHandler;
 import io.github.makbn.jlmap.JLProperties;
-import io.github.makbn.jlmap.engine.JLTransporter;
+import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletVectorLayerInt;
 import io.github.makbn.jlmap.listener.JLAction;
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
     AtomicInteger idGenerator;
-    JLTransporter transporter;
+    JLServerToClientTransporter transporter;
 
     public JLVectorLayer(JLWebEngine<Object> engine, JLMapCallbackHandler callbackHandler) {
         super(engine, callbackHandler);

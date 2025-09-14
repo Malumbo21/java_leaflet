@@ -1,7 +1,7 @@
 package io.github.makbn.jlmap.model;
 
-import io.github.makbn.jlmap.engine.JLTransport;
-import io.github.makbn.jlmap.engine.JLTransporter;
+import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
+import io.github.makbn.jlmap.engine.JLTransportRequest;
 import io.github.makbn.jlmap.listener.OnJLObjectActionListener;
 import io.github.makbn.jlmap.model.function.JLFunctionBase;
 import lombok.AccessLevel;
@@ -21,7 +21,7 @@ import lombok.experimental.NonFinal;
 public abstract sealed class JLObject<T extends JLObject<T>> implements JLFunctionBase<T> permits JLCircle, JLCircleMarker, JLGeoJson, JLImageOverlay, JLMarker, JLMultiPolyline, JLPolygon, JLPolyline, JLPopup {
 
     @Getter(AccessLevel.PUBLIC)
-    JLTransporter<?> transport;
+    JLServerToClientTransporter<?> transport;
 
     @NonFinal
     OnJLObjectActionListener<T> listener;
@@ -68,7 +68,7 @@ public abstract sealed class JLObject<T extends JLObject<T>> implements JLFuncti
      * @return the current instance of JLMarker.
      */
     public T setZIndexOffset(int offset) {
-        getTransport().execute(new JLTransport(this,
+        getTransport().execute(new JLTransportRequest(this,
                 String.format("this.%s.setZIndexOffset(%d);", getId(), offset)));
         this.zIndexOffset = offset;
         return self();
@@ -82,7 +82,7 @@ public abstract sealed class JLObject<T extends JLObject<T>> implements JLFuncti
      * @return the current instance of JLMarker.
      */
     public T setOpacity(double opacity) {
-        getTransport().execute(new JLTransport(this,
+        getTransport().execute(new JLTransportRequest(this,
                 String.format("this.%s.setOpacity(%f);", getId(), opacity)));
         this.opacity = opacity;
         return self();

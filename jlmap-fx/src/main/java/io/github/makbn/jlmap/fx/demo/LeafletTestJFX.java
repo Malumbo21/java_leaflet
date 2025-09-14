@@ -110,7 +110,15 @@ public class LeafletTestJFX extends Application {
                 map.getControlLayer().zoomOut(1);
 
                 JLGeoJson geoJsonObject = map.getGeoJsonLayer()
-                        .addFromUrl("https://pkgstore.datahub.io/examples/geojson-tutorial/example/data/db696b3bf628d9a273ca9907adcea5c9/example.geojson");
+                        .addFromUrl("https://pkgstore.datahub.io/examples/geojson-tutorial/example/data/db696b3bf628d9a273ca9907adcea5c9/example.geojson", JLGeoJsonOptions.builder()
+                                .styleFunction(properties -> JLOptions.builder()
+                                        .color(JLColor.ORANGE)
+                                        .weight(2)
+                                        .fillColor(JLColor.PURPLE)
+                                        .fillOpacity(0.5)
+                                        .build())
+
+                                .build());
 
                 log.info("geojson loaded! id: {}", geoJsonObject.getId());
             }

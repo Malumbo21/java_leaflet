@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.model.builder;
 
-import io.github.makbn.jlmap.engine.JLTransporter;
+import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.model.JLObject;
 import io.github.makbn.jlmap.model.JLOptions;
 import lombok.NonNull;
@@ -17,7 +17,7 @@ abstract class JLObjectBuilder<M extends JLObject<?>, T extends JLObjectBuilder<
     protected String uuid;
     protected JLOptions jlOptions;
     @Nullable
-    protected JLTransporter<?> transporter;
+    protected JLServerToClientTransporter<?> transporter;
     protected final Map<String, Object> options = new LinkedHashMap<>();
     protected final List<String> callbacks = new ArrayList<>();
 
@@ -32,7 +32,7 @@ abstract class JLObjectBuilder<M extends JLObject<?>, T extends JLObjectBuilder<
     }
 
     @Nullable
-    protected JLTransporter getTransporter() {
+    protected JLServerToClientTransporter getTransporter() {
         return transporter;
     }
 
@@ -52,7 +52,7 @@ abstract class JLObjectBuilder<M extends JLObject<?>, T extends JLObjectBuilder<
         return self();
     }
 
-    public T setTransporter(@Nullable JLTransporter<?> transporter) {
+    public T setTransporter(@Nullable JLServerToClientTransporter<?> transporter) {
         this.transporter = transporter;
         return self();
     }

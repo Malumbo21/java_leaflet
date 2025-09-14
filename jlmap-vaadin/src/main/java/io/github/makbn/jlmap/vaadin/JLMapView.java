@@ -18,6 +18,7 @@ import io.github.makbn.jlmap.listener.OnJLMapViewListener;
 import io.github.makbn.jlmap.map.JLMapProvider;
 import io.github.makbn.jlmap.model.JLLatLng;
 import io.github.makbn.jlmap.model.JLMapOption;
+import io.github.makbn.jlmap.vaadin.bridge.JLVaadinClientToServerTransporter;
 import io.github.makbn.jlmap.vaadin.engine.JLVaadinEngine;
 import io.github.makbn.jlmap.vaadin.layer.JLVaadinControlLayer;
 import io.github.makbn.jlmap.vaadin.layer.JLVaadinGeoJsonLayer;
@@ -163,6 +164,26 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
     }
 
     /**
+     * Bridge method called from JavaScript to invoke Java methods on registered objects.
+     * This enables the JavaScript-to-Java bridge functionality.
+     *
+     * @param callId     unique identifier for this call
+     * @param objectId   the ID of the object to call
+     * @param methodName the method to invoke
+     * @param argsJson   JSON-encoded arguments
+     */
+    @ClientCallable
+    @SuppressWarnings("unused")
+    public String jlObjectBridgeCall(String callId, String objectId, String methodName, String argsJson) {
+        JLVaadinGeoJsonLayer geoJsonLayer = (JLVaadinGeoJsonLayer) layers.get(JLVaadinGeoJsonLayer.class);
+        if (geoJsonLayer != null && geoJsonLayer.getClientToServer() != null) {
+            return ((JLVaadinClientToServerTransporter) geoJsonLayer.getClientToServer())
+                    .jlObjectBridgeCall(callId, objectId, methodName, argsJson);
+        }
+        return null;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -177,6 +198,7 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
     public void addControllerToDocument() {
         if (!controllerAdded) {
             jlWebEngine.executeScript("window.jlController = this;");
+            //language=JavaScript
             jlWebEngine.executeScript("""
                     if (typeof Event === 'function') {
                       window.dispatchEvent(new Event('resize'));
@@ -205,6 +227,7 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
      *
      * @return JLVaadinGeoJsonLayer
      */
+    @Override
     public JLVaadinGeoJsonLayer getGeoJsonLayer() {
         return (JLVaadinGeoJsonLayer) layers.get(JLVaadinGeoJsonLayer.class);
     }

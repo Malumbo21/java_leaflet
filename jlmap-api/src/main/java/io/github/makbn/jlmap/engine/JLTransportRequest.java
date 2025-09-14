@@ -10,11 +10,11 @@ import java.util.Objects;
 /**
  * @author Matt Akbarian  (@makbn)
  */
-public record JLTransport(JLObject<?> self, String function, Object... params) {
+public record JLTransportRequest(JLObject<?> self, String function, Object... params) {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof JLTransport that)) return false;
+        if (!(o instanceof JLTransportRequest that)) return false;
         return Objects.equals(function, that.function) && Objects.deepEquals(params, that.params);
     }
 

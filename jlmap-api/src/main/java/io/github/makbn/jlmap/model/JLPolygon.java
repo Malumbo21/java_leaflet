@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.model;
 
-import io.github.makbn.jlmap.engine.JLTransporter;
+import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,7 +37,7 @@ public final class JLPolygon extends JLObject<JLPolygon> {
     JLLatLng[][][] vertices;
 
     @Builder
-    public JLPolygon(String id, JLOptions options, JLLatLng[][][] vertices, JLTransporter<?> transport) {
+    public JLPolygon(String id, JLOptions options, JLLatLng[][][] vertices, JLServerToClientTransporter<?> transport) {
         super(transport);
         this.id = id;
         this.options = options;

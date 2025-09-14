@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.model;
 
-import io.github.makbn.jlmap.engine.JLTransporter;
+import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,7 +35,7 @@ public final class JLCircle extends JLObject<JLCircle> {
     JLOptions options;
 
     @Builder
-    public JLCircle(String id, double radius, JLLatLng latLng, JLOptions options, JLTransporter<?> transport) {
+    public JLCircle(String id, double radius, JLLatLng latLng, JLOptions options, JLServerToClientTransporter<?> transport) {
         super(transport);
         this.id = id;
         this.radius = radius;

@@ -2,11 +2,11 @@ package io.github.makbn.jlmap.vaadin.layer;
 
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import io.github.makbn.jlmap.JLMapCallbackHandler;
-import io.github.makbn.jlmap.engine.JLTransport;
+import io.github.makbn.jlmap.engine.JLTransportRequest;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletLayer;
 import io.github.makbn.jlmap.model.JLObject;
-import io.github.makbn.jlmap.vaadin.engine.JLVaadinTransporter;
+import io.github.makbn.jlmap.vaadin.engine.JLVaadinServerToClientTransporter;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
@@ -41,10 +41,10 @@ public abstract class JLVaadinLayer implements LeafletLayer {
         return String.format("this.map.removeLayer(this.%s)", uuid);
     }
 
-    protected @NotNull JLVaadinTransporter getTransporter() {
-        return new JLVaadinTransporter() {
+    protected @NotNull JLVaadinServerToClientTransporter getTransporter() {
+        return new JLVaadinServerToClientTransporter() {
             @Override
-            public Function<JLTransport, PendingJavaScriptResult> clientToServerTransport() {
+            public Function<JLTransportRequest, PendingJavaScriptResult> serverToClientTransport() {
                 return transport -> engine.executeScript(transport.function());
             }
         };

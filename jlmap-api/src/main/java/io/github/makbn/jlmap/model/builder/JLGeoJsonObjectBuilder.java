@@ -1,12 +1,19 @@
 package io.github.makbn.jlmap.model.builder;
 
+import io.github.makbn.jlmap.engine.JLClientToServerTransporter;
 import io.github.makbn.jlmap.model.JLGeoJson;
+import io.github.makbn.jlmap.model.JLGeoJsonOptions;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class JLGeoJsonObjectBuilder extends JLObjectBuilder<JLGeoJson, JLGeoJsonObjectBuilder> {
     String geoJson;
+    JLGeoJsonOptions geoJsonOptions;
+    JLClientToServerTransporter bridge;
 
     @Override
     protected String getElementType() {
@@ -23,10 +30,18 @@ public class JLGeoJsonObjectBuilder extends JLObjectBuilder<JLGeoJson, JLGeoJson
         return this;
     }
 
+    public JLGeoJsonObjectBuilder withGeoJsonOptions(JLGeoJsonOptions geoJsonOptions) {
+        this.geoJsonOptions = geoJsonOptions;
+        return this;
+    }
+
+    public JLGeoJsonObjectBuilder withBridge(JLClientToServerTransporter bridge) {
+        this.bridge = bridge;
+        return this;
+    }
+
     @Override
     public String buildJsElement() {
-        // all the options and methods are going to be implemented through the object as they are usually
-        // provided using feature for each geojson object
         return String.format("""
                         let %1$s = L.geoJSON(%2$s, { %3$s });
                         this.%1$s = %1$s;
@@ -36,16 +51,77 @@ public class JLGeoJsonObjectBuilder extends JLObjectBuilder<JLGeoJson, JLGeoJson
                         // callback end
                         %1$s.addTo(this.map);
                         """,
-                getElementVarName(), geoJson, renderOptions(), renderCallbacks());
+                getElementVarName(), geoJson, renderGeoJsonOptions(), renderCallbacks());
+    }
 
+    private String renderGeoJsonOptions() {
+        List<String> optionParts = new ArrayList<>();
+
+        // Add base style options if no custom style function is provided
+        if (geoJsonOptions == null || geoJsonOptions.getStyleFunction() == null) {
+            String baseOptions = renderOptions();
+            if (!baseOptions.isEmpty()) {
+                optionParts.add(baseOptions);
+            }
+        }
+
+        if (geoJsonOptions != null) {
+            // Add style function callback using bridge
+            if (geoJsonOptions.getStyleFunction() != null) {
+                //language=js
+                optionParts.add("""
+                        onEachFeature: function(feature, layer) {
+                            window.jlObjectBridge.call('%1$s', 'callFilterFunction', JSON.stringify(feature)).then(filterResult => {
+                                if (!filterResult || filterResult === 'false') {
+                                    layer.remove();
+                                } else {
+                                     window.jlObjectBridge.call('%1$s', 'callStyleFunction', JSON.stringify(feature.properties)).then(styleResult => {
+                                        console.log(styleResult);
+                                        layer.setStyle(styleResult ? JSON.parse(styleResult) : {});
+                                    });
+                                }
+                            });
+                        }
+                        """.formatted(uuid));
+            }
+
+            // Add filter function callback using bridge
+            if (geoJsonOptions.getFilter() != null) {
+                optionParts.add("filter: function(feature, layer) { " +
+                        "var result = window.jlObjectBridge.call('" + uuid + "', 'callFilterFunction', JSON.stringify(feature)); " +
+                        "return true; " +
+                        "}");
+            }
+
+        }
+
+        return String.join(", ", optionParts);
+    }
+
+
+    private String getValue(Object value) {
+        if (value instanceof String stringValue) {
+            return "\"" + stringValue + "\"";
+        } else {
+            return value.toString();
+        }
     }
 
     @Override
     public JLGeoJson buildJLObject() {
-        return JLGeoJson.builder()
+        JLGeoJson geoJsonObject = JLGeoJson.builder()
                 .id(uuid)
                 .geoJsonContent(geoJson)
+                .geoJsonOptions(geoJsonOptions)
                 .transport(transporter)
                 .build();
+
+        // Register the object with the bridge if it has functional callbacks
+        if (bridge != null && geoJsonOptions != null &&
+                (geoJsonOptions.getStyleFunction() != null || geoJsonOptions.getFilter() != null)) {
+            bridge.registerObject(uuid, geoJsonObject);
+        }
+
+        return geoJsonObject;
     }
 }

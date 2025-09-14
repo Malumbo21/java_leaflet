@@ -1,7 +1,7 @@
 package io.github.makbn.jlmap.fx.layer;
 
 import io.github.makbn.jlmap.JLMapCallbackHandler;
-import io.github.makbn.jlmap.engine.JLTransporter;
+import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletUILayerInt;
 import io.github.makbn.jlmap.listener.JLAction;
@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
-    JLTransporter<Object> transporter;
+    JLServerToClientTransporter<Object> transporter;
     AtomicInteger idGenerator;
 
     public JLUiLayer(JLWebEngine<Object> engine, JLMapCallbackHandler callbackHandler) {

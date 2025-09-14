@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.model;
 
-import io.github.makbn.jlmap.engine.JLTransporter;
+import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -37,7 +37,7 @@ public final class JLPopup extends JLObject<JLPopup> {
     JLObject<?> parent;
 
     @Builder
-    public JLPopup(String id, String text, JLLatLng latLng, JLOptions options, JLTransporter<?> transport) {
+    public JLPopup(String id, String text, JLLatLng latLng, JLOptions options, JLServerToClientTransporter<?> transport) {
         super(transport);
         this.id = id;
         this.text = text;

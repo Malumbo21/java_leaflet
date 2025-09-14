@@ -1,8 +1,8 @@
 package io.github.makbn.jlmap.model;
 
 
-import io.github.makbn.jlmap.engine.JLTransport;
-import io.github.makbn.jlmap.engine.JLTransporter;
+import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
+import io.github.makbn.jlmap.engine.JLTransportRequest;
 import io.github.makbn.jlmap.listener.JLAction;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -39,7 +39,7 @@ public final class JLMarker extends JLObject<JLMarker> {
     JLIcon icon;
 
     @Builder
-    public JLMarker(String id, String text, JLLatLng latLng, JLTransporter<?> transport) {
+    public JLMarker(String id, String text, JLLatLng latLng, JLServerToClientTransporter<?> transport) {
         super(transport);
         this.id = id;
         this.text = text;
@@ -69,7 +69,7 @@ public final class JLMarker extends JLObject<JLMarker> {
      * @return the current instance of JLMarker.
      */
     public JLMarker setLatLng(JLLatLng latLng) {
-        getTransport().execute(new JLTransport(this,
+        getTransport().execute(new JLTransportRequest(this,
                 String.format("this.%s.setLatLng([%f, %f]);", getId(), latLng.getLat(), latLng.getLng())));
         this.latLng = latLng;
         return this;
@@ -83,7 +83,7 @@ public final class JLMarker extends JLObject<JLMarker> {
      * @return the current instance of JLMarker.
      */
     public JLMarker setIcon(JLIcon icon) {
-        getTransport().execute(new JLTransport(this,
+        getTransport().execute(new JLTransportRequest(this,
                 String.format("this.%s.setIcon(%s);", getId(), icon)));
         this.icon = icon;
         return this;

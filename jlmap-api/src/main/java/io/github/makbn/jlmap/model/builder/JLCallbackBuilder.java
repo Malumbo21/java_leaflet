@@ -24,7 +24,7 @@ public class JLCallbackBuilder {
     public JLCallbackBuilder on(JLAction event) {
         callbacks.add(String.format("""
                 this.%3$s.on('%1$s', e => this.jlMapElement.$server.eventHandler('%1$s', '%2$s', e.target.uuid, this.map.getZoom(),
-                    JSON.stringify(e.target.getLatLng() ? { "lat": e.target.getLatLng().lat, "lng": e.target.getLatLng().lng } : {"lat": this.map.getCenter().lat, "lng": this.map.getCenter().lng}),
+                    JSON.stringify((typeof e.target.getLatLng === "function") ? { "lat": e.target.getLatLng().lat, "lng": e.target.getLatLng().lng } : {"lat": e.latlng.lat, "lng": e.latlng.lng}),
                     JSON.stringify(this.map.getBounds())
                 ));
                 """, event.getJsEventName(), elementType, varName));

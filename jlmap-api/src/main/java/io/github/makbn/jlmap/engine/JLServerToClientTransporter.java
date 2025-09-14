@@ -9,9 +9,9 @@ import java.util.function.Function;
  * @author Matt Akbarian  (@makbn)
  */
 @FunctionalInterface
-public interface JLTransporter<T> {
+public interface JLServerToClientTransporter<T> {
 
-    Function<JLTransport, T> clientToServerTransport();
+    Function<JLTransportRequest, T> serverToClientTransport();
 
     @SuppressWarnings("unchecked")
     default <M> M covertResult(T result) {
@@ -22,8 +22,8 @@ public interface JLTransporter<T> {
         }
     }
 
-    default <M> M execute(JLTransport transport) {
-        return covertResult(Optional.ofNullable(clientToServerTransport().apply(transport))
+    default <M> M execute(JLTransportRequest transport) {
+        return covertResult(Optional.ofNullable(serverToClientTransport().apply(transport))
                 .orElseThrow(() -> new JLException("No client to server transport found")));
 
     }

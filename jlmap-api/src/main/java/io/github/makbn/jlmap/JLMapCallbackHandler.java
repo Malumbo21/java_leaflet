@@ -43,6 +43,7 @@ public class JLMapCallbackHandler {
         classMap.put(JLPolyline.class.getSimpleName().toLowerCase(), new Class[]{JLPolyline.class});
         classMap.put(JLMultiPolyline.class.getSimpleName().toLowerCase(), new Class[]{JLMultiPolyline.class});
         classMap.put(JLPolygon.class.getSimpleName().toLowerCase(), new Class[]{JLPolygon.class});
+        classMap.put(JLGeoJson.class.getSimpleName().toLowerCase(), new Class[]{JLGeoJson.class});
     }
 
     /**

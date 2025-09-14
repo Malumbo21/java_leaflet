@@ -3,7 +3,7 @@ package io.github.makbn.jlmap.vaadin.engine;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
-import io.github.makbn.jlmap.engine.JLTransporter;
+import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import lombok.SneakyThrows;
 
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @author Matt Akbarian (@makbn)
  */
-public abstract class JLVaadinTransporter implements JLTransporter<PendingJavaScriptResult> {
+public abstract class JLVaadinServerToClientTransporter implements JLServerToClientTransporter<PendingJavaScriptResult> {
 
     Gson gson = new Gson();
 

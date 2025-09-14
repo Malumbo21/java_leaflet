@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.model;
 
-import io.github.makbn.jlmap.engine.JLTransporter;
+import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,7 +36,7 @@ public final class JLImageOverlay extends JLObject<JLImageOverlay> {
     JLOptions options;
 
     @Builder(toBuilder = true)
-    private JLImageOverlay(String id, String imageUrl, JLBounds bounds, JLOptions options, JLTransporter<?> transport) {
+    private JLImageOverlay(String id, String imageUrl, JLBounds bounds, JLOptions options, JLServerToClientTransporter<?> transport) {
         super(transport);
         this.id = id;
         this.imageUrl = imageUrl;

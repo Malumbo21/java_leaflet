@@ -13,20 +13,70 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Core interface representing a Java Leaflet map instance with unified API across UI frameworks.
+ * <p>
+ * This interface provides a consistent abstraction layer for map operations in both JavaFX and Vaadin
+ * implementations, allowing developers to write framework-agnostic mapping code.
+ * </p>
+ * <p>
+ * The interface provides access to various layers (UI, Vector, Control, GeoJSON) and map manipulation
+ * methods such as view setting, zooming, and retrieving map state information.
+ * </p>
+ *
+ * @param <T> The framework-specific type for web engine operations
  * @author Matt Akbarian  (@makbn)
+ * @since 2.0.0
  */
 public interface JLMap<T> extends JLObject<JLMap<T>> {
 
+    /**
+     * Returns the underlying web engine used for JavaScript execution and map rendering.
+     * <p>
+     * The web engine handles the communication between Java code and the Leaflet JavaScript library,
+     * enabling dynamic map operations and event handling.
+     * </p>
+     *
+     * @return the web engine instance specific to the UI framework implementation
+     */
     JLWebEngine<T> getJLEngine();
 
+    /**
+     * Initializes and adds the JavaScript map controller to the document.
+     * <p>
+     * This method sets up the necessary JavaScript infrastructure for map operations,
+     * including event handlers and communication bridges between Java and JavaScript layers.
+     * </p>
+     * <p>
+     * Typically called internally during map initialization and should not be invoked manually.
+     * </p>
+     */
     void addControllerToDocument();
 
+    /**
+     * Returns the internal registry of map layers by their class types.
+     * <p>
+     * This method provides access to the underlying layer management system, mapping
+     * layer interface classes to their concrete implementations.
+     * </p>
+     * <p>
+     * <strong>Note:</strong> This is primarily for internal use. Access layers through
+     * the dedicated getter methods instead: {@link #getUiLayer()}, {@link #getVectorLayer()},
+     * {@link #getControlLayer()}, {@link #getGeoJsonLayer()}.
+     * </p>
+     *
+     * @return a map of layer classes to their instances
+     */
     HashMap<Class<? extends LeafletLayer>, LeafletLayer> getLayers();
 
     /**
-     * handle all functions for add/remove layers from UI layer
+     * Provides access to the UI layer for managing markers, popups, and overlays.
+     * <p>
+     * The UI layer handles user interface elements that appear above the map content,
+     * including markers with custom icons, popups with HTML content, and image overlays.
+     * </p>
      *
-     * @return current instance of {{@link LeafletLayer}}
+     * @return the UI layer interface for adding and managing user interface elements
+     * @throws JLMapNotReadyException if the map is not properly initialized
      */
     default LeafletUILayerInt getUiLayer() {
         checkMapState();
@@ -34,20 +84,46 @@ public interface JLMap<T> extends JLObject<JLMap<T>> {
     }
 
     /**
-     * handle all functions for add/remove layers from Vector layer
+     * Provides access to the vector layer for managing geometric shapes and paths.
+     * <p>
+     * The vector layer handles geometric elements such as circles, polygons, polylines,
+     * and other vectorial shapes that can be styled and made interactive.
+     * </p>
      *
-     * @return current instance of {{@link LeafletVectorLayerInt}}
+     * @return the vector layer interface for adding and managing geometric shapes
+     * @throws JLMapNotReadyException if the map is not properly initialized
      */
     default LeafletVectorLayerInt getVectorLayer() {
         checkMapState();
         return getLayerInternal(LeafletVectorLayerInt.class);
     }
 
+    /**
+     * Provides access to the control layer for map navigation and view management.
+     * <p>
+     * The control layer handles map manipulation operations such as zooming, panning,
+     * setting bounds, and controlling the map's viewport and navigation state.
+     * </p>
+     *
+     * @return the control layer interface for map navigation and view control
+     * @throws JLMapNotReadyException if the map is not properly initialized
+     */
     default LeafletControlLayerInt getControlLayer() {
         checkMapState();
         return getLayerInternal(LeafletControlLayerInt.class);
     }
 
+    /**
+     * Provides access to the GeoJSON layer for managing geographic data layers.
+     * <p>
+     * The GeoJSON layer handles the loading, styling, and interaction with GeoJSON
+     * geographic data, supporting both simple displays and advanced features like
+     * custom styling functions and data filtering.
+     * </p>
+     *
+     * @return the GeoJSON layer interface for managing geographic data
+     * @throws JLMapNotReadyException if the map is not properly initialized
+     */
     default LeafletGeoJsonLayerInt getGeoJsonLayer() {
         checkMapState();
         return getLayerInternal(LeafletGeoJsonLayerInt.class);
@@ -55,10 +131,15 @@ public interface JLMap<T> extends JLObject<JLMap<T>> {
 
 
     /**
-     * Sets the view of the map (geographical latLng).
+     * Smoothly pans the map view to the specified geographical coordinates.
+     * <p>
+     * This method performs an animated transition to center the map on the given location
+     * while maintaining the current zoom level. The pan operation uses the default
+     * animation duration and easing settings.
+     * </p>
      *
-     * @param latLng Represents a geographical point with a certain latitude
-     *               and longitude.
+     * @param latLng the target geographical coordinates to pan to
+     * @throws JLMapNotReadyException if the map is not properly initialized
      */
     default void setView(JLLatLng latLng) {
         checkMapState();
@@ -68,11 +149,15 @@ public interface JLMap<T> extends JLObject<JLMap<T>> {
     }
 
     /**
-     * Sets the view of the map (geographical latLng) with animation duration.
+     * Smoothly pans the map view to the specified geographical coordinates with custom animation duration.
+     * <p>
+     * This method performs an animated transition to center the map on the given location
+     * while maintaining the current zoom level, using the specified animation duration.
+     * </p>
      *
-     * @param duration Represents the duration of transition animation.
-     * @param latLng   Represents a geographical point with a certain latitude
-     *                 and longitude.
+     * @param latLng   the target geographical coordinates to pan to
+     * @param duration the animation duration in milliseconds
+     * @throws JLMapNotReadyException if the map is not properly initialized
      */
     default void setView(JLLatLng latLng, int duration) {
         checkMapState();
@@ -82,9 +167,14 @@ public interface JLMap<T> extends JLObject<JLMap<T>> {
     }
 
     /**
-     * Gets the current zoom level of the map.
+     * Retrieves the current zoom level of the map.
+     * <p>
+     * Zoom levels typically range from 0 (world view) to 18+ (building level detail),
+     * depending on the tile provider. Each zoom level represents a doubling of the scale.
+     * </p>
      *
-     * @return current zoom level
+     * @return the current zoom level as an integer
+     * @throws JLMapNotReadyException if the map is not properly initialized
      */
     default int getZoom() {
         checkMapState();
@@ -94,9 +184,15 @@ public interface JLMap<T> extends JLObject<JLMap<T>> {
     }
 
     /**
-     * Sets the zoom level of the map.
+     * Sets the zoom level of the map with animation.
+     * <p>
+     * This method smoothly animates the map to the specified zoom level.
+     * Zoom levels typically range from 0 (world view) to 18+ (building level detail).
+     * Values outside the supported range will be clamped to valid bounds.
+     * </p>
      *
-     * @param zoomLevel Represents the zoom level of the map.
+     * @param zoomLevel the target zoom level (typically 0-19)
+     * @throws JLMapNotReadyException if the map is not properly initialized
      */
     default void setZoom(int zoomLevel) {
         checkMapState();
@@ -105,9 +201,15 @@ public interface JLMap<T> extends JLObject<JLMap<T>> {
     }
 
     /**
-     * Gets the current latLng of the map.
+     * Retrieves the current center coordinates of the map view.
+     * <p>
+     * This method returns the geographical coordinates (latitude and longitude)
+     * that correspond to the center point of the current map viewport.
+     * </p>
      *
-     * @return current latLng coordinates
+     * @return the center coordinates as a {@link JLLatLng} object
+     * @throws JLMapNotReadyException if the map is not properly initialized
+     * @throws NumberFormatException if the coordinate parsing fails
      */
     default JLLatLng getCenter() {
         checkMapState();

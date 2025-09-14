@@ -4,33 +4,66 @@ import io.github.makbn.jlmap.model.JLBounds;
 import io.github.makbn.jlmap.model.JLLatLng;
 
 /**
- * The {@code LeafletControlLayerInt} interface defines methods for controlling
- * the zoom and view of a Leaflet map. Leaflet is a popular JavaScript library
- * for creating interactive maps, and this interface provides a Java API for
- * manipulating the map's zoom level, view, and geographical bounds.
+ * Interface for programmatic control of map navigation, zooming, and viewport management.
+ * <p>
+ * This interface provides methods to manipulate the map's view state, including zoom levels,
+ * geographic bounds, and animated transitions. All operations are smoothly animated unless
+ * otherwise specified.
+ * </p>
+ * <p>
+ * The control layer handles the following key operations:
+ * </p>
+ * <ul>
+ *   <li><strong>Zoom Control</strong>: Increase, decrease, or set specific zoom levels</li>
+ *   <li><strong>View Management</strong>: Pan to coordinates and set geographic bounds</li>
+ *   <li><strong>Bounds Fitting</strong>: Automatically adjust view to fit geographic areas</li>
+ *   <li><strong>Constraints</strong>: Set minimum and maximum zoom limits</li>
+ *   <li><strong>Flight Animation</strong>: Smooth animated transitions between locations</li>
+ * </ul>
+ * <p>
+ * <strong>Thread Safety:</strong> All methods should be called from the UI thread of the
+ * respective framework (JavaFX Application Thread or Vaadin UI thread).
+ * </p>
  *
  * @author Matt Akbarian  (@makbn)
+ * @since 2.0.0
  */
 public interface LeafletControlLayerInt extends LeafletLayer {
 
     /**
-     * Increases the zoom of the map by delta
+     * Smoothly increases the map zoom level by the specified amount.
+     * <p>
+     * The map will animate to the new zoom level while maintaining the current center point.
+     * If the resulting zoom level exceeds the maximum allowed zoom, it will be clamped.
+     * </p>
      *
+     * @param delta the number of zoom levels to increase (must be positive)
      * @see <a href="https://leafletjs.com/reference.html#map-zoomin">leafletjs.com/reference.html#map-zoomin</a>
      */
     void zoomIn(int delta);
 
     /**
-     * Decreases the zoom of the map by delta
+     * Smoothly decreases the map zoom level by the specified amount.
+     * <p>
+     * The map will animate to the new zoom level while maintaining the current center point.
+     * If the resulting zoom level is below the minimum allowed zoom, it will be clamped.
+     * </p>
      *
+     * @param delta the number of zoom levels to decrease (must be positive)
      * @see <a href="https://leafletjs.com/reference.html#map-zoomout">
      * leafletjs.com/reference.html#map-zoomout</a>
      */
     void zoomOut(int delta);
 
     /**
-     * Sets the zoom of the map.
+     * Animates the map to the specified zoom level.
+     * <p>
+     * The map will smoothly transition to the new zoom level while keeping the current
+     * center point fixed. Values outside the allowed zoom range will be automatically
+     * clamped to valid bounds.
+     * </p>
      *
+     * @param level the target zoom level (typically 0-19, depending on tile provider)
      * @see <a href="https://leafletjs.com/reference.html#map-setzoom">
      * leafletjs.com/reference.html#map-setzoom</a>
      */

@@ -157,11 +157,15 @@ public class JLMapView extends AnchorPane implements JLMap<Object> {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public OnJLActionListener<JLMap<Object>> getOnActionListener() {
         return mapListener;
     }
 
+    /** @inheritDoc */
     @Override
     public void setOnActionListener(OnJLActionListener<JLMap<Object>> listener) {
         this.mapListener = listener;
@@ -204,6 +208,7 @@ public class JLMapView extends AnchorPane implements JLMap<Object> {
         setBottomAnchor(this, 0.5);
     }
 
+    /** @inheritDoc */
     @Override
     public HashMap<Class<? extends LeafletLayer>, LeafletLayer> getLayers() {
         layers.clear();
@@ -214,6 +219,7 @@ public class JLMapView extends AnchorPane implements JLMap<Object> {
         return layers;
     }
 
+    /** @inheritDoc */
     @Override
     public void addControllerToDocument() {
         JSObject window = (JSObject) webView.getEngine().executeScript("window");
@@ -231,6 +237,7 @@ public class JLMapView extends AnchorPane implements JLMap<Object> {
         jlMapCallbackHandler.functionCalled(this, functionName, jlType, uuid, param1, param2, param3);
     }
 
+    /** @inheritDoc */
     @Override
     public JLWebEngine<Object> getJLEngine() {
         return jlWebEngine;

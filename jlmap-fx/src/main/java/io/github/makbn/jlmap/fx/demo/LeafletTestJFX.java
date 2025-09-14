@@ -1,12 +1,11 @@
 package io.github.makbn.jlmap.fx.demo;
 
-import io.github.makbn.jlmap.JLMapController;
 import io.github.makbn.jlmap.JLProperties;
 import io.github.makbn.jlmap.fx.JLMapView;
-import io.github.makbn.jlmap.listener.OnJLMapViewListener;
-import io.github.makbn.jlmap.listener.OnJLObjectActionListener;
+import io.github.makbn.jlmap.listener.JLAction;
+import io.github.makbn.jlmap.listener.OnJLActionListener;
 import io.github.makbn.jlmap.listener.event.ClickEvent;
-import io.github.makbn.jlmap.listener.event.Event;
+import io.github.makbn.jlmap.listener.event.MapEvent;
 import io.github.makbn.jlmap.listener.event.MoveEvent;
 import io.github.makbn.jlmap.listener.event.ZoomEvent;
 import io.github.makbn.jlmap.map.JLMapProvider;
@@ -19,7 +18,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -62,91 +60,81 @@ public class LeafletTestJFX extends Application {
         stage.setY(100);
 
         //set listener fo map events
-        map.setMapListener(new OnJLMapViewListener() {
-            @Override
-            public void mapLoadedSuccessfully(@NonNull JLMapController mapView) {
-                log.info("map loaded!");
-                addMultiPolyline(map);
-                addPolyline(map);
-                addPolygon(map);
-
-               /* map.setView(JLLatLng.builder()
-                        .lng(10)
-                        .lat(10)
-                        .build());*/
-                map.getUiLayer()
-                        .addMarker(JLLatLng.builder()
-                                .lat(35.63)
-                                .lng(51.45)
-                                .build(), "Tehran", true)
-                        .setOnActionListener(getListener());
-
-                map.getVectorLayer()
-                        .addCircleMarker(JLLatLng.builder()
-                                .lat(35.63)
-                                .lng(40.45)
-                                .build());
-
-                map.getVectorLayer()
-                        .addCircle(JLLatLng.builder()
-                                .lat(35.63)
-                                .lng(51.45)
-                                .build(), 30000, JLOptions.DEFAULT);
-
-                // JLImageOverlay demo: Eiffel Tower image over Paris
-                JLBounds eiffelBounds = JLBounds.builder()
-                        .southWest(JLLatLng.builder().lat(47.857).lng(3.293).build())
-                        .northEast(JLLatLng.builder().lat(49.860).lng(1.298).build())
-                        .build();
-                map.getUiLayer().addImage(
-                        eiffelBounds,
-                        "https://img.favpng.com/1/24/8/eiffel-tower-eiffel-tower-illustrated-landmark-L5szYqrZ_t.jpg",
-                        JLOptions.DEFAULT
-                );
-
-                // map zoom functionalities
-                map.getControlLayer().setZoom(5);
-                map.getControlLayer().zoomIn(2);
-                map.getControlLayer().zoomOut(1);
-
-                JLGeoJson geoJsonObject = map.getGeoJsonLayer()
-                        .addFromUrl("https://pkgstore.datahub.io/examples/geojson-tutorial/example/data/db696b3bf628d9a273ca9907adcea5c9/example.geojson", JLGeoJsonOptions.builder()
-                                .styleFunction(properties -> JLOptions.builder()
-                                        .color(JLColor.ORANGE)
-                                        .weight(2)
-                                        .fillColor(JLColor.PURPLE)
-                                        .fillOpacity(0.5)
-                                        .build())
-
-                                .build());
-
-                log.info("geojson loaded! id: {}", geoJsonObject.getId());
-            }
-
-            @Override
-            public void mapFailed() {
-                log.error("map failed!");
-            }
-
-            @Override
-            public void onActionReceived(Event event) {
-                log.info("onActionReceived!: {}", event);
-                if (event instanceof MoveEvent moveEvent) {
-                    log.info("move event: {} c: {} \t bounds: {} \t z: {}", moveEvent.action(), moveEvent.center(),
-                            moveEvent.bounds(), moveEvent.zoomLevel());
-                } else if (event instanceof ClickEvent clickEvent) {
-                    log.info("click event: {}", clickEvent.center());
-                    map.getUiLayer().addPopup(clickEvent.center(), "New Click Event!", JLOptions.builder()
-                            .closeButton(false)
-                            .autoClose(false).build());
-                } else if (event instanceof ZoomEvent zoomEvent) {
-                    log.info("zoom event: {}", zoomEvent.zoomLevel());
-                }
+        map.setOnActionListener((source, event) -> {
+            log.info("onActionReceived!: {}", event);
+            if (event instanceof MoveEvent moveEvent) {
+                log.info("move event: {} c: {} \t bounds: {} \t z: {}", moveEvent.action(), moveEvent.center(),
+                        moveEvent.bounds(), moveEvent.zoomLevel());
+            } else if (event instanceof ClickEvent clickEvent) {
+                log.info("click event: {}", clickEvent.center());
+                map.getUiLayer().addPopup(clickEvent.center(), "New Click Event!", JLOptions.builder()
+                        .closeButton(false)
+                        .autoClose(false).build());
+            } else if (event instanceof ZoomEvent zoomEvent) {
+                log.info("zoom event: {}", zoomEvent.zoomLevel());
+            } else if (event instanceof MapEvent mapEvent && mapEvent.action() == JLAction.MAP_LOADED) {
+                loadDemoElement(map);
             }
         });
     }
 
-    private OnJLObjectActionListener<JLMarker> getListener() {
+    private void loadDemoElement(JLMapView map) {
+        log.info("map loaded!");
+        addMultiPolyline(map);
+        addPolyline(map);
+        addPolygon(map);
+
+        map.getUiLayer()
+                .addMarker(JLLatLng.builder()
+                        .lat(35.63)
+                        .lng(51.45)
+                        .build(), "Tehran", true)
+                .setOnActionListener(getListener());
+
+        map.getVectorLayer()
+                .addCircleMarker(JLLatLng.builder()
+                        .lat(35.63)
+                        .lng(40.45)
+                        .build());
+
+        map.getVectorLayer()
+                .addCircle(JLLatLng.builder()
+                        .lat(35.63)
+                        .lng(51.45)
+                        .build(), 30000, JLOptions.DEFAULT);
+
+        // JLImageOverlay demo: Eiffel Tower image over Paris
+        JLBounds eiffelBounds = JLBounds.builder()
+                .southWest(JLLatLng.builder().lat(47.857).lng(3.293).build())
+                .northEast(JLLatLng.builder().lat(49.860).lng(1.298).build())
+                .build();
+        map.getUiLayer().addImage(
+                eiffelBounds,
+                "https://img.favpng.com/1/24/8/eiffel-tower-eiffel-tower-illustrated-landmark-L5szYqrZ_t.jpg",
+                JLOptions.DEFAULT
+        );
+
+        // map zoom functionalities
+        map.getControlLayer().setZoom(5);
+        map.getControlLayer().zoomIn(2);
+        map.getControlLayer().zoomOut(1);
+
+        JLGeoJson geoJsonObject = map.getGeoJsonLayer()
+                .addFromUrl("https://pkgstore.datahub.io/examples/geojson-tutorial/example/data/db696b3bf628d9a273ca9907adcea5c9/example.geojson", JLGeoJsonOptions.builder()
+                        .styleFunction(properties -> JLOptions.builder()
+                                .color(JLColor.ORANGE)
+                                .weight(2)
+                                .fillColor(JLColor.PURPLE)
+                                .fillOpacity(0.5)
+                                .build())
+
+                        .build());
+
+
+        log.info("geojson loaded! id: {}", geoJsonObject.getJLId());
+    }
+
+    private OnJLActionListener<JLMarker> getListener() {
         return (jlMarker, event) -> log.info("object {} event for marker:{}", event.action(), jlMarker);
     }
 
@@ -205,11 +193,7 @@ public class LeafletTestJFX extends Application {
                 new JLLatLng(45, -104.05),
                 new JLLatLng(41, -104.05)
         };
-        map.getVectorLayer().addPolygon(vertices).setOnActionListener(new OnJLObjectActionListener<>() {
-            @Override
-            public void onActionReceived(JLPolygon jlPolygon, Event event) {
-                log.info("object {} event for jlPolygon:{}", event.action(), jlPolygon);
-            }
-        });
+        map.getVectorLayer().addPolygon(vertices).setOnActionListener((source, event) ->
+                log.info("{} event for: {}", event.action(), source));
     }
 }

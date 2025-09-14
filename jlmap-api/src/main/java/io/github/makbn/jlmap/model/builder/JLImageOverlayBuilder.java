@@ -82,7 +82,7 @@ public class JLImageOverlayBuilder extends JLObjectBuilder<JLImageOverlay, JLIma
                 .build();
 
         return JLImageOverlay.builder()
-                .id(uuid)
+                .jLId(uuid)
                 .imageUrl(imageUrl)
                 .bounds(jlBounds)
                 .options(jlOptions)

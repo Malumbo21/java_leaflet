@@ -98,9 +98,9 @@ public interface LeafletVectorLayerInt extends LeafletLayer{
     boolean removePolygon(String id);
 
     /**
-     * Adds a circle to the Leaflet map with the provided center coordinates, radius, and custom options.
+     * Adds a circle to the Leaflet map with the provided latLng coordinates, radius, and custom options.
      *
-     * @param center  The geographical coordinates (latitude and longitude) of the circle's center.
+     * @param center  The geographical coordinates (latitude and longitude) of the circle's latLng.
      * @param radius  The radius of the circle in meters.
      * @param options Custom options for configuring the appearance and behavior of the circle.
      * @return The {@link JLCircle} representing the added circle on the map.
@@ -108,9 +108,9 @@ public interface LeafletVectorLayerInt extends LeafletLayer{
     JLCircle addCircle(JLLatLng center, int radius, JLOptions options);
 
     /**
-     * Adds a circle to the Leaflet map with the provided center coordinates and radius.
+     * Adds a circle to the Leaflet map with the provided latLng coordinates and radius.
      *
-     * @param center The geographical coordinates (latitude and longitude) of the circle's center.
+     * @param center The geographical coordinates (latitude and longitude) of the circle's latLng.
      * @return The {@link JLCircle} representing the added circle on the map.
      */
     JLCircle addCircle(JLLatLng center);
@@ -125,9 +125,9 @@ public interface LeafletVectorLayerInt extends LeafletLayer{
     boolean removeCircle(String id);
 
     /**
-     * Adds a circle marker to the Leaflet map with the provided center coordinates, radius, and custom options.
+     * Adds a circle marker to the Leaflet map with the provided latLng coordinates, radius, and custom options.
      *
-     * @param center  The geographical coordinates (latitude and longitude) of the circle marker's center.
+     * @param center  The geographical coordinates (latitude and longitude) of the circle marker's latLng.
      * @param radius  The radius of the circle marker in pixels.
      * @param options Custom options for configuring the appearance and behavior of the circle marker.
      * @return The {@link JLCircleMarker} representing the added circle marker on the map.
@@ -135,9 +135,9 @@ public interface LeafletVectorLayerInt extends LeafletLayer{
     JLCircleMarker addCircleMarker(JLLatLng center, int radius, JLOptions options);
 
     /**
-     * Adds a circle marker to the Leaflet map with the provided center coordinates and radius.
+     * Adds a circle marker to the Leaflet map with the provided latLng coordinates and radius.
      *
-     * @param center The geographical coordinates (latitude and longitude) of the circle marker's center.
+     * @param center The geographical coordinates (latitude and longitude) of the circle marker's latLng.
      * @return The {@link JLCircleMarker} representing the added circle marker on the map.
      */
     JLCircleMarker addCircleMarker(JLLatLng center);

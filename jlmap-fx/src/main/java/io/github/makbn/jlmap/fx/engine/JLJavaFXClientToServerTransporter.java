@@ -36,8 +36,16 @@ public class JLJavaFXClientToServerTransporter extends JLClientToServerTransport
      * This allows JavaScript to directly call Java methods synchronously.
      */
     @SuppressWarnings("unused")
-    public String callFromJavaScript(String objectId, String methodName, String... args) {
-        return callObjectMethod(objectId, methodName, args);
+    public String callFromJavaScript(String objectId, String methodName, String argsJson) {
+        try {
+            String[] args = argsJson != null ? new String[]{argsJson} : new String[0];
+            String result = callObjectMethod(objectId, methodName, args);
+
+            return result;
+        } catch (Exception e) {
+            log.error("Error in JavaFX bridge call: {}", e.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -48,7 +56,7 @@ public class JLJavaFXClientToServerTransporter extends JLClientToServerTransport
                 // JavaFX-specific bridge implementation
                 window.jlObjectBridge._callJava = function(objectId, methodName, args) {
                     // Call the Java method directly via the exposed bridge object
-                    return window.jlObjectBridgeJava.callFromJavaScript(objectId, methodName, ...args);
+                    return window.jlObjectBridgeJava.callFromJavaScript(objectId, methodName, JSON.stringify(args));
                 };
                 
                 console.log('JavaFX JLObjectBridge ready');

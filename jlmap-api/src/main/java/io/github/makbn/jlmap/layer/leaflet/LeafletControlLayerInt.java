@@ -66,19 +66,19 @@ public interface LeafletControlLayerInt extends LeafletLayer {
     void fitWorld();
 
     /**
-     * Pans the map to a given center.
+     * Pans the map to a given latLng.
      *
-     * @param latLng The new center of the map.
+     * @param latLng The new latLng of the map.
      * @see <a href="https://leafletjs.com/reference.html#map-panto">
      * leafletjs.com/reference.html#map-panto</a>
      */
     void panTo(JLLatLng latLng);
 
     /**
-     * Sets the view of the map (geographical center and zoom) performing a
+     * Sets the view of the map (geographical latLng and zoom) performing a
      * smooth pan-zoom animation.
      *
-     * @param latLng The new center of the map.
+     * @param latLng The new latLng of the map.
      * @param zoom   The new zoom level (optional).
      * @see <a href="https://leafletjs.com/reference.html#map-flyto">
      * leafletjs.com/reference.html#map-flyto</a>

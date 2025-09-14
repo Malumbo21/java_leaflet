@@ -17,7 +17,7 @@ class JLGeoJsonOptionsTest {
 
     @Test
     void shouldCreateDefaultOptions() {
-        JLGeoJsonOptions options = JLGeoJsonOptions.DEFAULT;
+        JLGeoJsonOptions options = JLGeoJsonOptions.getDefault();
 
         assertThat(options).isNotNull();
         assertThat(options.getStyleFunction()).isNull();

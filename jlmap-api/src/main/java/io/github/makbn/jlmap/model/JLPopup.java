@@ -13,12 +13,7 @@ import lombok.experimental.NonFinal;
 @Getter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public final class JLPopup extends JLObject<JLPopup> {
-    /**
-     * id of JLPopup! this is an internal id for JLMap Application and not
-     * related to Leaflet!
-     */
-    String id;
+public final class JLPopup extends JLObjectBase<JLPopup> {
     /**
      * Content of the popup.
      */
@@ -38,8 +33,7 @@ public final class JLPopup extends JLObject<JLPopup> {
 
     @Builder
     public JLPopup(String id, String text, JLLatLng latLng, JLOptions options, JLServerToClientTransporter<?> transport) {
-        super(transport);
-        this.id = id;
+        super(id, transport);
         this.text = text;
         this.latLng = latLng;
         this.options = options;

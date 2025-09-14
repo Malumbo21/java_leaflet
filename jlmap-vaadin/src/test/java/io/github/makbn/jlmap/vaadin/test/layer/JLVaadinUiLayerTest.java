@@ -1,7 +1,7 @@
 package io.github.makbn.jlmap.vaadin.test.layer;
 
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.model.*;
 import io.github.makbn.jlmap.vaadin.layer.JLVaadinUiLayer;
@@ -27,7 +27,7 @@ class JLVaadinUiLayerTest {
     private JLWebEngine<PendingJavaScriptResult> mockEngine;
 
     @Mock
-    private JLMapCallbackHandler mockCallbackHandler;
+    private JLMapEventHandler mockCallbackHandler;
 
     @Mock
     private PendingJavaScriptResult mockJavaScriptResult;
@@ -213,8 +213,8 @@ class JLVaadinUiLayerTest {
         JLMarker marker1 = uiLayer.addMarker(position, "Test 1", false);
         JLMarker marker2 = uiLayer.addMarker(position, "Test 2", false);
 
-        assertThat(marker1.getId()).isNotEqualTo(marker2.getId());
-        assertThat(marker1.getId()).startsWith("JLMarker_");
-        assertThat(marker2.getId()).startsWith("JLMarker_");
+        assertThat(marker1.getJLId()).isNotEqualTo(marker2.getJLId());
+        assertThat(marker1.getJLId()).startsWith("JLMarker_");
+        assertThat(marker2.getJLId()).startsWith("JLMarker_");
     }
 }

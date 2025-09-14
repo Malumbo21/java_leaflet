@@ -3,6 +3,7 @@ package io.github.makbn.jlmap.model.builder;
 import io.github.makbn.jlmap.listener.JLAction;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +22,31 @@ public class JLCallbackBuilder {
         this.elementType = elementType;
     }
 
+    private static @NotNull String getCallbackFunction(JLAction event) {
+        return switch (event) {
+            case ADD, REMOVE -> """
+                    this.%3$s.on('%1$s', e => this.jlMapElement.$server.eventHandler('%1$s', '%2$s', e.target.uuid, this.map.getZoom(),
+                         JSON.stringify((typeof e.target.getLatLng === "function") ? 
+                         e.target.getLatLng() : 
+                         (typeof e.target.getLatLngs === "function") ? 
+                         e.target.getLatLngs() :
+                         {"lat": 0, "lng": 0}),
+                         JSON.stringify(this.map.getBounds())
+                     ));
+                    """;
+            default -> """
+                    this.%3$s.on('%1$s', e => this.jlMapElement.$server.eventHandler('%1$s', '%2$s', e.target.uuid, this.map.getZoom(),
+                        JSON.stringify((typeof e.target.getLatLng === "function") ? 
+                        { "lat": e.target.getLatLng().lat, "lng": e.target.getLatLng().lng } : 
+                        {"lat": e.latlng.lat, "lng": e.latlng.lng}),
+                        JSON.stringify(this.map.getBounds())
+                    ));
+                    """;
+        };
+    }
+
     public JLCallbackBuilder on(JLAction event) {
-        callbacks.add(String.format("""
-                this.%3$s.on('%1$s', e => this.jlMapElement.$server.eventHandler('%1$s', '%2$s', e.target.uuid, this.map.getZoom(),
-                    JSON.stringify((typeof e.target.getLatLng === "function") ? { "lat": e.target.getLatLng().lat, "lng": e.target.getLatLng().lng } : {"lat": e.latlng.lat, "lng": e.latlng.lng}),
-                    JSON.stringify(this.map.getBounds())
-                ));
-                """, event.getJsEventName(), elementType, varName));
+        callbacks.add(String.format(getCallbackFunction(event), event.getJsEventName(), elementType, varName));
         return this;
     }
 

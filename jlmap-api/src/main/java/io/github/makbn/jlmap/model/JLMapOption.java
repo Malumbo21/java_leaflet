@@ -1,5 +1,6 @@
 package io.github.makbn.jlmap.model;
 
+import io.github.makbn.jlmap.JLProperties;
 import io.github.makbn.jlmap.map.JLMapProvider;
 import lombok.Builder;
 import lombok.NonNull;
@@ -21,9 +22,6 @@ import java.util.Set;
 @Builder
 @Value
 public class JLMapOption {
-    public static final double DEFAULT_INITIAL_LATITUDE = 0.00;
-    public static final double DEFAULT_INITIAL_LONGITUDE = 0.00;
-    public static final int DEFAULT_INITIAL_ZOOM = 5;
 
     /**
      * The starting geographical coordinates (latitude and longitude)
@@ -33,8 +31,8 @@ public class JLMapOption {
     @Builder.Default
     @NonNull
     JLLatLng startCoordinate = JLLatLng.builder()
-            .lat(DEFAULT_INITIAL_LATITUDE)
-            .lng(DEFAULT_INITIAL_LONGITUDE)
+            .lat(JLProperties.DEFAULT_INITIAL_LATITUDE)
+            .lng(JLProperties.DEFAULT_INITIAL_LONGITUDE)
             .build();
     /**
      * The map type for configuring the map's appearance and behavior.
@@ -71,7 +69,7 @@ public class JLMapOption {
                 .map(Parameter::value)
                 .mapToInt(Integer::valueOf)
                 .findFirst()
-                .orElse(DEFAULT_INITIAL_ZOOM);
+                .orElse(JLProperties.DEFAULT_INITIAL_ZOOM);
     }
 
     /**

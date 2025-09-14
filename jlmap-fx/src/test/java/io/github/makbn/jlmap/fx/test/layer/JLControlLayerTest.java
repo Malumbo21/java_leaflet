@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.fx.test.layer;
 
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.fx.layer.JLControlLayer;
 import io.github.makbn.jlmap.model.JLBounds;
@@ -23,7 +23,7 @@ class JLControlLayerTest {
     private JLWebEngine<Object> engine;
 
     @Mock
-    private JLMapCallbackHandler callbackHandler;
+    private JLMapEventHandler callbackHandler;
 
     private JLControlLayer controlLayer;
 

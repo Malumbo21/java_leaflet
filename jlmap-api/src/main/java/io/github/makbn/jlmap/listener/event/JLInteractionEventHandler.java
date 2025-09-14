@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import io.github.makbn.jlmap.listener.JLAction;
 import io.github.makbn.jlmap.listener.OnJLActionListener;
 import io.github.makbn.jlmap.model.JLLatLng;
+import io.github.makbn.jlmap.model.JLObject;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
@@ -16,7 +17,7 @@ import java.util.Set;
  */
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class JLInteractionEventHandler implements JLEventHandler<Object> {
+public class JLInteractionEventHandler implements JLEventHandler<JLObject<?>> {
     /**
      * Fired when the user clicks (or taps) the layer.
      */
@@ -30,8 +31,9 @@ public class JLInteractionEventHandler implements JLEventHandler<Object> {
 
     Gson gson = new Gson();
 
+
     @Override
-    public void handle(@NonNull Object source, @NonNull String functionName, OnJLActionListener<Object> listener, Object param1, Object param2, Object param3, Object param4, Object param5) {
+    public void handle(@NonNull JLObject<?> source, @NonNull String functionName, OnJLActionListener<JLObject<?>> listener, Object param1, Object param2, Object param3, Object param4, Object param5) {
         switch (functionName) {
             case FUNCTION_CLICK -> listener
                     .onAction(source, new ClickEvent(JLAction.CLICK, gson.fromJson(String.valueOf(param4), JLLatLng.class)));

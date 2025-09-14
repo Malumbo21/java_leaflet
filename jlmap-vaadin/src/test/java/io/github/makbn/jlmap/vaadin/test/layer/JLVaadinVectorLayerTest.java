@@ -1,7 +1,7 @@
 package io.github.makbn.jlmap.vaadin.test.layer;
 
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.JLProperties;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.model.*;
@@ -24,7 +24,7 @@ class JLVaadinVectorLayerTest {
     private JLWebEngine<PendingJavaScriptResult> engine;
 
     @Mock
-    private JLMapCallbackHandler callbackHandler;
+    private JLMapEventHandler callbackHandler;
 
     @Mock
     private PendingJavaScriptResult mockJavaScriptResult;
@@ -78,7 +78,7 @@ class JLVaadinVectorLayerTest {
         assertThat(script).contains("addTo(this.map)");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith(JLPolyline.class.getSimpleName());
+        assertThat(result.getJLId()).startsWith(JLPolyline.class.getSimpleName());
     }
 
     @Test
@@ -156,7 +156,7 @@ class JLVaadinVectorLayerTest {
         assertThat(script).contains("on('remove'");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLCircle");
+        assertThat(result.getJLId()).startsWith("JLCircle");
     }
 
     @Test
@@ -215,7 +215,7 @@ class JLVaadinVectorLayerTest {
         assertThat(script).contains("on('dblclick'");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLCircleMarker");
+        assertThat(result.getJLId()).startsWith("JLCircleMarker");
     }
 
     @Test
@@ -264,7 +264,7 @@ class JLVaadinVectorLayerTest {
         assertThat(script).contains("[52.540000, 13.425000]");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLPolygon_");
+        assertThat(result.getJLId()).startsWith("JLPolygon_");
     }
 
     @Test
@@ -313,7 +313,7 @@ class JLVaadinVectorLayerTest {
         assertThat(script).contains("[52.540000,13.425000]");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLMultiPolyline_");
+        assertThat(result.getJLId()).startsWith("JLMultiPolyline_");
     }
 
     @Test
@@ -344,8 +344,8 @@ class JLVaadinVectorLayerTest {
         JLCircle circle1 = vectorLayer.addCircle(center);
         JLCircle circle2 = vectorLayer.addCircle(center);
 
-        assertThat(circle1.getId()).isNotEqualTo(circle2.getId());
-        assertThat(circle1.getId()).startsWith("JLCircle");
-        assertThat(circle2.getId()).startsWith("JLCircle");
+        assertThat(circle1.getJLId()).isNotEqualTo(circle2.getJLId());
+        assertThat(circle1.getJLId()).startsWith("JLCircle");
+        assertThat(circle2.getJLId()).startsWith("JLCircle");
     }
 }

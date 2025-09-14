@@ -1,7 +1,7 @@
 package io.github.makbn.jlmap.vaadin.test.layer;
 
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.model.JLBounds;
 import io.github.makbn.jlmap.model.JLLatLng;
@@ -24,7 +24,7 @@ class JLVaadinControlLayerTest {
     private JLWebEngine<PendingJavaScriptResult> mockEngine;
 
     @Mock
-    private JLMapCallbackHandler mockCallbackHandler;
+    private JLMapEventHandler mockCallbackHandler;
 
     @Mock
     private PendingJavaScriptResult mockJavaScriptResult;

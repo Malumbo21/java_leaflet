@@ -1,7 +1,7 @@
 package io.github.makbn.jlmap.fx;
 
-import io.github.makbn.jlmap.JLMapCallbackHandler;
-import io.github.makbn.jlmap.JLMapController;
+import io.github.makbn.jlmap.JLMap;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.JLProperties;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.fx.engine.JLJavaFXEngine;
@@ -11,7 +11,9 @@ import io.github.makbn.jlmap.fx.layer.JLGeoJsonLayer;
 import io.github.makbn.jlmap.fx.layer.JLUiLayer;
 import io.github.makbn.jlmap.fx.layer.JLVectorLayer;
 import io.github.makbn.jlmap.layer.leaflet.LeafletLayer;
-import io.github.makbn.jlmap.listener.OnJLMapViewListener;
+import io.github.makbn.jlmap.listener.JLAction;
+import io.github.makbn.jlmap.listener.OnJLActionListener;
+import io.github.makbn.jlmap.listener.event.MapEvent;
 import io.github.makbn.jlmap.map.JLMapProvider;
 import io.github.makbn.jlmap.model.JLLatLng;
 import io.github.makbn.jlmap.model.JLMapOption;
@@ -45,7 +47,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -53,18 +54,18 @@ import java.util.Set;
  */
 @Slf4j
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class JLMapView extends AnchorPane implements JLMapController<Object> {
+public class JLMapView extends AnchorPane implements JLMap<Object> {
     JLMapOption mapOption;
     JLWebEngine<Object> jlWebEngine;
     WebView webView;
-    JLMapCallbackHandler jlMapCallbackHandler;
+    JLMapEventHandler jlMapCallbackHandler;
     HashMap<Class<? extends LeafletLayer>, LeafletLayer> layers;
 
     @NonFinal
     boolean controllerAdded = false;
     @NonFinal
     @Nullable
-    OnJLMapViewListener mapListener;
+    OnJLActionListener<JLMap<Object>> mapListener;
 
     @Builder
     public JLMapView(@NonNull JLMapProvider jlMapProvider,
@@ -79,7 +80,7 @@ public class JLMapView extends AnchorPane implements JLMapController<Object> {
         this.layers = new HashMap<>();
         this.webView = new WebView();
         this.jlWebEngine = new JLJavaFXEngine(webView.getEngine());
-        this.jlMapCallbackHandler = new JLMapCallbackHandler(mapListener);
+        this.jlMapCallbackHandler = new JLMapEventHandler();
         initialize();
     }
 
@@ -105,7 +106,7 @@ public class JLMapView extends AnchorPane implements JLMapController<Object> {
                 webView.getEngine().setOnAlert(webErrorEvent -> log.error(webErrorEvent.getData()));
 
                 if (mapListener != null) {
-                    mapListener.mapLoadedSuccessfully(this);
+                    mapListener.onAction(this, new MapEvent(this, JLAction.MAP_LOADED));
                 }
 
             } else {
@@ -154,6 +155,16 @@ public class JLMapView extends AnchorPane implements JLMapController<Object> {
                 log.debug(e.getMessage(), e);
             }
         }
+    }
+
+    @Override
+    public OnJLActionListener<JLMap<Object>> getOnActionListener() {
+        return mapListener;
+    }
+
+    @Override
+    public void setOnActionListener(OnJLActionListener<JLMap<Object>> listener) {
+        this.mapListener = listener;
     }
 
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -225,11 +236,5 @@ public class JLMapView extends AnchorPane implements JLMapController<Object> {
         return jlWebEngine;
     }
 
-    public Optional<OnJLMapViewListener> getMapListener() {
-        return Optional.ofNullable(mapListener);
-    }
 
-    public void setMapListener(@NonNull OnJLMapViewListener mapListener) {
-        this.mapListener = mapListener;
-    }
 }

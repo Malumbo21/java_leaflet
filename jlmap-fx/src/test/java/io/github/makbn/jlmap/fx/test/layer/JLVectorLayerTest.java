@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.fx.test.layer;
 
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.fx.layer.JLVectorLayer;
 import io.github.makbn.jlmap.model.*;
@@ -22,7 +22,7 @@ class JLVectorLayerTest {
     private JLWebEngine<Object> engine;
 
     @Mock
-    private JLMapCallbackHandler callbackHandler;
+    private JLMapEventHandler callbackHandler;
 
     private JLVectorLayer vectorLayer;
 
@@ -83,7 +83,7 @@ class JLVectorLayerTest {
         assertThat(script).contains("addTo(this.map)");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLGeoJson");
+        assertThat(result.getJLId()).startsWith("JLGeoJson");
     }
 
     @Test
@@ -171,7 +171,7 @@ class JLVectorLayerTest {
         assertThat(script).contains("on('remove'");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLCircle");
+        assertThat(result.getJLId()).startsWith("JLCircle");
     }
 
     @Test
@@ -238,7 +238,7 @@ class JLVectorLayerTest {
         assertThat(script).contains("on('dblclick'");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLCircleMarker");
+        assertThat(result.getJLId()).startsWith("JLCircleMarker");
     }
 
     @Test
@@ -293,7 +293,7 @@ class JLVectorLayerTest {
         assertThat(script).contains("[52.540000, 13.425000]");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLGeoJson");
+        assertThat(result.getJLId()).startsWith("JLGeoJson");
     }
 
     @Test
@@ -348,7 +348,7 @@ class JLVectorLayerTest {
         assertThat(script).contains("[52.540000,13.425000]");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLGeoJson");
+        assertThat(result.getJLId()).startsWith("JLGeoJson");
     }
 
     @Test
@@ -384,8 +384,8 @@ class JLVectorLayerTest {
         JLCircle circle2 = vectorLayer.addCircle(center);
 
         // Then
-        assertThat(circle1.getId()).isNotEqualTo(circle2.getId());
-        assertThat(circle1.getId()).startsWith("JLCircle");
-        assertThat(circle2.getId()).startsWith("JLCircle");
+        assertThat(circle1.getJLId()).isNotEqualTo(circle2.getJLId());
+        assertThat(circle1.getJLId()).startsWith("JLCircle");
+        assertThat(circle2.getJLId()).startsWith("JLCircle");
     }
 }

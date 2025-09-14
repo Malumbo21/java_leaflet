@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.fx.layer;
 
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLClientToServerTransporter;
 import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
@@ -32,8 +32,7 @@ public class JLGeoJsonLayer extends JLLayer implements LeafletGeoJsonLayerInt {
     AtomicInteger idGenerator;
     JLClientToServerTransporter clientToServer;
 
-    public JLGeoJsonLayer(JLWebEngine<Object> engine,
-                          JLMapCallbackHandler callbackHandler) {
+    public JLGeoJsonLayer(JLWebEngine<Object> engine, JLMapEventHandler callbackHandler) {
         super(engine, callbackHandler);
         this.fromUrl = new JLGeoJsonURL();
         this.fromFile = new JLGeoJsonFile();
@@ -101,8 +100,8 @@ public class JLGeoJsonLayer extends JLLayer implements LeafletGeoJsonLayerInt {
                     jlCallbackBuilder.on(JLAction.ADD);
                     jlCallbackBuilder.on(JLAction.REMOVE);
                 });
-        engine.executeScript(builder.buildJsElement());
         JLGeoJson geoJson = builder.buildJLObject();
+        engine.executeScript(builder.buildJsElement());
         callbackHandler.addJLObject(elementUniqueName, geoJson);
         return geoJson;
     }

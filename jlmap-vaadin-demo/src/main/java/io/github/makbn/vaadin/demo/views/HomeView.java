@@ -7,9 +7,10 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import com.vaadin.flow.router.Route;
-import io.github.makbn.jlmap.JLMapController;
-import io.github.makbn.jlmap.listener.OnJLMapViewListener;
+import io.github.makbn.jlmap.JLMap;
+import io.github.makbn.jlmap.listener.OnJLActionListener;
 import io.github.makbn.jlmap.listener.event.ClickEvent;
 import io.github.makbn.jlmap.listener.event.Event;
 import io.github.makbn.jlmap.listener.event.MoveEvent;
@@ -18,7 +19,6 @@ import io.github.makbn.jlmap.model.*;
 import io.github.makbn.jlmap.vaadin.JLMapView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.util.annotation.NonNull;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -31,7 +31,7 @@ import java.util.function.BiFunction;
  * @author Matt Akbarian  (@makbn)
  */
 @Route("")
-public class HomeView extends FlexLayout implements OnJLMapViewListener {
+public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<PendingJavaScriptResult>> {
     public static final String MAP_API_KEY = "rNGhTaIpQWWH7C6QGKzF";
     public static final String LATITUDE = "Latitude";
     public static final String LONGITUDE = "Longitude";
@@ -62,7 +62,7 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
                 .startCoordinate(new JLLatLng(48.864716, 2.349014)) // Paris
                 .showZoomController(false)
                 .build();
-        mapView.setMapViewListener(this);
+        mapView.setOnActionListener(this);
         mapView.setSizeFull();
         add(mapView);
 
@@ -350,7 +350,7 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
                         .startCoordinate(new JLLatLng(48.864716, 2.349014))
                         .showZoomController(false)
                         .build();
-                newMapView.setMapViewListener(this);
+                newMapView.setOnActionListener(this);
                 newMapView.setSizeFull();
                 addComponentAtIndex(0, newMapView);
                 mapView = newMapView;
@@ -359,19 +359,8 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
         menuContent.add(mapProviderComboBox);
     }
 
-    /**
-     * Called when the map is loaded successfully.
-     *
-     * @param mapController the map controller
-     */
     @Override
-    public void mapLoadedSuccessfully(@NonNull JLMapController mapController) {
-        log.info("Map loaded successfully");
-        Notification.show("Map loaded successfully");
-    }
-
-    @Override
-    public void onActionReceived(Event event) {
-        Notification.show("Map Action received: " + event);
+    public void onAction(JLMap<PendingJavaScriptResult> source, Event event) {
+        Notification.show("Map event: " + event);
     }
 }

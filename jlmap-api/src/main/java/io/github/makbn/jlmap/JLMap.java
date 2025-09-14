@@ -1,9 +1,11 @@
 package io.github.makbn.jlmap;
 
+import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.exception.JLMapNotReadyException;
 import io.github.makbn.jlmap.layer.leaflet.*;
 import io.github.makbn.jlmap.model.JLLatLng;
+import io.github.makbn.jlmap.model.JLObject;
 import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +15,7 @@ import java.util.Map;
 /**
  * @author Matt Akbarian  (@makbn)
  */
-public interface JLMapController<T> {
+public interface JLMap<T> extends JLObject<JLMap<T>> {
 
     JLWebEngine<T> getJLEngine();
 
@@ -51,8 +53,9 @@ public interface JLMapController<T> {
         return getLayerInternal(LeafletGeoJsonLayerInt.class);
     }
 
+
     /**
-     * Sets the view of the map (geographical center).
+     * Sets the view of the map (geographical latLng).
      *
      * @param latLng Represents a geographical point with a certain latitude
      *               and longitude.
@@ -65,7 +68,7 @@ public interface JLMapController<T> {
     }
 
     /**
-     * Sets the view of the map (geographical center) with animation duration.
+     * Sets the view of the map (geographical latLng) with animation duration.
      *
      * @param duration Represents the duration of transition animation.
      * @param latLng   Represents a geographical point with a certain latitude
@@ -102,9 +105,9 @@ public interface JLMapController<T> {
     }
 
     /**
-     * Gets the current center of the map.
+     * Gets the current latLng of the map.
      *
-     * @return current center coordinates
+     * @return current latLng coordinates
      */
     default JLLatLng getCenter() {
         checkMapState();
@@ -135,5 +138,34 @@ public interface JLMapController<T> {
                 .map(layerClass::cast)
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    default JLServerToClientTransporter<?> getTransport() {
+        throw new UnsupportedOperationException("Use getJLEngine() instead");
+    }
+
+    @Override
+    default JLMap<T> self() {
+        return this;
+    }
+
+    @Override
+    default JLMap<T> setJLObjectOpacity(double opacity) {
+        getJLEngine()
+                .executeScript(String.format("this.map.setOpacity(%f);", opacity));
+        return this;
+    }
+
+    @Override
+    default JLMap<T> setZIndexOffset(int offset) {
+        getJLEngine()
+                .executeScript(String.format("this.map.setZIndex(%d);", offset));
+        return this;
+    }
+
+    @Override
+    default String getJLId() {
+        return "jl-map-view";
     }
 }

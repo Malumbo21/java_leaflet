@@ -1,4 +1,4 @@
-package io.github.makbn.jlmap.vaadin.bridge;
+package io.github.makbn.jlmap.vaadin.engine;
 
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import io.github.makbn.jlmap.engine.JLClientToServerTransporterBase;

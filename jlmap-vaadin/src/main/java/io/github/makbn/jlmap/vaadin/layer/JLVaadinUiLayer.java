@@ -1,7 +1,7 @@
 package io.github.makbn.jlmap.vaadin.layer;
 
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletUILayerInt;
 import io.github.makbn.jlmap.listener.JLAction;
@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class JLVaadinUiLayer extends JLVaadinLayer implements LeafletUILayerInt {
     AtomicInteger idGenerator;
 
-    public JLVaadinUiLayer(JLWebEngine<PendingJavaScriptResult> engine, JLMapCallbackHandler callbackHandler) {
+    public JLVaadinUiLayer(JLWebEngine<PendingJavaScriptResult> engine, JLMapEventHandler callbackHandler) {
         super(engine, callbackHandler);
         this.idGenerator = new AtomicInteger();
     }

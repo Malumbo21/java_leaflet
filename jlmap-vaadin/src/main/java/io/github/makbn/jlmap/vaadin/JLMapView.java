@@ -10,15 +10,17 @@ import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.orderedlayout.BoxSizing;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
-import io.github.makbn.jlmap.JLMapCallbackHandler;
-import io.github.makbn.jlmap.JLMapController;
+import io.github.makbn.jlmap.JLMap;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletLayer;
-import io.github.makbn.jlmap.listener.OnJLMapViewListener;
+import io.github.makbn.jlmap.listener.JLAction;
+import io.github.makbn.jlmap.listener.OnJLActionListener;
+import io.github.makbn.jlmap.listener.event.MapEvent;
 import io.github.makbn.jlmap.map.JLMapProvider;
 import io.github.makbn.jlmap.model.JLLatLng;
 import io.github.makbn.jlmap.model.JLMapOption;
-import io.github.makbn.jlmap.vaadin.bridge.JLVaadinClientToServerTransporter;
+import io.github.makbn.jlmap.vaadin.engine.JLVaadinClientToServerTransporter;
 import io.github.makbn.jlmap.vaadin.engine.JLVaadinEngine;
 import io.github.makbn.jlmap.vaadin.layer.JLVaadinControlLayer;
 import io.github.makbn.jlmap.vaadin.layer.JLVaadinGeoJsonLayer;
@@ -52,9 +54,9 @@ import java.util.Set;
 @StyleSheet("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css")
 @NpmPackage(value = "@maptiler/leaflet-maptilersdk", version = "4.1.0")
 @JavaScript("https://unpkg.com/leaflet-providers@latest/leaflet-providers.js")
-public class JLMapView extends VerticalLayout implements JLMapController<PendingJavaScriptResult> {
+public class JLMapView extends VerticalLayout implements JLMap<PendingJavaScriptResult> {
     transient JLMapOption mapOption;
-    transient JLMapCallbackHandler jlMapCallbackHandler;
+    transient JLMapEventHandler jlMapCallbackHandler;
     transient JLWebEngine<PendingJavaScriptResult> jlWebEngine;
     @Getter
     transient HashMap<Class<? extends LeafletLayer>, LeafletLayer> layers;
@@ -62,13 +64,13 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
     transient boolean controllerAdded = false;
     @NonFinal
     @Nullable
-    transient OnJLMapViewListener mapListener;
+    transient OnJLActionListener<JLMap<PendingJavaScriptResult>> mapListener;
 
     /**
      * Creates a new JLMapView with the specified map type, starting coordinates, and zoom controller visibility.
      *
-     * @param jlMapProvider            the type of map to display
-     * @param startCoordinate    the initial center coordinates of the map
+     * @param jlMapProvider      the type of map to display
+     * @param startCoordinate    the initial latLng coordinates of the map
      * @param showZoomController whether to show the zoom controller
      */
     @Builder
@@ -89,7 +91,7 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
                         Objects.toString(showZoomController))))
                 .build();
         this.jlWebEngine = new JLVaadinEngine(this::getElement);
-        this.jlMapCallbackHandler = new JLMapCallbackHandler(mapListener);
+        this.jlMapCallbackHandler = new JLMapEventHandler();
         this.layers = new HashMap<>();
     }
 
@@ -107,7 +109,7 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
         addControllerToDocument();
 
         if (mapListener != null) {
-            mapListener.mapLoadedSuccessfully(this);
+            mapListener.onAction(this, new MapEvent(this, JLAction.MAP_LOADED));
         }
     }
 
@@ -119,11 +121,36 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
     @SuppressWarnings("all")
     private String generateInitializeFunctionCall() {
         String call = """
-                this.jlMapElement = document.querySelector('jl-map-view');
-                this.map = L.map(this.jlMapElement, {zoomControl: %b}).setView([%s, %s], %d);
+                function getCenterOfElement(mapElement) {
+                   return JSON.stringify({
+                           lat: mapElement.getCenter().lat,
+                           lng: mapElement.getCenter().lng
+                   });
+                }
                 
-                L.tileLayer('%s')
-                .addTo(this.map);
+                function getMapBounds(mapElement) {
+                   return JSON.stringify({
+                                   "northEast": {
+                                       "lat": mapElement.getBounds().getNorthEast().lat,
+                                       "lng": mapElement.getBounds().getNorthEast().lng,
+                                   },
+                                   "southWest": {
+                                       "lat": mapElement.getBounds().getSouthWest().lat,
+                                       "lng": mapElement.getBounds().getSouthWest().lng,
+                                   }
+                               });
+                   }
+                   this.jlMapElement = document.querySelector('jl-map-view');
+                   this.map = L.map(this.jlMapElement, {zoomControl: %b}).setView([%s, %s], %d);
+                
+                   L.tileLayer('%s')
+                   .addTo(this.map);
+                
+                   this.map.on('click', e => this.jlMapElement.$server.eventHandler('click', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(this.map), getMapBounds(this.map)));
+                   this.map.on('move', e => this.jlMapElement.$server.eventHandler('move', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(this.map), getMapBounds(this.map)));
+                   this.map.on('movestart', e => this.jlMapElement.$server.eventHandler('movestart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(this.map), getMapBounds(this.map)));
+                   this.map.on('moveend', e => this.jlMapElement.$server.eventHandler('moveend', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(this.map), getMapBounds(this.map)));
+                   this.map.on('zoom', e => this.jlMapElement.$server.eventHandler('zoom', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(this.map), getMapBounds(this.map)));
                 """;
 
         return call.formatted(mapOption.zoomControlEnabled(),
@@ -213,22 +240,18 @@ public class JLMapView extends VerticalLayout implements JLMapController<Pending
         }
     }
 
+    @Override
+    public OnJLActionListener<JLMap<PendingJavaScriptResult>> getOnActionListener() {
+        return mapListener;
+    }
+
     /**
      * Sets the listener for map view events.
      *
      * @param listener the listener
      */
-    public void setMapViewListener(OnJLMapViewListener listener) {
-        this.mapListener = listener;
-    }
-
-    /**
-     * Gets the GeoJson layer for this map view.
-     *
-     * @return JLVaadinGeoJsonLayer
-     */
     @Override
-    public JLVaadinGeoJsonLayer getGeoJsonLayer() {
-        return (JLVaadinGeoJsonLayer) layers.get(JLVaadinGeoJsonLayer.class);
+    public void setOnActionListener(OnJLActionListener<JLMap<PendingJavaScriptResult>> listener) {
+        this.mapListener = listener;
     }
 }

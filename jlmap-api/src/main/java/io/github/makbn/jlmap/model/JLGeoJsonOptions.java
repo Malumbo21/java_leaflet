@@ -16,18 +16,18 @@ import java.util.function.Predicate;
  */
 @Getter
 @Setter
-@AllArgsConstructor
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JLGeoJsonOptions {
 
     /**
-     * Default options for GeoJSON layers
+     * get default options for GeoJSON layers
      */
-    public static final JLGeoJsonOptions DEFAULT = JLGeoJsonOptions.builder().build();
-
-
+    public static JLGeoJsonOptions getDefault() {
+        return JLGeoJsonOptions.builder().build();
+    }
     /**
      * Style function that receives feature properties and returns styling options.
      * Called by Leaflet for each feature - the call is proxied back to this Java function.

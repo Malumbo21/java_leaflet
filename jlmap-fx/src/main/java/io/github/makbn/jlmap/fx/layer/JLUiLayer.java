@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.fx.layer;
 
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletUILayerInt;
@@ -25,7 +25,7 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
     JLServerToClientTransporter<Object> transporter;
     AtomicInteger idGenerator;
 
-    public JLUiLayer(JLWebEngine<Object> engine, JLMapCallbackHandler callbackHandler) {
+    public JLUiLayer(JLWebEngine<Object> engine, JLMapEventHandler callbackHandler) {
         super(engine, callbackHandler);
         this.idGenerator = new AtomicInteger();
         this.transporter = () -> transport -> {

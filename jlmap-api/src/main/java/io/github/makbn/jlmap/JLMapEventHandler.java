@@ -1,6 +1,5 @@
 package io.github.makbn.jlmap;
 
-import io.github.makbn.jlmap.listener.OnJLMapViewListener;
 import io.github.makbn.jlmap.listener.event.*;
 import io.github.makbn.jlmap.model.*;
 import lombok.AccessLevel;
@@ -8,15 +7,19 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Matt Akbarian  (@makbn)
  */
 @Slf4j
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class JLMapCallbackHandler {
-    OnJLMapViewListener listener;
+public class JLMapEventHandler {
+    public static final String MAP_TYPE = "map";
+    public static final String MAP_UUID = "main_map";
     HashMap<Class<? extends JLObject<?>>, HashMap<String, JLObject<?>>> jlObjects;
 
     HashMap<String, Class<? extends JLObject<?>>[]> classMap;
@@ -27,8 +30,7 @@ public class JLMapCallbackHandler {
             new JLLayerEventHandler()
     );
 
-    public JLMapCallbackHandler(OnJLMapViewListener listener) {
-        this.listener = listener;
+    public JLMapEventHandler() {
         this.jlObjects = new HashMap<>();
         this.classMap = new HashMap<>();
         initClassMap();
@@ -55,7 +57,7 @@ public class JLMapCallbackHandler {
      * @param param3       additional param
      */
     @SuppressWarnings("all")
-    public void functionCalled(Object mapView, String functionName, Object jlType, Object uuid,
+    public void functionCalled(JLObject<?> mapView, String functionName, Object jlType, Object uuid,
                                Object param1, Object param2, Object param3) {
         log.debug("function: {} jlType: {} uuid: {} param1: {} param2: {} param3: {}",
                 functionName, jlType, uuid, param1, param2, param3);
@@ -80,10 +82,10 @@ public class JLMapCallbackHandler {
                                     .forEach(hadler -> hadler.handle(jlObject, functionName,
                                             jlObject.getOnActionListener(), jlType, uuid, param1, param2, param3));
                         });
-            } else if (jlType.equals("main_map") && getMapListener().isPresent()) {
+            } else if (MAP_TYPE.equals(jlType) && MAP_UUID.equals(uuid) && mapView.getOnActionListener() != null) {
                 eventHandlers.stream()
                         .filter(hadler -> hadler.canHandle(functionName))
-                        .forEach(hadler -> hadler.handle(mapView, functionName, getMapListener().get(),
+                        .forEach(hadler -> hadler.handle(mapView, functionName, mapView.getOnActionListener(),
                                 jlType, uuid, param1, param2, param3));
             }
         } catch (Exception e) {
@@ -108,11 +110,7 @@ public class JLMapCallbackHandler {
             return;
         JLObject<?> object = jlObjects.get(targetClass).remove(key);
         if (object != null) {
-            log.error("{} id: {} removed", targetClass.getSimpleName(), object.getId());
+            log.error("{} id: {} removed", targetClass.getSimpleName(), object.getJLId());
         }
-    }
-
-    private Optional<OnJLMapViewListener> getMapListener() {
-        return Optional.ofNullable(listener);
     }
 }

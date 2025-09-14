@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 
 import java.util.List;
 import java.util.Map;
@@ -18,9 +17,7 @@ import java.util.Map;
  */
 @Getter
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public final class JLGeoJson extends JLObject<JLGeoJson> {
-    @NonFinal
-    String id;
+public final class JLGeoJson extends JLObjectBase<JLGeoJson> {
     /**
      * GeoJSON content as a string
      */
@@ -32,10 +29,9 @@ public final class JLGeoJson extends JLObject<JLGeoJson> {
 
     @Builder
     public JLGeoJson(String id, String geoJsonContent, JLGeoJsonOptions geoJsonOptions, JLServerToClientTransporter<?> transport) {
-        super(transport);
-        this.id = id;
+        super(id, transport);
         this.geoJsonContent = geoJsonContent;
-        this.geoJsonOptions = geoJsonOptions != null ? geoJsonOptions : JLGeoJsonOptions.DEFAULT;
+        this.geoJsonOptions = geoJsonOptions != null ? geoJsonOptions : JLGeoJsonOptions.getDefault();
     }
 
     @Override

@@ -15,12 +15,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public final class JLCircleMarker extends JLObject<JLCircleMarker> {
-    /**
-     * id of object! this is an internal id for JLMap Application and not
-     * related to Leaflet!
-     */
-    String id;
+public final class JLCircleMarker extends JLObjectBase<JLCircleMarker> {
     /**
      * Radius of the circle marker, in pixels
      */
@@ -36,8 +31,7 @@ public final class JLCircleMarker extends JLObject<JLCircleMarker> {
 
     @Builder
     public JLCircleMarker(String id, double radius, JLLatLng latLng, JLOptions options, JLServerToClientTransporter<?> transport) {
-        super(transport);
-        this.id = id;
+        super(id, transport);
         this.radius = radius;
         this.latLng = latLng;
         this.options = options;

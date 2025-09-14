@@ -13,7 +13,7 @@ import java.util.List;
 public class JLGeoJsonObjectBuilder extends JLObjectBuilder<JLGeoJson, JLGeoJsonObjectBuilder> {
     String geoJson;
     JLGeoJsonOptions geoJsonOptions;
-    JLClientToServerTransporter bridge;
+    JLClientToServerTransporter serverToClient;
 
     @Override
     protected String getElementType() {
@@ -36,7 +36,7 @@ public class JLGeoJsonObjectBuilder extends JLObjectBuilder<JLGeoJson, JLGeoJson
     }
 
     public JLGeoJsonObjectBuilder withBridge(JLClientToServerTransporter bridge) {
-        this.bridge = bridge;
+        this.serverToClient = bridge;
         return this;
     }
 
@@ -98,15 +98,6 @@ public class JLGeoJsonObjectBuilder extends JLObjectBuilder<JLGeoJson, JLGeoJson
         return String.join(", ", optionParts);
     }
 
-
-    private String getValue(Object value) {
-        if (value instanceof String stringValue) {
-            return "\"" + stringValue + "\"";
-        } else {
-            return value.toString();
-        }
-    }
-
     @Override
     public JLGeoJson buildJLObject() {
         JLGeoJson geoJsonObject = JLGeoJson.builder()
@@ -116,11 +107,7 @@ public class JLGeoJsonObjectBuilder extends JLObjectBuilder<JLGeoJson, JLGeoJson
                 .transport(transporter)
                 .build();
 
-        // Register the object with the bridge if it has functional callbacks
-        if (bridge != null && geoJsonOptions != null &&
-                (geoJsonOptions.getStyleFunction() != null || geoJsonOptions.getFilter() != null)) {
-            bridge.registerObject(uuid, geoJsonObject);
-        }
+        serverToClient.registerObject(uuid, geoJsonObject);
 
         return geoJsonObject;
     }

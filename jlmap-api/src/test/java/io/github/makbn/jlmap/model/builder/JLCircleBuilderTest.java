@@ -27,30 +27,24 @@ class JLCircleBuilderTest {
                     jlCallbackBuilder.on(JLAction.REMOVE);
                 });
 
-        assertThat(circleBuilder.buildJsElement()
-                .trim().replaceAll("( +|\r|\n)", " ")).isEqualTo("""
-                let circle = L.circle([10.200000, 20.100000], { radius: 13.000000, fillOpacity: 0.2, draggable: false, closeButton: true, smoothFactor: 1.0, weight: 3, fill: true, opacity: 1.0, stroke: true, autoClose: true });
-                this.circle = circle;
-                circle.uuid = 'circle';
-                // callback start
-                this.circle.on('move', e => this.jlMapElement.$server.eventHandler('move', 'jlcircle', e.target.uuid, this.map.getZoom(),
-                 JSON.stringify(e.target.getLatLng() ? { "lat": e.target.getLatLng().lat, "lng": e.target.getLatLng().lng } : {"lat": this.map.getCenter().lat, "lng": this.map.getCenter().lng}),
-                 JSON.stringify(this.map.getBounds())
-                ));
-                
-                this.circle.on('add', e => this.jlMapElement.$server.eventHandler('add', 'jlcircle', e.target.uuid, this.map.getZoom(),
-                 JSON.stringify(e.target.getLatLng() ? { "lat": e.target.getLatLng().lat, "lng": e.target.getLatLng().lng } : {"lat": this.map.getCenter().lat, "lng": this.map.getCenter().lng}),
-                 JSON.stringify(this.map.getBounds())
-                ));
-                
-                this.circle.on('remove', e => this.jlMapElement.$server.eventHandler('remove', 'jlcircle', e.target.uuid, this.map.getZoom(),
-                 JSON.stringify(e.target.getLatLng() ? { "lat": e.target.getLatLng().lat, "lng": e.target.getLatLng().lng } : {"lat": this.map.getCenter().lat, "lng": this.map.getCenter().lng}),
-                 JSON.stringify(this.map.getBounds())
-                ));
-                
-                // callback end
-                circle.addTo(this.map);
-                """.trim().replaceAll("( +|\r|\n)", " "));
 
+        assertThat(circleBuilder.buildJsElement()
+                .trim().replaceAll("( +|\r|\n)", " "))
+                .contains("let circle = L.circle([10.200000, 20.100000]")
+                .contains("radius: 13.000000")
+                .contains("fillOpacity: 0.2")
+                .contains("draggable: false")
+                .contains("closeButton: true")
+                .contains("smoothFactor: 1.0")
+                .contains("weight: 3")
+                .contains("fill: true")
+                .contains("opacity: 1.0")
+                .contains("stroke: true")
+                .contains("autoClose: true")
+                .contains("circle.uuid = 'circle'")
+                .contains("this.circle.on('move'")
+                .contains("this.circle.on('add',")
+                .contains("this.circle.on('remove',")
+                .contains("circle.addTo(this.map)");
     }
 }

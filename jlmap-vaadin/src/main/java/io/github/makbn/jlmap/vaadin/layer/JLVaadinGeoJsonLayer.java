@@ -1,7 +1,7 @@
 package io.github.makbn.jlmap.vaadin.layer;
 
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLClientToServerTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.exception.JLException;
@@ -13,7 +13,7 @@ import io.github.makbn.jlmap.listener.JLAction;
 import io.github.makbn.jlmap.model.JLGeoJson;
 import io.github.makbn.jlmap.model.JLGeoJsonOptions;
 import io.github.makbn.jlmap.model.builder.JLGeoJsonObjectBuilder;
-import io.github.makbn.jlmap.vaadin.bridge.JLVaadinClientToServerTransporter;
+import io.github.makbn.jlmap.vaadin.engine.JLVaadinClientToServerTransporter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -42,7 +42,7 @@ public class JLVaadinGeoJsonLayer extends JLVaadinLayer implements LeafletGeoJso
     JLClientToServerTransporter clientToServer;
 
     public JLVaadinGeoJsonLayer(JLWebEngine<PendingJavaScriptResult> engine,
-                                JLMapCallbackHandler callbackHandler) {
+                                JLMapEventHandler callbackHandler) {
         super(engine, callbackHandler);
         this.fromUrl = new JLGeoJsonURL();
         this.fromFile = new JLGeoJsonFile();
@@ -141,8 +141,8 @@ public class JLVaadinGeoJsonLayer extends JLVaadinLayer implements LeafletGeoJso
                     jlCallbackBuilder.on(JLAction.ADD);
                     jlCallbackBuilder.on(JLAction.REMOVE);
                 });
-        engine.executeScript(builder.buildJsElement());
         var obj = builder.buildJLObject();
+        engine.executeScript(builder.buildJsElement());
         callbackHandler.addJLObject(elementUniqueName, obj);
         return obj;
     }

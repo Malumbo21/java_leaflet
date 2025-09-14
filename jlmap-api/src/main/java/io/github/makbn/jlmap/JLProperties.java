@@ -16,4 +16,7 @@ public final class JLProperties {
     public static final int INIT_MIN_WIDTH_STAGE = INIT_MIN_WIDTH;
     public static final int INIT_MIN_HEIGHT_STAGE = INIT_MIN_HEIGHT;
     public static final double START_ANIMATION_RADIUS = 10;
+    public static final double DEFAULT_INITIAL_LATITUDE = 0.00;
+    public static final double DEFAULT_INITIAL_LONGITUDE = 0.00;
+    public static final int DEFAULT_INITIAL_ZOOM = 5;
 }

@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.fx.test.layer;
 
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.exception.JLException;
 import io.github.makbn.jlmap.fx.layer.JLGeoJsonLayer;
@@ -43,7 +43,7 @@ class JLGeoJsonLayerTest {
     @Mock
     private JLWebEngine<Object> engine;
     @Mock
-    private JLMapCallbackHandler callbackHandler;
+    private JLMapEventHandler callbackHandler;
     @Mock
     private JLGeoJsonFile mockGeoJsonFile;
     @Mock
@@ -125,7 +125,7 @@ class JLGeoJsonLayerTest {
         assertThat(script).contains("addTo(this.map)");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLGeoJson");
+        assertThat(result.getJLId()).startsWith("JLGeoJson");
         assertThat(result.getGeoJsonContent()).isEqualTo(VALID_GEOJSON);
     }
 
@@ -185,7 +185,7 @@ class JLGeoJsonLayerTest {
         assertThat(script).contains("13.4050, 52.5200");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLGeoJson");
+        assertThat(result.getJLId()).startsWith("JLGeoJson");
         assertThat(result.getGeoJsonContent()).isEqualTo(simpleGeoJson);
     }
 
@@ -240,7 +240,7 @@ class JLGeoJsonLayerTest {
         assertThat(script).contains("Berlin");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLGeoJson");
+        assertThat(result.getJLId()).startsWith("JLGeoJson");
         assertThat(result.getGeoJsonContent()).isEqualTo(content);
     }
 
@@ -310,9 +310,9 @@ class JLGeoJsonLayerTest {
         JLGeoJson geoJson2 = geoJsonLayer.addFromContent(VALID_GEOJSON);
 
         // Then
-        assertThat(geoJson1.getId()).isNotEqualTo(geoJson2.getId());
-        assertThat(geoJson1.getId()).startsWith("JLGeoJson");
-        assertThat(geoJson2.getId()).startsWith("JLGeoJson");
+        assertThat(geoJson1.getJLId()).isNotEqualTo(geoJson2.getJLId());
+        assertThat(geoJson1.getJLId()).startsWith("JLGeoJson");
+        assertThat(geoJson2.getJLId()).startsWith("JLGeoJson");
     }
 
     // === Multiple Data Sources Test ===
@@ -329,13 +329,13 @@ class JLGeoJsonLayerTest {
         JLGeoJson geoJson2 = geoJsonLayer.addFromFile(new File("test.geojson"));
         JLGeoJson geoJson3 = geoJsonLayer.addFromUrl("https://example.com/data.geojson");
 
-        geoJsonLayer.removeGeoJson(geoJson1.getId());
+        geoJsonLayer.removeGeoJson(geoJson1.getJLId());
 
         // Then
         verify(engine, times(3)).executeScript(argThat(script -> script.contains("L.geoJSON")));
         verify(engine).executeScript(argThat(script -> script.contains("removeLayer")));
 
         verify(callbackHandler, times(3)).addJLObject(anyString(), any(JLGeoJson.class));
-        verify(callbackHandler).remove(JLGeoJson.class, geoJson1.getId());
+        verify(callbackHandler).remove(JLGeoJson.class, geoJson1.getJLId());
     }
 }

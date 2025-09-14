@@ -13,16 +13,12 @@ public interface JLFunctionBase<T extends JLObject<T>> {
 
     default T remove() {
         getTransport().execute(new JLTransportRequest(self(),
-                String.format("%1$s.%2$s.remove()", mapReference(), self().getId())));
+                String.format("this.%1$s.remove()", self().getJLId())));
         return self();
     }
 
     default String getAttribution() {
         return getTransport().execute(new JLTransportRequest(self(),
-                String.format("%1$s.%2$s.getAttribution();", mapReference(), self().getId())));
-    }
-
-    default String mapReference() {
-        return "this";
+                String.format("this.%1$s.getAttribution();", self().getJLId())));
     }
 }

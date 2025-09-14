@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.fx.test.layer;
 
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.fx.layer.JLUiLayer;
 import io.github.makbn.jlmap.model.*;
@@ -22,7 +22,7 @@ class JLUiLayerTest {
     private JLWebEngine<Object> engine;
 
     @Mock
-    private JLMapCallbackHandler callbackHandler;
+    private JLMapEventHandler callbackHandler;
 
     private JLUiLayer uiLayer;
 
@@ -84,7 +84,7 @@ class JLUiLayerTest {
         assertThat(script).contains("on('click'");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLGeoJson");
+        assertThat(result.getJLId()).startsWith("JLGeoJson");
         assertThat(result.getText()).isEqualTo(text);
     }
 
@@ -163,7 +163,7 @@ class JLUiLayerTest {
         assertThat(script).contains("addTo(this.map)");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLGeoJson");
+        assertThat(result.getJLId()).startsWith("JLGeoJson");
         assertThat(result.getText()).isEqualTo(text);
     }
 
@@ -252,7 +252,7 @@ class JLUiLayerTest {
         assertThat(script).contains("addTo(this.map)");
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).startsWith("JLGeoJson");
+        assertThat(result.getJLId()).startsWith("JLGeoJson");
         assertThat(result.getImageUrl()).isEqualTo(imageUrl);
     }
 
@@ -289,8 +289,8 @@ class JLUiLayerTest {
         JLMarker marker2 = uiLayer.addMarker(position, "Marker 2", false);
 
         // Then
-        assertThat(marker1.getId()).isNotEqualTo(marker2.getId());
-        assertThat(marker1.getId()).startsWith("JLGeoJson");
-        assertThat(marker2.getId()).startsWith("JLGeoJson");
+        assertThat(marker1.getJLId()).isNotEqualTo(marker2.getJLId());
+        assertThat(marker1.getJLId()).startsWith("JLGeoJson");
+        assertThat(marker2.getJLId()).startsWith("JLGeoJson");
     }
 }

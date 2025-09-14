@@ -12,6 +12,8 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum JLAction {
+    MAP_LOADED("load"),
+    MAP_FAILED("failed"),
     /**
      * Zoom level changes continuously
      */

@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.fx.layer;
 
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletLayer;
 import io.github.makbn.jlmap.model.JLObject;
@@ -21,11 +21,11 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PROTECTED)
 public abstract class JLLayer implements LeafletLayer {
     JLWebEngine<Object> engine;
-    JLMapCallbackHandler callbackHandler;
+    JLMapEventHandler callbackHandler;
     String componentSessionId = "_" + UUID.randomUUID().toString().replace("-", "") + "_";
 
 
-    protected JLLayer(JLWebEngine<Object> engine, JLMapCallbackHandler callbackHandler) {
+    protected JLLayer(JLWebEngine<Object> engine, JLMapEventHandler callbackHandler) {
         this.engine = engine;
         this.callbackHandler = callbackHandler;
     }

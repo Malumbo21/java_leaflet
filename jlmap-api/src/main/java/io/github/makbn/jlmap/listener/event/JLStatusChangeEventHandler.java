@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import io.github.makbn.jlmap.listener.JLAction;
 import io.github.makbn.jlmap.listener.OnJLActionListener;
 import io.github.makbn.jlmap.model.JLBounds;
-import io.github.makbn.jlmap.model.JLLatLng;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,13 +27,13 @@ public class JLStatusChangeEventHandler implements JLEventHandler<Object> {
     public void handle(@NonNull Object source, @NonNull String functionName, OnJLActionListener<Object> listener, Object param1, Object param2, Object param3, Object param4, Object param5) {
         switch (functionName) {
             case FUNCTION_ZOOM -> listener
-                    .onAction(source, new LayerEvent(JLAction.ZOOM, gson.fromJson(String.valueOf(param4), JLLatLng.class), gson.fromJson(String.valueOf(param5), JLBounds.class)));
+                    .onAction(source, new ZoomEvent(JLAction.ZOOM, gson.fromJson(String.valueOf(param3), Integer.class), gson.fromJson(String.valueOf(param5), JLBounds.class)));
             case FUNCTION_ZOOM_START -> listener
-                    .onAction(source, new LayerEvent(JLAction.ZOOM_START, gson.fromJson(String.valueOf(param4), JLLatLng.class), gson.fromJson(String.valueOf(param5), JLBounds.class)));
+                    .onAction(source, new ZoomEvent(JLAction.ZOOM_START, gson.fromJson(String.valueOf(param3), Integer.class), gson.fromJson(String.valueOf(param5), JLBounds.class)));
             case FUNCTION_ZOOM_END -> listener
-                    .onAction(source, new LayerEvent(JLAction.ZOOM_END, gson.fromJson(String.valueOf(param4), JLLatLng.class), gson.fromJson(String.valueOf(param5), JLBounds.class)));
+                    .onAction(source, new ZoomEvent(JLAction.ZOOM_END, gson.fromJson(String.valueOf(param3), Integer.class), gson.fromJson(String.valueOf(param5), JLBounds.class)));
             case FUNCTION_RESIZE -> listener
-                    .onAction(source, new LayerEvent(JLAction.RESIZE, gson.fromJson(String.valueOf(param4), JLLatLng.class), gson.fromJson(String.valueOf(param5), JLBounds.class)));
+                    .onAction(source, new ZoomEvent(JLAction.RESIZE, gson.fromJson(String.valueOf(param4), Integer.class), gson.fromJson(String.valueOf(param5), JLBounds.class)));
             default -> log.error("{} not implemented!", functionName);
         }
     }

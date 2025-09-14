@@ -34,6 +34,7 @@ module io.github.makbn.jlmap.vaadin {
     requires vaadin.spring;
     requires gwt.elemental;
     requires org.apache.tomcat.embed.core;
+    requires spring.context;
 
     // Exports for public API
     exports io.github.makbn.jlmap.vaadin;

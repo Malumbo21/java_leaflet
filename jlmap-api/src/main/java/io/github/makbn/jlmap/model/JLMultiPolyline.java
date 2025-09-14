@@ -15,12 +15,7 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public final class JLMultiPolyline extends JLObject<JLMultiPolyline> {
-    /**
-     * id of JLMultiPolyline! this is an internal id for JLMap Application
-     * and not related to Leaflet!
-     */
-    String id;
+public final class JLMultiPolyline extends JLObjectBase<JLMultiPolyline> {
     /**
      * theming options for JLMultiPolyline. all options are not available!
      */
@@ -33,8 +28,7 @@ public final class JLMultiPolyline extends JLObject<JLMultiPolyline> {
 
     @Builder
     public JLMultiPolyline(String id, JLOptions options, JLLatLng[][] vertices, JLServerToClientTransporter<?> transport) {
-        super(transport);
-        this.id = id;
+        super(id, transport);
         this.options = options;
         this.vertices = vertices;
     }

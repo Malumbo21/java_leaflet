@@ -1,6 +1,6 @@
 package io.github.makbn.jlmap.fx.layer;
 
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.JLProperties;
 import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
@@ -26,7 +26,7 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
     AtomicInteger idGenerator;
     JLServerToClientTransporter transporter;
 
-    public JLVectorLayer(JLWebEngine<Object> engine, JLMapCallbackHandler callbackHandler) {
+    public JLVectorLayer(JLWebEngine<Object> engine, JLMapEventHandler callbackHandler) {
         super(engine, callbackHandler);
         this.idGenerator = new AtomicInteger();
         this.transporter = () -> transport -> {
@@ -210,7 +210,7 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
     /**
      * Drawing circle overlays on the map.
      *
-     * @param center  center point of circle
+     * @param center  latLng point of circle
      * @param radius  radius of circle in meters
      * @param options see {@link JLOptions} for customizing
      * @return the added {@link JLCircle}  to map
@@ -273,7 +273,7 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
     /**
      * Drawing circle marker overlays on the map.
      *
-     * @param center  center point of circle marker
+     * @param center  latLng point of circle marker
      * @param radius  radius of circle marker in pixels
      * @param options see {@link JLOptions} for customizing
      * @return the added {@link JLCircleMarker}  to map

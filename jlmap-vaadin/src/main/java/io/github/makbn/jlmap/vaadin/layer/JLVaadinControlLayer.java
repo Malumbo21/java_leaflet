@@ -1,7 +1,7 @@
 package io.github.makbn.jlmap.vaadin.layer;
 
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletControlLayerInt;
 import io.github.makbn.jlmap.model.JLBounds;
@@ -13,7 +13,7 @@ import io.github.makbn.jlmap.model.JLLatLng;
  * @author Matt Akbarian  (@makbn)
  */
 public class JLVaadinControlLayer extends JLVaadinLayer implements LeafletControlLayerInt {
-    public JLVaadinControlLayer(JLWebEngine<PendingJavaScriptResult> engine, JLMapCallbackHandler callbackHandler) {
+    public JLVaadinControlLayer(JLWebEngine<PendingJavaScriptResult> engine, JLMapEventHandler callbackHandler) {
         super(engine, callbackHandler);
     }
 

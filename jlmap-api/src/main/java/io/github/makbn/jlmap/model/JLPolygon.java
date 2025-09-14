@@ -17,12 +17,8 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public final class JLPolygon extends JLObject<JLPolygon> {
-    /**
-     * id of JLPolygon! this is an internal id for JLMap Application and not
-     * related to Leaflet!
-     */
-    String id;
+public final class JLPolygon extends JLObjectBase<JLPolygon> {
+
     /**
      * theming options for JLMultiPolyline. all options are not available!
      */
@@ -38,8 +34,7 @@ public final class JLPolygon extends JLObject<JLPolygon> {
 
     @Builder
     public JLPolygon(String id, JLOptions options, JLLatLng[][][] vertices, JLServerToClientTransporter<?> transport) {
-        super(transport);
-        this.id = id;
+        super(id, transport);
         this.options = options;
         this.vertices = vertices;
     }

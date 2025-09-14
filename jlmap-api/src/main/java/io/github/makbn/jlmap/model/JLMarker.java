@@ -3,7 +3,6 @@ package io.github.makbn.jlmap.model;
 
 import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.engine.JLTransportRequest;
-import io.github.makbn.jlmap.listener.JLAction;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -19,12 +18,7 @@ import lombok.experimental.NonFinal;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public final class JLMarker extends JLObject<JLMarker> {
-    /**
-     * id of object! this is an internal id for JLMap Application and not
-     * related to Leaflet!
-     */
-    String id;
+public final class JLMarker extends JLObjectBase<JLMarker> {
     /**
      * optional text for showing on created JLMarker tooltip.
      */
@@ -40,21 +34,9 @@ public final class JLMarker extends JLObject<JLMarker> {
 
     @Builder
     public JLMarker(String id, String text, JLLatLng latLng, JLServerToClientTransporter<?> transport) {
-        super(transport);
-        this.id = id;
+        super(id, transport);
         this.text = text;
         this.latLng = latLng;
-    }
-
-    @Override
-    public void update(Object... params) {
-        super.update(params);
-        if (params != null && params.length > 0
-                && String.valueOf(params[0]).equals(
-                JLAction.MOVE_END.getJsEventName())
-                && params[1] != null) {
-            latLng = (JLLatLng) params[1];
-        }
     }
 
     @Override
@@ -70,7 +52,7 @@ public final class JLMarker extends JLObject<JLMarker> {
      */
     public JLMarker setLatLng(JLLatLng latLng) {
         getTransport().execute(new JLTransportRequest(this,
-                String.format("this.%s.setLatLng([%f, %f]);", getId(), latLng.getLat(), latLng.getLng())));
+                String.format("this.%s.setLatLng([%f, %f]);", getJLId(), latLng.getLat(), latLng.getLng())));
         this.latLng = latLng;
         return this;
     }
@@ -84,7 +66,7 @@ public final class JLMarker extends JLObject<JLMarker> {
      */
     public JLMarker setIcon(JLIcon icon) {
         getTransport().execute(new JLTransportRequest(this,
-                String.format("this.%s.setIcon(%s);", getId(), icon)));
+                String.format("this.%s.setIcon(%s);", getJLId(), icon)));
         this.icon = icon;
         return this;
     }

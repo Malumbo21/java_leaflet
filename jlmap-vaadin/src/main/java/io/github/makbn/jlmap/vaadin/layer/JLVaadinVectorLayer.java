@@ -1,7 +1,7 @@
 package io.github.makbn.jlmap.vaadin.layer;
 
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
-import io.github.makbn.jlmap.JLMapCallbackHandler;
+import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.JLProperties;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletVectorLayerInt;
@@ -27,7 +27,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
     AtomicInteger idGenerator;
 
     public JLVaadinVectorLayer(JLWebEngine<PendingJavaScriptResult> engine,
-                               JLMapCallbackHandler callbackHandler) {
+                               JLMapEventHandler callbackHandler) {
         super(engine, callbackHandler);
         this.idGenerator = new AtomicInteger();
     }
@@ -233,7 +233,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
     /**
      * Drawing circle overlays on the map.
      *
-     * @param center  center point of circle
+     * @param center  latLng point of circle
      * @param radius  radius of circle in meters
      * @param options see {@link JLOptions} for customizing
      * @return the added {@link JLCircle}  to map
@@ -295,7 +295,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
     /**
      * Drawing circle marker overlays on the map.
      *
-     * @param center  center point of circle marker
+     * @param center  latLng point of circle marker
      * @param radius  radius of circle marker in pixels
      * @param options see {@link JLOptions} for customizing
      * @return the added {@link JLCircleMarker}  to map

@@ -1,8 +1,10 @@
 package io.github.makbn.jlmap.model;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 /**
  * Color abstraction for map styling.
@@ -12,11 +14,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class JLColor {
-    private double redParameter;
-    private double greenParameter;
-    private double blueParameter;
-    private double opacity;
+    double redParameter;
+    double greenParameter;
+    double blueParameter;
+    double opacity;
 
     public JLColor(double red, double green, double blue) {
         this(red, green, blue, 1.0);

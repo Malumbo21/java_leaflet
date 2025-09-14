@@ -225,7 +225,55 @@ public class HomeView extends FlexLayout implements OnJLMapViewListener {
             }
         });
         addUsOutlineGeoJson.setClassName(MENU_ITEM_CLASS);
-        menuContent.add(section.apply("Geo Json Layer", new Button[]{loadGeoJson, addUsOutlineGeoJson}));
+
+        Button flyToNYC = new Button("Fly to NYC", e -> {
+            // Fly to New York City to see the demo features
+            mapView.getControlLayer().flyTo(new JLLatLng(40.7831, -73.9712), 12);
+            Notification.show("Flying to New York City!");
+        });
+        flyToNYC.setClassName(MENU_ITEM_CLASS);
+
+        Button demoStyleFunctions = new Button("Demo Style Functions", e -> {
+            // Create a sample GeoJSON with different feature types
+            DialogBuilder.builder()
+                    .addUpload()
+                    .get(event -> {
+                        loadStyledGeoJson(event);
+                    });
+        });
+        demoStyleFunctions.setClassName(MENU_ITEM_CLASS);
+
+        menuContent.add(section.apply("Geo Json Layer", new Button[]{loadGeoJson, addUsOutlineGeoJson, flyToNYC, demoStyleFunctions}));
+    }
+
+    private void loadStyledGeoJson(Map<String, Object> event) {
+        // Create GeoJSON options with style function
+        JLGeoJsonOptions options = JLGeoJsonOptions.builder()
+                .styleFunction(features -> JLOptions.builder()
+                        .fill(true)
+                        .fillColor(JLColor.fromHex((String) features.get(0).get("fill")))
+                        .fillOpacity((Double) features.get(0).get("fill-opacity"))
+                        .stroke(true)
+                        .color(JLColor.fromHex((String) features.get(0).get("stroke")))
+                        .build())
+                .filter(features -> {
+                    Map<String, Object> featureProperties = features.get(0);
+                    // Show features with population > 1M, rivers longer than 500km, or parks larger than 100 hectares
+                    return ((Integer) featureProperties.get("id")) % 2 == 0;
+                }).build();
+
+        try {
+            // First fly to Canada to see the features
+            mapView.getControlLayer().flyTo(new JLLatLng(51.76, -114.06), 5);
+
+            JLGeoJson geoJson = mapView.getGeoJsonLayer().addFromFile(((Set<File>) event.get("uploadedFiles")).iterator().next(), options);
+            geoJson.setOnActionListener((jlGeoJson, event1) ->
+                    Notification.show("GeoJSON Feature clicked: " + event1));
+
+        } catch (Exception ex) {
+            Notification.show("Failed to add GeoJSON: " + ex.getMessage());
+            log.error("Failed to add styled GeoJSON", ex);
+        }
     }
 
     private void addUiSection(VerticalLayout menuContent, BiFunction<String, Button[], VerticalLayout> section) {

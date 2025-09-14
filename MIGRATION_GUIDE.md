@@ -6,18 +6,23 @@ This guide helps you migrate your JavaFX applications from Java Leaflet v1.x to 
 
 - **Multi-Module Architecture**: Clean separation between API, JavaFX, and Vaadin implementations
 - **Vaadin Support**: New Vaadin component implementation alongside existing JavaFX support
-- **Unified API**: Consistent interface across different UI frameworks
+- **Unified API**: Consistent interface across different UI frameworks with new JLMap interface
+- **Enhanced Event Handling**: Refactored event system with improved map event handling and better center/bounds
+  calculations
+- **Modern Map Providers**: New JLMapProvider system replacing legacy MapType enumeration
+- **Enhanced Object Model**: New JLObjectBase implementation with improved callback handling
 - **Enhanced Modularity**: Better separation of concerns and extensibility
 - **Modern Java**: Full Java 17+ and JPMS support
 
 ## 🔄 **Migration Overview**
 
-| Component | v1.x | v2.0.0 | Change Required |
-|-----------|------|---------|-----------------|
-| **Main Class** | `io.github.makbn.jlmap.JLMapView` | `io.github.makbn.jlmap.fx.JLMapView` | ✅ **Yes** |
-| **Maven Artifact** | `jlmap` | `jlmap-fx` | ✅ **Yes** |
-| **API Classes** | `io.github.makbn.jlmap.*` | `io.github.makbn.jlmap.*` | ❌ **No** |
-| **Usage Code** | All existing code | All existing code | ❌ **No** |
+| Component          | v1.x                              | v2.0.0                               | Change Required    |
+|--------------------|-----------------------------------|--------------------------------------|--------------------|
+| **Main Class**     | `io.github.makbn.jlmap.JLMapView` | `io.github.makbn.jlmap.fx.JLMapView` | ✅ **Yes**          |
+| **Maven Artifact** | `jlmap`                           | `jlmap-fx`                           | ✅ **Yes**          |
+| **Map Provider**   | `JLProperties.MapType`            | `JLMapProvider`                      | ⚠️ **Recommended** |
+| **API Classes**    | `io.github.makbn.jlmap.*`         | `io.github.makbn.jlmap.*`            | ❌ **No**           |
+| **Usage Code**     | Most existing code                | Most existing code                   | ❌ **No**           |
 
 ## 📋 **Step-by-Step Migration**
 
@@ -128,9 +133,19 @@ public class MapExample extends Application {
     
     @Override
     public void start(Stage stage) {
-        // Create a map view - EXACTLY the same code!
+        // Create a map view with modern provider (recommended)
         JLMapView map = JLMapView.builder()
-                .jlMapProvider(JLMapProvider.MAP_TILER.parameter(new JLMapOption.Parameter("key", MAP_API_KEY)).build())
+                .jlMapProvider(JLMapProvider.OSM_MAPNIK.build())  // New provider system
+                .startCoordinate(JLLatLng.builder()
+                        .lat(51.044)
+                        .lng(114.07)
+                        .build())
+                .showZoomController(true)
+                .build();
+
+        // OR continue using legacy mapType (still supported)
+        JLMapView mapLegacy = JLMapView.builder()
+                .mapType(JLProperties.MapType.OSM_MAPNIK)  // Legacy approach still works
                 .startCoordinate(JLLatLng.builder()
                         .lat(51.044)
                         .lng(114.07)
@@ -167,21 +182,21 @@ public class AdvancedMapExample {
     public void setupMap() {
         JLMapView map = JLMapView.builder()
                 .mapType(JLProperties.MapType.OSM_MAPNIK)
-                .startCoordinate(new JLLatLng(35.63, 51.45))
+                .startCoordinate(new JLLatLng(51.04530, -114.06283))
                 .showZoomController(true)
                 .build();
         
         // Add markers
         map.getUiLayer().addMarker(
-            new JLLatLng(35.63, 51.45), 
-            "Tehran", 
-            true
+                new JLLatLng(51.04530, -114.06283),
+                "Calgary",
+                true
         );
         
         // Add shapes
         map.getVectorLayer().addCircle(
-            new JLLatLng(35.63, 51.45), 
-            30000, 
+                new JLLatLng(51.04530, -114.06283),
+                30000, 
             JLOptions.DEFAULT
         );
         
@@ -202,24 +217,24 @@ import io.github.makbn.jlmap.listener.OnJLMapViewListener; // ← No change
 public class AdvancedMapExample {
     
     public void setupMap() {
-        // EXACTLY the same code!
+        // Modern provider approach (recommended)
         JLMapView map = JLMapView.builder()
-                .jlMapProvider(JLMapProvider.MAP_TILER.parameter(new JLMapOption.Parameter("key", MAP_API_KEY)).build())
-                .startCoordinate(new JLLatLng(35.63, 51.45))
+                .jlMapProvider(JLMapProvider.OSM_MAPNIK.build())  // New provider system
+                .startCoordinate(new JLLatLng(51.04530, -114.06283))
                 .showZoomController(true)
                 .build();
         
         // EXACTLY the same code!
         map.getUiLayer().addMarker(
-            new JLLatLng(35.63, 51.45), 
-            "Tehran", 
-            true
+                new JLLatLng(51.04530, -114.06283),
+                "Calgary",
+                true
         );
         
         // EXACTLY the same code!
         map.getVectorLayer().addCircle(
-            new JLLatLng(35.63, 51.45), 
-            30000, 
+                new JLLatLng(51.04530, -114.06283),
+                30000, 
             JLOptions.DEFAULT
         );
         
@@ -230,17 +245,89 @@ public class AdvancedMapExample {
 }
 ```
 
+## Listeners
+
+Version 1.x had two different listeners, `OnJLObjectActionListener` for JL Objects, and `OnJLMapViewListener` for the
+map itself. With version 2.x to make it more simple
+these two listeners have been replaced by `OnJLActionListener` that only offers one functional method.
+
+**Before (v1.x):**
+
+```jshelllanguage
+
+// map listener
+    map.setMapListener(new OnJLMapViewListener() {
+        @Override
+        public void mapLoadedSuccessfully(@NonNull JLMapView mapView) {
+            // ...
+        }
+
+        @Override
+        public void mapFailed() {
+            // ...
+        }
+
+        @Override
+        public void onAction(Event event) {
+            // ...
+        }
+    });
+
+    // jl object listener
+    map.getVectorLayer().addPolygon(vertices).setOnActionListener(new OnJLObjectActionListener<>() {
+        @Override
+        public void click(JLPolygon jlPolygon, Action action) {
+            // ...
+        }
+
+        @Override
+        public void move(JLPolygon jlPolygon, Action action) {
+            // ...
+        }
+    });
+
+```
+
+**After (v2.0.0):**
+
+```jshelllanguage
+    // map listener
+    mapView.setOnActionListener((source, event) -> {
+        if (event instanceof MapEvent mapEvent && mapEvent.action() == JLAction.MAP_LOADED) {
+            // ...
+        } else if (event instanceof ClickEvent clickEvent) {
+            //...
+        }
+    });
+
+    // jl object listener
+    marker.setOnActionListener((jlMarker, event1) -> {
+        if (event1 instanceof MoveEvent) {
+            // ...
+        } else if (event1 instanceof ClickEvent) {
+            // ...
+        }
+    });
+```
+
 ## 🔍 **What Stays the Same**
 
 ✅ **No changes needed for:**
 
 ### **API Classes**
-- `io.github.makbn.jlmap.JLProperties`
+
+- `io.github.makbn.jlmap.JLProperties` (constants and legacy MapType enum)
 - `io.github.makbn.jlmap.model.*` (JLLatLng, JLOptions, JLColor, etc.)
 - `io.github.makbn.jlmap.listener.*` (OnJLMapViewListener, OnJLObjectActionListener, etc.)
 - `io.github.makbn.jlmap.layer.leaflet.*` (interfaces)
 - `io.github.makbn.jlmap.geojson.*` (GeoJSON support)
 - `io.github.makbn.jlmap.exception.*` (exceptions)
+
+### **Enhanced Features (Backward Compatible)**
+
+- **JLMap Interface**: New unified interface for both JavaFX and Vaadin implementations
+- **JLObjectBase**: Enhanced base class with improved event handling
+- **Event System**: Refactored with better parameter passing and callback handling
 
 ### **Functionality**
 - Builder pattern usage
@@ -283,6 +370,49 @@ java_leaflet/
 └── jlmap-vaadin-demo/              ← Vaadin Demo
 ```
 
+## 🆕 **New Features & Enhancements**
+
+### **Modern Map Provider System**
+
+Replace legacy `JLProperties.MapType` with new `JLMapProvider` system:
+
+**New Approach (Recommended):**
+
+```java
+// Use built-in providers
+JLMapProvider osmProvider = JLMapProvider.OSM_MAPNIK.build();
+JLMapProvider topoProvider = JLMapProvider.OPEN_TOPO.build();
+
+// For providers requiring API keys
+JLMapProvider mapTilerProvider = JLMapProvider.MAP_TILER
+        .parameter(new JLMapOption.Parameter("key", "your-api-key"))
+        .build();
+
+// Use with map
+JLMapView map = JLMapView.builder()
+        .jlMapProvider(osmProvider)
+        .startCoordinate(new JLLatLng(35.63, 51.45))
+        .build();
+```
+
+**Legacy Approach (Still Supported):**
+
+```java
+// Old enum-based approach still works
+JLMapView map = JLMapView.builder()
+                .mapType(JLProperties.MapType.OSM_MAPNIK)
+                .startCoordinate(new JLLatLng(35.63, 51.45))
+                .build();
+```
+
+### **Enhanced Event Handling**
+
+v2.0.0 includes improved event handling with better parameter passing:
+
+- Enhanced map center and bounds calculations
+- Improved callback registration system
+- Better event parameter handling for user interactions
+
 ## 🚨 **Common Migration Issues**
 
 ### **Issue 1: Class Not Found**
@@ -305,6 +435,14 @@ Error: Could not resolve dependency io.github.makbn:jlmap
 ```
 
 **Solution:** Change artifactId from `jlmap` to `jlmap-fx`
+
+### **Issue 4: Deprecated MapType Usage**
+
+```
+Warning: JLProperties.MapType may be deprecated in future versions
+```
+
+**Solution:** Migrate to `JLMapProvider` system for future compatibility
 
 ## 🧪 **Testing Your Migration**
 
@@ -332,12 +470,20 @@ jar --describe-module --file target/jlmap-fx-2.0.0.jar
 
 ## 🎯 **Migration Checklist**
 
+### **Essential Changes (Required)**
 - [ ] Update Maven dependency from `jlmap` to `jlmap-fx`
 - [ ] Update import from `io.github.makbn.jlmap.JLMapView` to `io.github.makbn.jlmap.fx.JLMapView`
 - [ ] Update module-info.java (if using JPMS) from `requires io.github.makbn.jlmap` to `requires io.github.makbn.jlmap.fx`
 - [ ] Test compilation with `mvn clean compile`
 - [ ] Test runtime with `mvn javafx:run`
 - [ ] Verify all existing functionality works as expected
+
+### **Recommended Upgrades (Optional)**
+
+- [ ] Migrate from `JLProperties.MapType` to `JLMapProvider` system
+- [ ] Review and test enhanced event handling features
+- [ ] Update any custom map provider configurations
+- [ ] Consider using new JLMap interface for better abstraction
 
 ## 💡 **Pro Tips**
 

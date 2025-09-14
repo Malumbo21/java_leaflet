@@ -121,8 +121,8 @@ public class JLMapView extends VerticalLayout implements JLMap<PendingJavaScript
     @SuppressWarnings("all")
     private String generateInitializeFunctionCall() {
         String call = """
-                function getCenterOfElement(mapElement) {
-                   return JSON.stringify({
+                function getCenterOfElement(event, mapElement) {
+                   return JSON.stringify(event.latlng ? event.latlng: {
                            lat: mapElement.getCenter().lat,
                            lng: mapElement.getCenter().lng
                    });
@@ -146,11 +146,11 @@ public class JLMapView extends VerticalLayout implements JLMap<PendingJavaScript
                    L.tileLayer('%s')
                    .addTo(this.map);
                 
-                   this.map.on('click', e => this.jlMapElement.$server.eventHandler('click', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(this.map), getMapBounds(this.map)));
-                   this.map.on('move', e => this.jlMapElement.$server.eventHandler('move', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(this.map), getMapBounds(this.map)));
-                   this.map.on('movestart', e => this.jlMapElement.$server.eventHandler('movestart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(this.map), getMapBounds(this.map)));
-                   this.map.on('moveend', e => this.jlMapElement.$server.eventHandler('moveend', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(this.map), getMapBounds(this.map)));
-                   this.map.on('zoom', e => this.jlMapElement.$server.eventHandler('zoom', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(this.map), getMapBounds(this.map)));
+                   this.map.on('click', e => this.jlMapElement.$server.eventHandler('click', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('move', e => this.jlMapElement.$server.eventHandler('move', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('movestart', e => this.jlMapElement.$server.eventHandler('movestart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('moveend', e => this.jlMapElement.$server.eventHandler('moveend', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('zoom', e => this.jlMapElement.$server.eventHandler('zoom', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
                 """;
 
         return call.formatted(mapOption.zoomControlEnabled(),

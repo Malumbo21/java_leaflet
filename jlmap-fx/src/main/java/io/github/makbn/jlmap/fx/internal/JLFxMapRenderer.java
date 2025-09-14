@@ -52,32 +52,25 @@ public class JLFxMapRenderer implements JLMapRenderer {
     private String mapHelperFunctions() {
         // language=js
         return """
-                    function getCenterOfElement(element) {
-                       if (element && element.getLatLng) {
-                              return JSON.stringify({
-                                lat: element.getLatLng().lat,
-                                lng: element.getLatLng().lng
-                              });
-                            } else {
-                              return JSON.stringify({
-                                lat: this.map.getCenter().lat,
-                                lng: this.map.getCenter().lng
-                              });
-                            }
-                       }
+                function getCenterOfElement(event, mapElement) {
+                   return JSON.stringify(event.latlng ? event.latlng: {
+                           lat: mapElement.getCenter().lat,
+                           lng: mapElement.getCenter().lng
+                   });
+                }
                 
-                     function getMapBounds() {
-                        return JSON.stringify({
-                                        "northEast": {
-                                            "lat": this.map.getBounds().getNorthEast().lat,
-                                            "lng": this.map.getBounds().getNorthEast().lng,
-                                        },
-                                        "southWest": {
-                                            "lat": this.map.getBounds().getSouthWest().lat,
-                                            "lng": this.map.getBounds().getSouthWest().lng,
-                                        }
-                                    });
-                        }
+                function getMapBounds(mapElement) {
+                   return JSON.stringify({
+                                   "northEast": {
+                                       "lat": mapElement.getBounds().getNorthEast().lat,
+                                       "lng": mapElement.getBounds().getNorthEast().lng,
+                                   },
+                                   "southWest": {
+                                       "lat": mapElement.getBounds().getSouthWest().lat,
+                                       "lng": mapElement.getBounds().getSouthWest().lng,
+                                   }
+                               });
+                   }
                 """;
     }
 
@@ -117,11 +110,11 @@ public class JLFxMapRenderer implements JLMapRenderer {
                 
                     this.map.jlid = 'main_map';
                 
-                    this.map.on('click', e => eventHandler('click', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(), getMapBounds()));
-                    this.map.on('move', e => eventHandler('move', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(), getMapBounds()));
-                    this.map.on('movestart', e => eventHandler('movestart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(), getMapBounds()));
-                    this.map.on('moveend', e => eventHandler('moveend', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(), getMapBounds()));
-                    this.map.on('zoom', e => eventHandler('zoom', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(), getMapBounds()));
+                    this.map.on('click', e => eventHandler('click', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                    this.map.on('move', e => eventHandler('move', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                    this.map.on('movestart', e => eventHandler('movestart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                    this.map.on('moveend', e => eventHandler('moveend', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                    this.map.on('zoom', e => eventHandler('zoom', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
                 
                 """.formatted(option.zoomControlEnabled(),
                 option.getStartCoordinate().getLat(),

@@ -1,6 +1,8 @@
 package io.github.makbn.jlmap.listener.event;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import io.github.makbn.jlmap.listener.JLAction;
 import io.github.makbn.jlmap.listener.OnJLActionListener;
 import io.github.makbn.jlmap.model.JLBounds;
@@ -10,6 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Set;
 
 /**
+ * Handles status change events for the map, such as zoom and resize actions.
+ * <p>
+ * This event handler listens for map status changes and dispatches corresponding events:
+ * @see ZoomEvent
+ * @see ResizeEvent
+ *
  * @author Matt Akbarian  (@makbn)
  */
 @Slf4j
@@ -33,9 +41,28 @@ public class JLStatusChangeEventHandler implements JLEventHandler<Object> {
             case FUNCTION_ZOOM_END -> listener
                     .onAction(source, new ZoomEvent(JLAction.ZOOM_END, gson.fromJson(String.valueOf(param3), Integer.class), gson.fromJson(String.valueOf(param5), JLBounds.class)));
             case FUNCTION_RESIZE -> listener
-                    .onAction(source, new ZoomEvent(JLAction.RESIZE, gson.fromJson(String.valueOf(param4), Integer.class), gson.fromJson(String.valueOf(param5), JLBounds.class)));
+                    .onAction(source, new ResizeEvent(JLAction.RESIZE,
+                            getDimension(param4, false, "Width"),
+                            getDimension(param4, false, "Height"),
+                            getDimension(param4, true, "Width"),
+                            getDimension(param4, true, "Height"),
+                            gson.fromJson(String.valueOf(param3), Integer.class)));
             default -> log.error("{} not implemented!", functionName);
         }
+    }
+
+    /**
+     * Extracts the dimension value from the JSON object for new or old width/height.
+     *
+     * @param json      the JSON object as string
+     * @param forOld    true for old dimension, false for new
+     * @param dimension "Width" or "Height"
+     * @return the dimension value as int
+     */
+    private int getDimension(Object json, boolean forOld, String dimension) {
+        String field = (forOld ? "old" : "new") + dimension;
+        JsonElement dimensionElement = JsonParser.parseString(String.valueOf(json));
+        return dimensionElement.getAsJsonObject().get(field).getAsInt();
     }
 
     @Override

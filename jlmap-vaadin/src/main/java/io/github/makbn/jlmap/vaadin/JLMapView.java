@@ -109,7 +109,7 @@ public class JLMapView extends VerticalLayout implements JLMap<PendingJavaScript
         addControllerToDocument();
 
         if (mapListener != null) {
-            mapListener.onAction(this, new MapEvent(this, JLAction.MAP_LOADED));
+            mapListener.onAction(this, new MapEvent(JLAction.MAP_LOADED));
         }
     }
 
@@ -151,6 +151,9 @@ public class JLMapView extends VerticalLayout implements JLMap<PendingJavaScript
                    this.map.on('movestart', e => this.jlMapElement.$server.eventHandler('movestart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
                    this.map.on('moveend', e => this.jlMapElement.$server.eventHandler('moveend', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
                    this.map.on('zoom', e => this.jlMapElement.$server.eventHandler('zoom', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('zoomstart', e => this.jlMapElement.$server.eventHandler('zoomstart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('zoomend', e => this.jlMapElement.$server.eventHandler('zoomend', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('resize', e => this.jlMapElement.$server.eventHandler('resize', 'map', 'main_map', this.map.getZoom(), JSON.stringify({"oldWidth": e.oldSize.x, "oldHeight": e.oldSize.y, "newWidth": e.newSize.x, "newHeight": e.newSize.y}), getMapBounds(this.map)));
                 """;
 
         return call.formatted(mapOption.zoomControlEnabled(),

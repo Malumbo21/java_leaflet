@@ -106,7 +106,7 @@ public class JLMapView extends AnchorPane implements JLMap<Object> {
                 webView.getEngine().setOnAlert(webErrorEvent -> log.error(webErrorEvent.getData()));
 
                 if (mapListener != null) {
-                    mapListener.onAction(this, new MapEvent(this, JLAction.MAP_LOADED));
+                    mapListener.onAction(this, new MapEvent(JLAction.MAP_LOADED));
                 }
 
             } else {

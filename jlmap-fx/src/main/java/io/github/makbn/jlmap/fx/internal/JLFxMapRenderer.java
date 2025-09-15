@@ -115,6 +115,9 @@ public class JLFxMapRenderer implements JLMapRenderer {
                     this.map.on('movestart', e => eventHandler('movestart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
                     this.map.on('moveend', e => eventHandler('moveend', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
                     this.map.on('zoom', e => eventHandler('zoom', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                    this.map.on('zoomstart', e => eventHandler('zoomstart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                    this.map.on('zoomend', e => eventHandler('zoomend', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                    this.map.on('resize', e => eventHandler('resize', 'map', 'main_map', this.map.getZoom(), JSON.stringify({"oldWidth": e.oldSize.x, "oldHeight": e.oldSize.y, "newWidth": e.newSize.x, "newHeight": e.newSize.y}), getMapBounds(this.map)));
                 
                 """.formatted(option.zoomControlEnabled(),
                 option.getStartCoordinate().getLat(),

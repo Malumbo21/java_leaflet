@@ -34,6 +34,12 @@ public class JLCallbackBuilder {
                          JSON.stringify(this.map.getBounds())
                      ));
                     """;
+            case RESIZE -> """
+                    this.map.on('%1$s', e => this.jlMapElement.$server.eventHandler('%1$s', '%2$s', this.%3$s.uuid, this.map.getZoom(),
+                        JSON.stringify({"oldWidth": e.oldSize.x, "oldHeight": e.oldSize.y, "newWidth": e.newSize.x, "newHeight": e.newSize.y}),
+                        JSON.stringify(this.map.getBounds())
+                    ));
+                    """;
             default -> """
                     this.%3$s.on('%1$s', e => this.jlMapElement.$server.eventHandler('%1$s', '%2$s', e.target.uuid, this.map.getZoom(),
                         JSON.stringify((typeof e.target.getLatLng === "function") ? 

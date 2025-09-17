@@ -22,6 +22,7 @@ Project Source Code: https://github.com/makbn/java_leaflet
 - **Unified API**: Consistent interface across different UI frameworks
 - **Enhanced Modularity**: Better separation of concerns and extensibility
 - **Modern Java**: Full Java 17+ and JPMS support
+- **Comprehensive Documentation**: Complete JavaDoc coverage with usage examples and technical details
 
 ## 🏗️ Project Structure
 
@@ -73,7 +74,6 @@ refer to the [Feature Comparison Table](Feature.md).
 Add the JavaFX dependency to your `pom.xml`:
 
 ```xml
-
 <dependency>
     <groupId>io.github.makbn</groupId>
     <artifactId>jlmap-fx</artifactId>
@@ -86,7 +86,6 @@ Add the JavaFX dependency to your `pom.xml`:
 Add the Vaadin dependency to your `pom.xml`:
 
 ```xml
-
 <dependency>
     <groupId>io.github.makbn</groupId>
     <artifactId>jlmap-vaadin</artifactId>
@@ -168,23 +167,17 @@ public class VaadinMapExample extends VerticalLayout {
 
 ### Map Control
 
-```jshelllanguage
-    // Change the current coordinate
-    map.setView(JLLatLng.builder()
-            .lng(10)
-            .lat(10)
-            .build());
+```java
+// Change the current coordinate
+map.setView(JLLatLng.builder()
+        .lng(10)
+        .lat(10)
+        .build());
 
-    // Map zoom functionalities
-    map.getControlLayer().
-            setZoom(5);
-
-    map.getControlLayer().zoomIn(2);
-    map.
-
-            getControlLayer().
-
-            zoomOut(1);
+// Map zoom functionalities
+map.getControlLayer().setZoom(5);
+map.getControlLayer().zoomIn(2);
+map.getControlLayer().zoomOut(1);
 ```
 
 ### Adding Markers
@@ -192,21 +185,17 @@ public class VaadinMapExample extends VerticalLayout {
 ```java
 // Add a marker to the UI layer
 JLMarker marker = map.getUiLayer()
-                .addMarker(JLLatLng.builder()
-                        .lat(35.63)
-                        .lng(51.45)
-                        .build(), "Tehran", true);
+        .addMarker(JLLatLng.builder()
+                .lat(35.63)
+                .lng(51.45)
+                .build(), "Tehran", true);
 
 // Add event listeners
-marker.
-
-setOnActionListener((jlMarker, event) ->{
-        if(event instanceof ClickEvent){
-        System.out.
-
-println("Marker clicked: "+jlMarker);
+marker.setOnActionListener((jlMarker, event) -> {
+    if (event instanceof ClickEvent) {
+        System.out.println("Marker clicked: " + jlMarker);
     }
-            });
+});
 ```
 
 ### Adding Shapes
@@ -214,28 +203,14 @@ println("Marker clicked: "+jlMarker);
 ```java
 // Add a circle
 map.getVectorLayer()
-    .
-
-addCircle(JLLatLng.builder()
-        .
-
-lat(35.63)
-        .
-
-lng(51.45)
-        .
-
-build(), 
+    .addCircle(JLLatLng.builder()
+            .lat(35.63)
+            .lng(51.45)
+            .build(),
         30000,
-                JLOptions.
-
-builder()
-                .
-
-color(JLColor.BLACK)
-                .
-
-build());
+        JLOptions.builder()
+                .color(JLColor.BLACK)
+                .build());
 ```
 
 ### Layer Management
@@ -351,7 +326,6 @@ v2.0.0
 **Before (v1.x):**
 
 ```xml
-
 <dependency>
     <groupId>io.github.makbn</groupId>
     <artifactId>jlmap</artifactId>
@@ -369,11 +343,11 @@ v2.0.0
     <version>2.0.0</version>
 </dependency>
 
-        <!-- For Vaadin -->
+<!-- For Vaadin -->
 <dependency>
-<groupId>io.github.makbn</groupId>
-<artifactId>jlmap-vaadin</artifactId>
-<version>2.0.0</version>
+    <groupId>io.github.makbn</groupId>
+    <artifactId>jlmap-vaadin</artifactId>
+    <version>2.0.0</version>
 </dependency>
 ```
 
@@ -424,6 +398,7 @@ the [LICENSE](LICENSE) file for details.
 - **Enhancement**: Unified API across different UI frameworks & Improved Fluent API
 - **Enhancement**: Improved separation of concerns
 - **Enhancement**: Added comprehensive demo applications
+- **Enhancement**: Complete JavaDoc documentation with usage examples and technical details
 - **Fix**: Resolved module system compatibility issues
 
 ### Version 1.9.5

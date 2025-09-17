@@ -45,7 +45,9 @@ public final class JLOptions {
     @Builder.Default
     boolean fill = true;
 
-    /** Stroke opacity */
+    /**
+     * Stroke or image opacity
+     */
     @Builder.Default
     double opacity = 1.0;
 

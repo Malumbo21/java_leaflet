@@ -168,35 +168,23 @@ public class VaadinMapExample extends VerticalLayout {
 
 ### Map Control
 
-```java
-// Change the current coordinate
-map.setView(JLLatLng.builder()
-        .
+```jshelllanguage
+    // Change the current coordinate
+    map.setView(JLLatLng.builder()
+            .lng(10)
+            .lat(10)
+            .build());
 
-lng(10)
-        .
+    // Map zoom functionalities
+    map.getControlLayer().
+            setZoom(5);
 
-lat(10)
-        .
+    map.getControlLayer().zoomIn(2);
+    map.
 
-build());
+            getControlLayer().
 
-// Map zoom functionalities
-        map.
-
-getControlLayer().
-
-setZoom(5);
-map.
-
-getControlLayer().
-
-zoomIn(2);
-map.
-
-getControlLayer().
-
-zoomOut(1);
+            zoomOut(1);
 ```
 
 ### Adding Markers
@@ -453,12 +441,14 @@ the [LICENSE](LICENSE) file for details.
 - [X] Vaadin implementation
 - [X] Unified API design
 - [X] Enhanced modularity
-- [ ] Additional UI framework implementations (Swing, etc.)
-- [ ] Enhanced GeoJSON support
-- [ ] Better map provider support
+- [X] Enhanced GeoJSON support
+- [X] Better map provider support
+- [X] Support receiving events on Map and Objects
+- [X] Support calling methods on JLObjects to set or update value on Js side
 - [ ] SVG support
 - [ ] Animation support
 - [ ] Performance optimizations
+- [ ] implement object specific `JLOptions`
 
 ## Additional Resources
 

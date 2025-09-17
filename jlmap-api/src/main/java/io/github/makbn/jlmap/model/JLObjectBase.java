@@ -55,6 +55,9 @@ public abstract class JLObjectBase<T extends JLObject<T>> implements JLObject<T>
         this.listener = listener;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public T setZIndexOffset(int offset) {
         getTransport().execute(JLTransportRequest.voidCall(this, "setZIndexOffset", offset));
@@ -62,6 +65,7 @@ public abstract class JLObjectBase<T extends JLObject<T>> implements JLObject<T>
         return self();
     }
 
+    /** {@inheritDoc} */
     @Override
     public T setJLObjectOpacity(double opacity) {
         getTransport().execute(JLTransportRequest.voidCall(this, "setOpacity", opacity));

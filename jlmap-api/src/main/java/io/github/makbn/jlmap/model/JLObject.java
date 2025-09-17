@@ -1,7 +1,7 @@
 package io.github.makbn.jlmap.model;
 
+import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.listener.OnJLActionListener;
-import io.github.makbn.jlmap.model.function.JLFunctionBase;
 
 /**
  * Represents basic object classes for interacting with Leaflet
@@ -9,7 +9,7 @@ import io.github.makbn.jlmap.model.function.JLFunctionBase;
  * @author Matt Akbarian  (@makbn)
  */
 
-public interface JLObject<T extends JLObject<T>> extends JLFunctionBase<T> {
+public interface JLObject<T extends JLObject<T>> {
 
 
     OnJLActionListener<T> getOnActionListener();
@@ -17,6 +17,10 @@ public interface JLObject<T extends JLObject<T>> extends JLFunctionBase<T> {
     void setOnActionListener(OnJLActionListener<T> listener);
 
     String getJLId();
+
+    T self();
+
+    JLServerToClientTransporter<?> getTransport();
 
     /**
      * By default, marker images zIndex is set automatically based on its latitude. Use this option if you want

@@ -10,6 +10,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import com.vaadin.flow.router.Route;
 import io.github.makbn.jlmap.JLMap;
+import io.github.makbn.jlmap.listener.JLAction;
 import io.github.makbn.jlmap.listener.OnJLActionListener;
 import io.github.makbn.jlmap.listener.event.ClickEvent;
 import io.github.makbn.jlmap.listener.event.Event;
@@ -130,8 +131,19 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
                                                         .build(),
                                                 (Integer) event.get("Radius"),
                                                 JLOptions.DEFAULT.toBuilder().draggable(true).build())
-                                        .setOnActionListener((jlCircle, jlEvent) ->
-                                                Notification.show(String.format("Circle '%s' Event: %s", jlCircle, jlEvent)))));
+                                        .setOnActionListener((jlCircle, jlEvent) -> {
+                                                    if (jlEvent.action() == JLAction.CLICK) {
+                                                        jlCircle.setLatLng(JLLatLng.builder().lng(10).lng(10).build());
+                                                        jlCircle.getBounds().whenComplete((response, throwable) ->
+                                                                Notification.show(String.format("Circle bound is '%s'", response)));
+                                                    } else {
+                                                        jlCircle.toGeoJSON().whenComplete((response, throwable) -> {
+                                                            Notification.show(String.format("Circle Geo Json is '%s' and Event: %s", response, jlEvent));
+                                                        });
+                                                    }
+
+                                                }
+                                        )));
 
 
         Button drawCircleMarker = new Button("Draw Circle Marker", e ->

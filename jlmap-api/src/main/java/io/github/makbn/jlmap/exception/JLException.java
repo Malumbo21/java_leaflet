@@ -5,7 +5,6 @@ package io.github.makbn.jlmap.exception;
  *
  * @author Matt Akbarian  (@makbn)
  */
-
 public class JLException extends RuntimeException {
     public JLException(String message) {
         super(message);

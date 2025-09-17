@@ -78,4 +78,30 @@ public final class JLOptions {
 
     JLObject<?> parent;
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        if (color != null) {
+            sb.append("color: '").append(color.toHexString()).append("', ");
+        }
+        if (fillColor != null) {
+            sb.append("fillColor: '").append(fillColor.toHexString()).append("', ");
+        }
+
+        sb.append("weight: ").append(weight).append(", ");
+        sb.append("stroke: ").append(stroke).append(", ");
+        sb.append("fill: ").append(fill).append(", ");
+        sb.append("opacity: ").append(opacity).append(", ");
+        sb.append("fillOpacity: ").append(fillOpacity).append(", ");
+        sb.append("smoothFactor: ").append(smoothFactor).append(", ");
+        sb.append("closeButton: ").append(closeButton).append(", ");
+        sb.append("autoClose: ").append(autoClose).append(", ");
+        sb.append("draggable: ").append(draggable);
+
+        sb.append("}");
+        return sb.toString();
+    }
+
+
 }

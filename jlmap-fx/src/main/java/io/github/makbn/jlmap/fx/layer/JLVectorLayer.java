@@ -2,7 +2,6 @@ package io.github.makbn.jlmap.fx.layer;
 
 import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.JLProperties;
-import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletVectorLayerInt;
 import io.github.makbn.jlmap.listener.JLAction;
@@ -24,15 +23,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
     AtomicInteger idGenerator;
-    JLServerToClientTransporter transporter;
 
     public JLVectorLayer(JLWebEngine<Object> engine, JLMapEventHandler callbackHandler) {
         super(engine, callbackHandler);
         this.idGenerator = new AtomicInteger();
-        this.transporter = () -> transport -> {
-            // NO-OP
-            return null;
-        };
     }
 
     /**
@@ -66,7 +60,7 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
                 })
-                .setTransporter(transporter);
+                .setTransporter(getTransporter());
         engine.executeScript(builder.buildJsElement());
         JLPolyline polyline = builder.buildJLObject();
         callbackHandler.addJLObject(elementUniqueName, polyline);
@@ -120,7 +114,7 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
                 })
-                .setTransporter(transporter);
+                .setTransporter(getTransporter());
         for (JLLatLng[] group : vertices) {
             List<double[]> groupList = new ArrayList<>();
             for (JLLatLng v : group) {
@@ -165,7 +159,7 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
                 })
-                .setTransporter(transporter);
+                .setTransporter(getTransporter());
         for (JLLatLng[][] group : vertices) {
             List<double[]> groupList = new ArrayList<>();
             for (JLLatLng[] ring : group) {
@@ -217,10 +211,6 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      */
     @Override
     public JLCircle addCircle(JLLatLng center, int radius, JLOptions options) {
-        // TODO move theses to JLOPtions
-        String hexColor = convertColorToString(options.getColor());
-        String fillHexColor = convertColorToString(options.getFillColor());
-
         var elementUniqueName = getElementUniqueName(JLCircle.class, idGenerator.incrementAndGet());
 
         var circleBuilder = new JLCircleBuilder()
@@ -228,7 +218,7 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                 .setLat(center.getLat())
                 .setLng(center.getLng())
                 .setRadius(radius)
-                .setTransporter(transporter)
+                .setTransporter(getTransporter())
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.MOVE);
@@ -280,9 +270,6 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
      */
     @Override
     public JLCircleMarker addCircleMarker(JLLatLng center, int radius, JLOptions options) {
-        //TODO mov theses to JLOPtions
-        String hexColor = convertColorToString(options.getColor());
-        String fillHexColor = convertColorToString(options.getFillColor());
         var elementUniqueName = getElementUniqueName(JLCircleMarker.class, idGenerator.incrementAndGet());
 
         var circleMarkerBuilder = new JLCircleMarkerBuilder()
@@ -290,7 +277,7 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
                 .setLat(center.getLat())
                 .setLng(center.getLng())
                 .setRadius(radius)
-                .setTransporter(transporter)
+                .setTransporter(getTransporter())
                 .withOptions(options)
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.MOVE);
@@ -330,9 +317,5 @@ public class JLVectorLayer extends JLLayer implements LeafletVectorLayerInt {
         callbackHandler.remove(JLCircleMarker.class, id);
 
         return Boolean.parseBoolean(result);
-    }
-
-    private String convertColorToString(JLColor c) {
-        return c.toHexString();
     }
 }

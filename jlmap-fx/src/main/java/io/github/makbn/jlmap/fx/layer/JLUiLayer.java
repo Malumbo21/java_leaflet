@@ -1,7 +1,6 @@
 package io.github.makbn.jlmap.fx.layer;
 
 import io.github.makbn.jlmap.JLMapEventHandler;
-import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletUILayerInt;
 import io.github.makbn.jlmap.listener.JLAction;
@@ -22,16 +21,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
-    JLServerToClientTransporter<Object> transporter;
     AtomicInteger idGenerator;
 
     public JLUiLayer(JLWebEngine<Object> engine, JLMapEventHandler callbackHandler) {
         super(engine, callbackHandler);
         this.idGenerator = new AtomicInteger();
-        this.transporter = () -> transport -> {
-            // NO-OP
-            return null;
-        };
     }
 
     /**
@@ -49,7 +43,7 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
                 .setLat(latLng.getLat())
                 .setLng(latLng.getLng())
                 .setText(text)
-                .setTransporter(transporter)
+                .setTransporter(getTransporter())
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.MOVE);
                     jlCallbackBuilder.on(JLAction.MOVE_START);
@@ -107,7 +101,7 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
                     jlCallbackBuilder.on(JLAction.ADD);
                     jlCallbackBuilder.on(JLAction.REMOVE);
                 })
-                .setTransporter(transporter);
+                .setTransporter(getTransporter());
         engine.executeScript(popupBuilder.buildJsElement());
         JLPopup popup = popupBuilder.buildJLObject();
         callbackHandler.addJLObject(elementUniqueName, popup);
@@ -155,7 +149,7 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
                         new double[]{bounds.getSouthWest().getLat(), bounds.getSouthWest().getLng()},
                         new double[]{bounds.getNorthEast().getLat(), bounds.getNorthEast().getLng()}
                 ))
-                .setTransporter(transporter)
+                .setTransporter(getTransporter())
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);

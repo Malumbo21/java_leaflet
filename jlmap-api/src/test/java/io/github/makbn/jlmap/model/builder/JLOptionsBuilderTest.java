@@ -30,4 +30,24 @@ class JLOptionsBuilderTest {
                     assertThat(actualMap).containsEntry("weight", 3);
                 });
     }
+
+    @Test
+    void toString_shouldGenerateLeafletStyleString() {
+        JLOptions options = JLOptions.DEFAULT;
+        String str = options.toString();
+        assertThat(str)
+                .contains("color: '")
+                .contains("fillColor: '")
+                .contains("weight: 3")
+                .contains("stroke: true")
+                .contains("fill: true")
+                .contains("opacity: 1.0")
+                .contains("fillOpacity: 0.2")
+                .contains("smoothFactor: 1.0")
+                .contains("closeButton: true")
+                .contains("autoClose: true")
+                .contains("draggable: false")
+                .startsWith("{")
+                .endsWith("}");
+    }
 }

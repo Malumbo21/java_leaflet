@@ -51,8 +51,7 @@ public final class JLMarker extends JLObjectBase<JLMarker> {
      * @return the current instance of JLMarker.
      */
     public JLMarker setLatLng(JLLatLng latLng) {
-        getTransport().execute(JLTransportRequest.voidCall(this,
-                String.format("this.%s.setLatLng([%f, %f]);", getJLId(), latLng.getLat(), latLng.getLng())));
+        getTransport().execute(JLTransportRequest.voidCall(this, "setLatLng", latLng.toString()));
         this.latLng = latLng;
         return this;
     }
@@ -65,8 +64,7 @@ public final class JLMarker extends JLObjectBase<JLMarker> {
      * @return the current instance of JLMarker.
      */
     public JLMarker setIcon(JLIcon icon) {
-        getTransport().execute(JLTransportRequest.voidCall(this,
-                String.format("this.%s.setIcon(%s);", getJLId(), icon)));
+        getTransport().execute(JLTransportRequest.voidCall(this, "setIcon", icon));
         this.icon = icon;
         return this;
     }

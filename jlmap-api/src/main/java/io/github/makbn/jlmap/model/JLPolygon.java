@@ -1,11 +1,11 @@
 package io.github.makbn.jlmap.model;
 
 import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import io.github.makbn.jlmap.engine.JLTransportRequest;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A class for drawing polygon overlays on the map.
@@ -43,4 +43,27 @@ public final class JLPolygon extends JLObjectBase<JLPolygon> {
     public JLPolygon self() {
         return this;
     }
+
+    /**
+     * Converts the polygon to GeoJSON format asynchronously.
+     * <p>
+     * Returns a {@link CompletableFuture} that will complete with the GeoJSON
+     * string representation of this polygon. The GeoJSON will include the polygon's
+     * geometry and any associated properties.
+     * </p>
+     * <h4>Example:</h4>
+     * <pre>{@code
+     * polygon.toGeoJSON().thenAccept(geoJson -> {
+     *     System.out.println("Polygon GeoJSON: " + geoJson);
+     *     // Process the GeoJSON string
+     * });
+     * }</pre>
+     *
+     * @return a {@link CompletableFuture} that will complete with the GeoJSON string
+     */
+    @NonNull
+    public CompletableFuture<String> toGeoJSON() {
+        return transport.execute(JLTransportRequest.returnableCall(this, "toGeoJSON", String.class));
+    }
+
 }

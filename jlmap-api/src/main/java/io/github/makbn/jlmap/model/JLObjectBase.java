@@ -1,18 +1,21 @@
 package io.github.makbn.jlmap.model;
 
+import io.github.makbn.jlmap.element.menu.JLContextMenu;
+import io.github.makbn.jlmap.element.menu.JLHasContextMenu;
 import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.engine.JLTransportRequest;
 import io.github.makbn.jlmap.listener.OnJLActionListener;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-public abstract class JLObjectBase<T extends JLObject<T>> implements JLObject<T> {
+public abstract class JLObjectBase<T extends JLObject<T>> implements JLObject<T>, JLHasContextMenu<T> {
 
     /**
      * id of object! this is an internal id for JLMap Application and not
@@ -45,6 +48,18 @@ public abstract class JLObjectBase<T extends JLObject<T>> implements JLObject<T>
     @NonFinal
     double opacity = 1.0;
 
+    /**
+     * Context menu for this object (lazily initialized).
+     */
+    @NonFinal
+    JLContextMenu<T> contextMenu;
+
+    /**
+     * Whether the context menu is enabled for this object.
+     */
+    @NonFinal
+    boolean contextMenuEnabled = true;
+
     @Override
     public OnJLActionListener<T> getOnActionListener() {
         return listener;
@@ -65,7 +80,9 @@ public abstract class JLObjectBase<T extends JLObject<T>> implements JLObject<T>
         return self();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public T setJLObjectOpacity(double opacity) {
         getTransport().execute(JLTransportRequest.voidCall(this, "setOpacity", opacity));
@@ -137,5 +154,50 @@ public abstract class JLObjectBase<T extends JLObject<T>> implements JLObject<T>
      */
     public CompletableFuture<String> getAttribution() {
         return getTransport().execute(JLTransportRequest.returnableCall(this, "getAttribution", String.class));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Nullable
+    public synchronized JLContextMenu<T> getContextMenu() {
+        return contextMenu;
+    }
+
+    @Override
+    public synchronized void setContextMenu(@NonNull JLContextMenu<T> contextMenu) {
+        this.contextMenu = contextMenu;
+    }
+
+    @NonNull
+    @Override
+    public synchronized JLContextMenu<T> addContextMenu() {
+        this.contextMenu = new JLContextMenu<>(self());
+        return getContextMenu();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasContextMenu() {
+        return contextMenu != null && contextMenu.hasVisibleItems();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isContextMenuEnabled() {
+        return contextMenuEnabled;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setContextMenuEnabled(boolean enabled) {
+        this.contextMenuEnabled = enabled;
     }
 }

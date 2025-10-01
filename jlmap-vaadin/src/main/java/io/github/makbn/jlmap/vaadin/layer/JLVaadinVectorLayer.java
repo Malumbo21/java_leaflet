@@ -63,6 +63,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
                     jlCallbackBuilder.on(JLAction.REMOVE);
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                    jlCallbackBuilder.on(JLAction.CONTEXT_MENU);
                 });
 
         // Add vertices to the builder using the correct method
@@ -128,6 +129,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
                     jlCallbackBuilder.on(JLAction.REMOVE);
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                    jlCallbackBuilder.on(JLAction.CONTEXT_MENU);
                 });
 
         // Add vertices arrays to the builder using the correct method
@@ -182,6 +184,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
                     jlCallbackBuilder.on(JLAction.REMOVE);
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                    jlCallbackBuilder.on(JLAction.CONTEXT_MENU);
                 });
 
         // Add vertices arrays to the builder using the correct method
@@ -255,6 +258,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
                     jlCallbackBuilder.on(JLAction.REMOVE);
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                    jlCallbackBuilder.on(JLAction.CONTEXT_MENU);
                 });
 
         engine.executeScript(circleBuilder.buildJsElement());
@@ -318,6 +322,7 @@ public class JLVaadinVectorLayer extends JLVaadinLayer implements LeafletVectorL
                     jlCallbackBuilder.on(JLAction.REMOVE);
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                    jlCallbackBuilder.on(JLAction.CONTEXT_MENU);
                 });
 
         engine.executeScript(circleMarkerBuilder.buildJsElement());

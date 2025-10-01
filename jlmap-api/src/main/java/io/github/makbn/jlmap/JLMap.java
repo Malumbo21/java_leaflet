@@ -1,5 +1,6 @@
 package io.github.makbn.jlmap;
 
+import io.github.makbn.jlmap.element.menu.JLHasContextMenu;
 import io.github.makbn.jlmap.engine.JLServerToClientTransporter;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.exception.JLMapNotReadyException;
@@ -27,7 +28,7 @@ import java.util.Map;
  * @author Matt Akbarian  (@makbn)
  * @since 2.0.0
  */
-public interface JLMap<T> extends JLObject<JLMap<T>> {
+public interface JLMap<T> extends JLObject<JLMap<T>>, JLHasContextMenu<JLMap<T>> {
 
     /**
      * Returns the underlying web engine used for JavaScript execution and map rendering.

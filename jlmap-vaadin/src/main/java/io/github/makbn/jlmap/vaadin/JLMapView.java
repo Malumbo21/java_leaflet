@@ -12,6 +12,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.PendingJavaScriptResult;
 import io.github.makbn.jlmap.JLMap;
 import io.github.makbn.jlmap.JLMapEventHandler;
+import io.github.makbn.jlmap.element.menu.JLContextMenu;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.layer.leaflet.LeafletLayer;
 import io.github.makbn.jlmap.listener.JLAction;
@@ -63,8 +64,12 @@ public class JLMapView extends VerticalLayout implements JLMap<PendingJavaScript
     @NonFinal
     transient boolean controllerAdded = false;
     @NonFinal
+    transient boolean contextMenuEnabled = true;
+    @NonFinal
     @Nullable
     transient OnJLActionListener<JLMap<PendingJavaScriptResult>> mapListener;
+    @NonFinal
+    transient JLContextMenu<JLMap<PendingJavaScriptResult>> contextMenu;
 
     /**
      * Creates a new JLMapView with the specified map type, starting coordinates, and zoom controller visibility.
@@ -98,7 +103,7 @@ public class JLMapView extends VerticalLayout implements JLMap<PendingJavaScript
     /**
      * Initializes the map when the component is attached to the DOM.
      *
-     * @param attachEvent the attach event
+     * @param attachEvent the attachment event
      */
     @Override
     protected void onAttach(AttachEvent attachEvent) {
@@ -107,10 +112,44 @@ public class JLMapView extends VerticalLayout implements JLMap<PendingJavaScript
         getElement().executeJs(generateInitializeFunctionCall());
         initializeLayers();
         addControllerToDocument();
-
         if (mapListener != null) {
             mapListener.onAction(this, new MapEvent(JLAction.MAP_LOADED));
         }
+    }
+
+    @NonNull
+    @Override
+    public JLContextMenu<JLMap<PendingJavaScriptResult>> addContextMenu() {
+        if (contextMenu == null) {
+            contextMenu = new JLContextMenu<>(this);
+        }
+        return contextMenu;
+    }
+
+    @Nullable
+    @Override
+    public JLContextMenu<JLMap<PendingJavaScriptResult>> getContextMenu() {
+        return contextMenu;
+    }
+
+    @Override
+    public void setContextMenu(@NonNull JLContextMenu<JLMap<PendingJavaScriptResult>> contextMenu) {
+        this.contextMenu = contextMenu;
+    }
+
+    @Override
+    public boolean hasContextMenu() {
+        return getContextMenu() != null;
+    }
+
+    @Override
+    public boolean isContextMenuEnabled() {
+        return contextMenuEnabled;
+    }
+
+    @Override
+    public void setContextMenuEnabled(boolean enabled) {
+        this.contextMenuEnabled = enabled;
     }
 
     /**
@@ -146,6 +185,8 @@ public class JLMapView extends VerticalLayout implements JLMap<PendingJavaScript
                    L.tileLayer('%s')
                    .addTo(this.map);
                 
+                   console.log('Map initialized with center: ', this.map.getCenter(), ' and zoom: ', this.map.getZoom());
+                
                    this.map.on('click', e => this.jlMapElement.$server.eventHandler('click', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
                    this.map.on('move', e => this.jlMapElement.$server.eventHandler('move', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
                    this.map.on('movestart', e => this.jlMapElement.$server.eventHandler('movestart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
@@ -154,6 +195,10 @@ public class JLMapView extends VerticalLayout implements JLMap<PendingJavaScript
                    this.map.on('zoomstart', e => this.jlMapElement.$server.eventHandler('zoomstart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
                    this.map.on('zoomend', e => this.jlMapElement.$server.eventHandler('zoomend', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
                    this.map.on('resize', e => this.jlMapElement.$server.eventHandler('resize', 'map', 'main_map', this.map.getZoom(), JSON.stringify({"oldWidth": e.oldSize.x, "oldHeight": e.oldSize.y, "newWidth": e.newSize.x, "newHeight": e.newSize.y}), getMapBounds(this.map)));
+                   this.map.on('contextmenu', e => {
+                        this.jlMapElement.$server.eventHandler('contextmenu', 'map', 'main_map', this.map.getZoom(), JSON.stringify({"x": e.containerPoint.x, "y": e.containerPoint.y, "lat": e.latlng.lat, "lng": e.latlng.lng}), getMapBounds(this.map));
+                        L.DomEvent.stopPropagation(e);
+                    });
                 """;
 
         return call.formatted(mapOption.zoomControlEnabled(),

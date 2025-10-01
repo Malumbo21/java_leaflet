@@ -3,6 +3,7 @@ package io.github.makbn.jlmap.listener.event;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import io.github.makbn.jlmap.JLMap;
 import io.github.makbn.jlmap.listener.JLAction;
 import io.github.makbn.jlmap.listener.OnJLActionListener;
 import io.github.makbn.jlmap.model.JLBounds;
@@ -37,7 +38,7 @@ public class JLLayerEventHandler implements JLEventHandler<Object> {
     Gson gson = new Gson();
 
     @Override
-    public void handle(@NonNull Object source, @NonNull String functionName, OnJLActionListener<Object> listener,
+    public void handle(@NonNull JLMap<?> map, @NonNull Object source, @NonNull String functionName, OnJLActionListener<Object> listener,
                        Object param1, Object param2, Object param3, Object param4, Object param5) {
         switch (functionName) {
             case FUNCTION_ADD -> listener

@@ -3,6 +3,7 @@ package io.github.makbn.jlmap.fx;
 import io.github.makbn.jlmap.JLMap;
 import io.github.makbn.jlmap.JLMapEventHandler;
 import io.github.makbn.jlmap.JLProperties;
+import io.github.makbn.jlmap.element.menu.JLContextMenu;
 import io.github.makbn.jlmap.engine.JLWebEngine;
 import io.github.makbn.jlmap.fx.engine.JLJavaFXEngine;
 import io.github.makbn.jlmap.fx.internal.JLFxMapRenderer;
@@ -165,10 +166,42 @@ public class JLMapView extends AnchorPane implements JLMap<Object> {
         return mapListener;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     @Override
     public void setOnActionListener(OnJLActionListener<JLMap<Object>> listener) {
         this.mapListener = listener;
+    }
+
+    @Override
+    public @NonNull JLContextMenu<JLMap<Object>> addContextMenu() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public @NonNull JLContextMenu<JLMap<Object>> getContextMenu() {
+        return null;
+    }
+
+    @Override
+    public void setContextMenu(@NonNull JLContextMenu<JLMap<Object>> contextMenu) {
+
+    }
+
+    @Override
+    public boolean hasContextMenu() {
+        return false;
+    }
+
+    @Override
+    public boolean isContextMenuEnabled() {
+        return false;
+    }
+
+    @Override
+    public void setContextMenuEnabled(boolean enabled) {
+
     }
 
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -208,7 +241,9 @@ public class JLMapView extends AnchorPane implements JLMap<Object> {
         setBottomAnchor(this, 0.5);
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     @Override
     public HashMap<Class<? extends LeafletLayer>, LeafletLayer> getLayers() {
         layers.clear();
@@ -219,7 +254,9 @@ public class JLMapView extends AnchorPane implements JLMap<Object> {
         return layers;
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     @Override
     public void addControllerToDocument() {
         JSObject window = (JSObject) webView.getEngine().executeScript("window");
@@ -237,7 +274,9 @@ public class JLMapView extends AnchorPane implements JLMap<Object> {
         jlMapCallbackHandler.functionCalled(this, functionName, jlType, uuid, param1, param2, param3);
     }
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     @Override
     public JLWebEngine<Object> getJLEngine() {
         return jlWebEngine;

@@ -20,6 +20,7 @@ import java.util.Set;
 public class JLMapEventHandler {
     public static final String MAP_TYPE = "map";
     public static final String MAP_UUID = "main_map";
+
     HashMap<Class<? extends JLObject<?>>, HashMap<String, JLObject<?>>> jlObjects;
 
     HashMap<String, Class<? extends JLObject<?>>[]> classMap;
@@ -51,13 +52,13 @@ public class JLMapEventHandler {
     /**
      * @param functionName name of source function from js
      * @param jlType       name of object class
-     * @param uuid       id of object
+     * @param uuid         id of object
      * @param param1       additional param
      * @param param2       additional param
      * @param param3       additional param
      */
     @SuppressWarnings("all")
-    public void functionCalled(JLObject<?> mapView, String functionName, Object jlType, Object uuid,
+    public void functionCalled(JLMap<?> mapView, String functionName, Object jlType, Object uuid,
                                Object param1, Object param2, Object param3) {
         log.debug("function: {} jlType: {} uuid: {} param1: {} param2: {} param3: {}",
                 functionName, jlType, uuid, param1, param2, param3);
@@ -76,21 +77,23 @@ public class JLMapEventHandler {
                         .map(targetClass -> jlObjects.get(targetClass).get(String.valueOf(uuid)))
                         .filter(Objects::nonNull)
                         .filter(jlObject -> Objects.nonNull(jlObject.getOnActionListener()))
-                        .forEach(jlObject -> {
-                            eventHandlers.stream()
-                                    .filter(hadler -> hadler.canHandle(functionName))
-                                    .forEach(hadler -> hadler.handle(jlObject, functionName,
-                                            jlObject.getOnActionListener(), jlType, uuid, param1, param2, param3));
-                        });
+                        .forEach(jlObject -> invokeEventHandler(functionName, jlType, uuid, param1, param2, param3, mapView, jlObject));
             } else if (MAP_TYPE.equals(jlType) && MAP_UUID.equals(uuid) && mapView.getOnActionListener() != null) {
                 eventHandlers.stream()
                         .filter(hadler -> hadler.canHandle(functionName))
-                        .forEach(hadler -> hadler.handle(mapView, functionName, mapView.getOnActionListener(),
+                        .forEach(hadler -> hadler.handle(mapView, mapView, functionName, mapView.getOnActionListener(),
                                 jlType, uuid, param1, param2, param3));
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    private void invokeEventHandler(String functionName, Object jlType, Object uuid, Object param1, Object param2, Object param3, JLMap<?> map, JLObject<?> jlObject) {
+        eventHandlers.stream()
+                .filter(handler -> handler.canHandle(functionName))
+                .forEach(handler -> handler.handle(map, jlObject, functionName,
+                        jlObject.getOnActionListener(), jlType, uuid, param1, param2, param3));
     }
 
     public void addJLObject(@NonNull String key, @NonNull JLObject<?> object) {

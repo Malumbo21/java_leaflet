@@ -23,22 +23,34 @@ public class JLCallbackBuilder {
     }
 
     private static @NotNull String getCallbackFunction(JLAction event) {
+        //language=JavaScript
         return switch (event) {
             case ADD, REMOVE -> """
-                    this.%3$s.on('%1$s', e => this.jlMapElement.$server.eventHandler('%1$s', '%2$s', e.target.uuid, this.map.getZoom(),
+                    this.%3$s.on('%1$s', e => {
+                        e.sourceTarget.getElement().setAttribute('id', e.target.uuid);
+                        this.jlMapElement.$server.eventHandler('%1$s', '%2$s', e.target.uuid, this.map.getZoom(),
                          JSON.stringify((typeof e.target.getLatLng === "function") ? 
                          e.target.getLatLng() : 
                          (typeof e.target.getLatLngs === "function") ? 
                          e.target.getLatLngs() :
                          {"lat": 0, "lng": 0}),
-                         JSON.stringify(this.map.getBounds())
-                     ));
+                         JSON.stringify(this.map.getBounds()));
+                    
+                    });
                     """;
             case RESIZE -> """
                     this.map.on('%1$s', e => this.jlMapElement.$server.eventHandler('%1$s', '%2$s', this.%3$s.uuid, this.map.getZoom(),
                         JSON.stringify({"oldWidth": e.oldSize.x, "oldHeight": e.oldSize.y, "newWidth": e.newSize.x, "newHeight": e.newSize.y}),
                         JSON.stringify(this.map.getBounds())
                     ));
+                    """;
+            case CONTEXT_MENU -> """
+                    this.%3$s.on('%1$s', e => {
+                        this.jlMapElement.$server.eventHandler('%1$s', '%2$s', e.target.uuid, this.map.getZoom(),
+                        JSON.stringify({"x": e.containerPoint.x, "y": e.containerPoint.y, "lat": e.latlng.lat, "lng": e.latlng.lng}),
+                        JSON.stringify(this.map.getBounds()));
+                        L.DomEvent.stopPropagation(e);
+                    });
                     """;
             default -> """
                     this.%3$s.on('%1$s', e => this.jlMapElement.$server.eventHandler('%1$s', '%2$s', e.target.uuid, this.map.getZoom(),

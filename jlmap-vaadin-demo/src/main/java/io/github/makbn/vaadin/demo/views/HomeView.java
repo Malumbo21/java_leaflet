@@ -67,6 +67,12 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
         mapView.setSizeFull();
         add(mapView);
 
+        mapView.addContextMenu().addItem("Refresh Map", "Refresh the map tiles", "https://cdn-icons-png.flaticon.com/128/484/484662.png").setOnMenuItemListener(item -> {
+            if ("Refresh Map".equals(item.getId())) {
+                Notification.show("Map refresh triggered");
+            }
+        });
+
         // --- PIXEL PERFECT JLMap MENU ---
         VerticalLayout menuWrapper = new VerticalLayout();
         menuWrapper.setClassName("jlmap-menu");
@@ -124,26 +130,36 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
                         .decimalField(LATITUDE)
                         .decimalField(LONGITUDE)
                         .numberField("Radius").get(event ->
-                                mapView.getVectorLayer()
-                                        .addCircle(JLLatLng.builder()
-                                                        .lat((Double) event.get(LATITUDE))
-                                                        .lng((Double) event.get(LONGITUDE))
-                                                        .build(),
-                                                (Integer) event.get("Radius"),
-                                                JLOptions.DEFAULT.toBuilder().draggable(true).build())
-                                        .setOnActionListener((jlCircle, jlEvent) -> {
-                                                    if (jlEvent.action() == JLAction.CLICK) {
-                                                        jlCircle.setLatLng(JLLatLng.builder().lng(10).lng(10).build());
-                                                        jlCircle.getBounds().whenComplete((response, throwable) ->
-                                                                Notification.show(String.format("Circle bound is '%s'", response)));
-                                                    } else {
-                                                        jlCircle.toGeoJSON().whenComplete((response, throwable) -> {
-                                                            Notification.show(String.format("Circle Geo Json is '%s' and Event: %s", response, jlEvent));
-                                                        });
-                                                    }
+                        {
+                            JLCircle circle = mapView.getVectorLayer()
+                                    .addCircle(JLLatLng.builder()
+                                                    .lat((Double) event.get(LATITUDE))
+                                                    .lng((Double) event.get(LONGITUDE))
+                                                    .build(),
+                                            (Integer) event.get("Radius"),
+                                            JLOptions.DEFAULT.toBuilder().draggable(true).build());
 
-                                                }
-                                        )));
+                            circle.setOnActionListener((jlCircle, jlEvent) -> {
+                                if (jlEvent.action() == JLAction.CLICK) {
+                                    jlCircle.setLatLng(JLLatLng.builder().lng(10).lng(10).build());
+                                    jlCircle.getBounds().whenComplete((response, throwable) ->
+                                            Notification.show(String.format("Circle bound is '%s'", response)));
+                                } else {
+                                    jlCircle.toGeoJSON().whenComplete((response, throwable) -> {
+                                        Notification.show(String.format("Circle Geo Json is '%s' and Event: %s", response, jlEvent));
+                                    });
+                                }
+                            });
+
+                            circle.addContextMenu()
+                                    .addItem("Remove", "Remove this circle")
+                                    .setOnMenuItemListener(item -> {
+                                        if ("remove".equals(item.getId())) {
+                                            circle.remove();
+                                            Notification.show("Circle removed from map");
+                                        }
+                                    });
+                        }));
 
 
         Button drawCircleMarker = new Button("Draw Circle Marker", e ->
@@ -164,28 +180,76 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
 
                             circleMarker.setOnActionListener((jlCircleMarker, jlEvent) ->
                                     Notification.show(String.format("Circle Marker '%s' Event: %s", jlCircleMarker, jlEvent)));
+
+                            circleMarker.addContextMenu()
+                                    .addItem("Remove", "Remove this circle marker")
+                                    .setOnMenuItemListener(item -> {
+                                        if ("remove".equals(item.getId())) {
+                                            circleMarker.remove();
+                                            Notification.show("Circle marker removed from map");
+                                        }
+                                    });
                         }));
         Button drawSimplePolyline = new Button("Draw Simple Polyline", e -> {
             JLLatLng[] vertices = {new JLLatLng(48.864716, 2.349014), new JLLatLng(52.520008, 13.404954), new JLLatLng(41.902783, 12.496366), new JLLatLng(40.416775, -3.703790)};
             JLPolyline polyline = mapView.getVectorLayer().addPolyline(vertices, JLOptions.DEFAULT.toBuilder().color(JLColor.BLUE).weight(5).build());
             polyline.setOnActionListener((jlPolyline, jlEvent) -> Notification.show(String.format("Polyline '%s' Event: %s", jlPolyline, jlEvent)));
+
+            polyline.addContextMenu()
+                    .addItem("Remove", "Remove this polyline")
+                    .setOnMenuItemListener(item -> {
+                        if ("remove".equals(item.getId())) {
+                            polyline.remove();
+                            Notification.show("Polyline removed from map");
+                        }
+                    });
+
             Notification.show("European Cities Route Added!");
         });
         Button drawCustomPolyline = new Button("Draw Custom Polyline", e -> DialogBuilder.builder().decimalField("Start Latitude").decimalField("Start Longitude").decimalField("Mid Latitude").decimalField("Mid Longitude").decimalField("End Latitude").decimalField("End Longitude").get(event -> {
             JLLatLng[] vertices = {new JLLatLng((Double) event.get("Start Latitude"), (Double) event.get("Start Longitude")), new JLLatLng((Double) event.get("Mid Latitude"), (Double) event.get("Mid Longitude")), new JLLatLng((Double) event.get("End Latitude"), (Double) event.get("End Longitude"))};
             JLPolyline polyline = mapView.getVectorLayer().addPolyline(vertices, JLOptions.DEFAULT.toBuilder().color(JLColor.GREEN).weight(3).build());
             polyline.setOnActionListener((jlPolyline, jlEvent) -> Notification.show(String.format("Custom Polyline '%s' Event: %s", jlPolyline, jlEvent)));
+
+            polyline.addContextMenu()
+                    .addItem("Remove", "Remove this custom polyline")
+                    .setOnMenuItemListener(item -> {
+                        if ("remove".equals(item.getId())) {
+                            polyline.remove();
+                            Notification.show("Custom polyline removed from map");
+                        }
+                    });
         }));
         Button drawMultiPolyline = new Button("Draw Multi-Polyline", e -> {
             JLLatLng[][] routes = {{new JLLatLng(59.334591, 18.063240), new JLLatLng(60.169857, 24.938379), new JLLatLng(55.676097, 12.568337)}, {new JLLatLng(50.075538, 14.437800), new JLLatLng(47.497912, 19.040235), new JLLatLng(48.208174, 16.373819)}};
             JLMultiPolyline multiPolyline = mapView.getVectorLayer().addMultiPolyline(routes, JLOptions.DEFAULT.toBuilder().color(JLColor.PURPLE).weight(4).build());
             multiPolyline.setOnActionListener((jlMultiPolyline, jlEvent) -> Notification.show(String.format("Multi-Polyline '%s' Event: %s", jlMultiPolyline, jlEvent)));
+
+            multiPolyline.addContextMenu()
+                    .addItem("Remove", "Remove this multi-polyline")
+                    .setOnMenuItemListener(item -> {
+                        if ("remove".equals(item.getId())) {
+                            multiPolyline.remove();
+                            Notification.show("Multi-polyline removed from map");
+                        }
+                    });
+
             Notification.show("Multi-Route Network Added!");
         });
         Button drawTrianglePolygon = new Button("Draw Triangle Polygon", e -> {
             JLLatLng[][][] triangleVertices = {{{new JLLatLng(48.864716, 2.349014), new JLLatLng(48.874716, 2.339014), new JLLatLng(48.854716, 2.339014), new JLLatLng(48.864716, 2.349014)}}};
             JLPolygon polygon = mapView.getVectorLayer().addPolygon(triangleVertices, JLOptions.DEFAULT.toBuilder().color(JLColor.ORANGE).fillColor(JLColor.YELLOW).fillOpacity(0.3).build());
             polygon.setOnActionListener((jlPolygon, jlEvent) -> Notification.show(String.format("Triangle Polygon '%s' Event: %s", jlPolygon, jlEvent)));
+
+            polygon.addContextMenu()
+                    .addItem("Remove", "Remove this triangle polygon")
+                    .setOnMenuItemListener(item -> {
+                        if ("Remove".equals(item.getId())) {
+                            polygon.remove();
+                            Notification.show("Triangle polygon removed from map");
+                        }
+                    });
+
             Notification.show("Triangle Polygon Added around Paris!");
         });
         Button drawCustomPolygon = new Button("Draw Custom Polygon", e -> DialogBuilder.builder().decimalField("Center Latitude").decimalField("Center Longitude").decimalField("Size (degrees)").get(event -> {
@@ -195,20 +259,75 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             JLLatLng[][][] squareVertices = {{{new JLLatLng(centerLat + size, centerLng - size), new JLLatLng(centerLat + size, centerLng + size), new JLLatLng(centerLat - size, centerLng + size), new JLLatLng(centerLat - size, centerLng - size), new JLLatLng(centerLat + size, centerLng - size)}}};
             JLPolygon polygon = mapView.getVectorLayer().addPolygon(squareVertices, JLOptions.DEFAULT.toBuilder().color(JLColor.RED).fillColor(new JLColor(0.0, 1.0, 1.0)).fillOpacity(0.5).weight(3).build());
             polygon.setOnActionListener((jlPolygon, jlEvent) -> Notification.show(String.format("Custom Polygon '%s' Event: %s", jlPolygon, jlEvent)));
+
+            polygon.addContextMenu()
+                    .addItem("Remove", "Remove this custom polygon")
+                    .setOnMenuItemListener(item -> {
+                        if ("remove".equals(item.getId())) {
+                            polygon.remove();
+                            Notification.show("Custom polygon removed from map");
+                        }
+                    });
         }));
         Button drawPolygonWithHole = new Button("Draw Polygon with Hole", e -> {
             JLLatLng[][][] donutVertices = {{{new JLLatLng(48.874716, 2.329014), new JLLatLng(48.874716, 2.369014), new JLLatLng(48.854716, 2.369014), new JLLatLng(48.854716, 2.329014), new JLLatLng(48.874716, 2.329014)}, {new JLLatLng(48.869716, 2.339014), new JLLatLng(48.869716, 2.359014), new JLLatLng(48.859716, 2.359014), new JLLatLng(48.859716, 2.339014), new JLLatLng(48.869716, 2.339014)}}};
             JLPolygon donutPolygon = mapView.getVectorLayer().addPolygon(donutVertices, JLOptions.DEFAULT.toBuilder().color(new JLColor(0.0, 0.5, 0.0)).fillColor(new JLColor(0.5, 1.0, 0.5)).fillOpacity(0.7).weight(2).build());
             donutPolygon.setOnActionListener((jlPolygon, jlEvent) -> Notification.show(String.format("Donut Polygon '%s' Event: %s", jlPolygon, jlEvent)));
+
+            donutPolygon.addContextMenu()
+                    .addItem("Remove", "Remove this donut polygon")
+                    .setOnMenuItemListener(item -> {
+                        if ("remove".equals(item.getId())) {
+                            donutPolygon.remove();
+                            Notification.show("Donut polygon removed from map");
+                        }
+                    });
+
             Notification.show("Donut-shaped Polygon Added!");
         });
         Button demoAllShapes = new Button("Demo All Vector Shapes", e -> {
-            mapView.getVectorLayer().addCircle(new JLLatLng(48.864716, 2.349014), 5000, JLOptions.DEFAULT.toBuilder().color(JLColor.BLUE).fillOpacity(0.2).build());
-            mapView.getVectorLayer().addCircleMarker(new JLLatLng(48.874716, 2.359014), 10, JLOptions.DEFAULT.toBuilder().color(JLColor.RED).build());
+            JLCircle demoCircle = mapView.getVectorLayer().addCircle(new JLLatLng(48.864716, 2.349014), 5000, JLOptions.DEFAULT.toBuilder().color(JLColor.BLUE).fillOpacity(0.2).build());
+            demoCircle.addContextMenu()
+                    .addItem("Remove", "Remove demo circle")
+                    .setOnMenuItemListener(item -> {
+                        if ("remove".equals(item.getId())) {
+                            demoCircle.remove();
+                            Notification.show("Demo circle removed from map");
+                        }
+                    });
+
+            JLCircleMarker demoCircleMarker = mapView.getVectorLayer().addCircleMarker(new JLLatLng(48.874716, 2.359014), 10, JLOptions.DEFAULT.toBuilder().color(JLColor.RED).build());
+            demoCircleMarker.addContextMenu()
+                    .addItem("Remove", "Remove demo circle marker")
+                    .setOnMenuItemListener(item -> {
+                        if ("remove".equals(item.getId())) {
+                            demoCircleMarker.remove();
+                            Notification.show("Demo circle marker removed from map");
+                        }
+                    });
+
             JLLatLng[] lineVertices = {new JLLatLng(48.854716, 2.339014), new JLLatLng(48.864716, 2.359014)};
-            mapView.getVectorLayer().addPolyline(lineVertices, JLOptions.DEFAULT.toBuilder().color(JLColor.GREEN).weight(3).build());
+            JLPolyline demoPolyline = mapView.getVectorLayer().addPolyline(lineVertices, JLOptions.DEFAULT.toBuilder().color(JLColor.GREEN).weight(3).build());
+            demoPolyline.addContextMenu()
+                    .addItem("Remove", "Remove demo polyline")
+                    .setOnMenuItemListener(item -> {
+                        if ("remove".equals(item.getId())) {
+                            demoPolyline.remove();
+                            Notification.show("Demo polyline removed from map");
+                        }
+                    });
+
             JLLatLng[][][] polygonVertices = {{{new JLLatLng(48.869716, 2.344014), new JLLatLng(48.869716, 2.354014), new JLLatLng(48.859716, 2.354014), new JLLatLng(48.859716, 2.344014), new JLLatLng(48.869716, 2.344014)}}};
-            mapView.getVectorLayer().addPolygon(polygonVertices, JLOptions.DEFAULT.toBuilder().color(JLColor.PURPLE).fillColor(JLColor.YELLOW).fillOpacity(0.4).build());
+            JLPolygon demoPolygon = mapView.getVectorLayer().addPolygon(polygonVertices, JLOptions.DEFAULT.toBuilder().color(JLColor.PURPLE).fillColor(JLColor.YELLOW).fillOpacity(0.4).build());
+            demoPolygon.addContextMenu()
+                    .addItem("Remove", "Remove demo polygon")
+                    .setOnMenuItemListener(item -> {
+                        if ("remove".equals(item.getId())) {
+                            demoPolygon.remove();
+                            Notification.show("Demo polygon removed from map");
+                        }
+                    });
+
             Notification.show("All vector shapes demonstrated! Check the map.");
         });
         for (Button b : new Button[]{drawCircle, drawCircleMarker, drawSimplePolyline, drawCustomPolyline, drawMultiPolyline, drawTrianglePolygon, drawCustomPolygon, drawPolygonWithHole, demoAllShapes})
@@ -222,14 +341,32 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
                 DialogBuilder.builder()
                         .addUpload()
                         .get(event ->
-                                ((Set<File>) event.get("uploadedFiles")).forEach(mapView.getGeoJsonLayer()::addFromFile)));
+                                ((Set<File>) event.get("uploadedFiles")).forEach(file -> {
+                                    JLGeoJson geoJson = mapView.getGeoJsonLayer().addFromFile(file);
+                                    geoJson.addContextMenu()
+                                            .addItem("Remove", "Remove this GeoJSON layer")
+                                            .setOnMenuItemListener(item -> {
+                                                if ("remove".equals(item.getId())) {
+                                                    geoJson.remove();
+                                                    Notification.show("GeoJSON layer removed from map");
+                                                }
+                                            });
+                                })));
 
 
         loadGeoJson.setClassName(MENU_ITEM_CLASS);
 
         Button addUsOutlineGeoJson = new Button("US Outline GeoJSON Url", e -> {
             try {
-                mapView.getGeoJsonLayer().addFromUrl("https://eric.clst.org/assets/wiki/uploads/Stuff/gz_2010_us_outline_5m.json");
+                JLGeoJson usOutlineGeoJson = mapView.getGeoJsonLayer().addFromUrl("https://eric.clst.org/assets/wiki/uploads/Stuff/gz_2010_us_outline_5m.json");
+                usOutlineGeoJson.addContextMenu()
+                        .addItem("Remove", "Remove US outline GeoJSON")
+                        .setOnMenuItemListener(item -> {
+                            if ("remove".equals(item.getId())) {
+                                usOutlineGeoJson.remove();
+                                Notification.show("US outline GeoJSON removed from map");
+                            }
+                        });
                 Notification.show("US Outline GeoJSON added to map.");
             } catch (Exception ex) {
                 Notification.show("Failed to load GeoJSON: " + ex.getMessage());
@@ -282,6 +419,15 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             geoJson.setOnActionListener((jlGeoJson, event1) ->
                     Notification.show("GeoJSON Feature clicked: " + event1));
 
+            geoJson.addContextMenu()
+                    .addItem("Remove", "Remove styled GeoJSON layer")
+                    .setOnMenuItemListener(item -> {
+                        if ("remove".equals(item.getId())) {
+                            geoJson.remove();
+                            Notification.show("Styled GeoJSON layer removed from map");
+                        }
+                    });
+
         } catch (Exception ex) {
             Notification.show("Failed to add GeoJSON: " + ex.getMessage());
             log.error("Failed to add styled GeoJSON", ex);
@@ -310,6 +456,15 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
                             });
                             marker.getPopup().setOnActionListener((jlPopup, jlEvent) ->
                                     Notification.show(String.format("Mareker's Popup '%s' Event: %s", jlPopup, jlEvent)));
+
+                            marker.addContextMenu()
+                                    .addItem("Remove", "Remove this marker")
+                                    .setOnMenuItemListener(item -> {
+                                        if ("remove".equals(item.getId())) {
+                                            marker.remove();
+                                            Notification.show("Marker removed from map");
+                                        }
+                                    });
                         }));
 
         addMarker.setClassName(MENU_ITEM_CLASS);
@@ -324,7 +479,17 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
                     .northEast(new JLLatLng(neLat, neLng))
                     .build();
             String imageUrl = "https://img.favpng.com/1/24/8/eiffel-tower-eiffel-tower-illustrated-landmark-L5szYqrZ_t.jpg";
-            mapView.getUiLayer().addImage(bounds, imageUrl, JLOptions.DEFAULT);
+            JLImageOverlay imageOverlay = mapView.getUiLayer().addImage(bounds, imageUrl, JLOptions.DEFAULT);
+
+            imageOverlay.addContextMenu()
+                    .addItem("Remove", "Remove Eiffel Tower overlay")
+                    .setOnMenuItemListener(item -> {
+                        if ("remove".equals(item.getId())) {
+                            imageOverlay.remove();
+                            Notification.show("Eiffel Tower overlay removed from map");
+                        }
+                    });
+
             Notification.show("Eiffel Tower overlay added!");
         });
         addEiffelOverlay.setClassName(MENU_ITEM_CLASS);

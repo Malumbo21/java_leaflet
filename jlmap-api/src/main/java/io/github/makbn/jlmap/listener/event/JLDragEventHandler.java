@@ -1,6 +1,7 @@
 package io.github.makbn.jlmap.listener.event;
 
 import com.google.gson.Gson;
+import io.github.makbn.jlmap.JLMap;
 import io.github.makbn.jlmap.listener.JLAction;
 import io.github.makbn.jlmap.listener.OnJLActionListener;
 import io.github.makbn.jlmap.model.JLBounds;
@@ -52,7 +53,7 @@ public class JLDragEventHandler implements JLEventHandler<JLObject<?>> {
     Gson gson = new Gson();
 
     @Override
-    public void handle(@NonNull JLObject<?> source, @NonNull String functionName,
+    public void handle(@NonNull JLMap<?> map, @NonNull JLObject<?> source, @NonNull String functionName,
                        OnJLActionListener<JLObject<?>> listener, Object param1, Object param2,
                        Object param3, Object param4, Object param5) {
         switch (functionName) {

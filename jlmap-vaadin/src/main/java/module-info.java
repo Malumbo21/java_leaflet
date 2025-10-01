@@ -14,6 +14,7 @@ module io.github.makbn.jlmap.vaadin {
     requires vaadin.text.field.flow;
     requires vaadin.lumo.theme;
     requires vaadin.ordered.layout.flow;
+    requires vaadin.context.menu.flow;
 
     // JDK modules
     requires jdk.jsobject;
@@ -35,9 +36,16 @@ module io.github.makbn.jlmap.vaadin {
     requires gwt.elemental;
     requires org.apache.tomcat.embed.core;
     requires spring.context;
+    requires vaadin.icons.flow;
+    requires vaadin.avatar.flow;
 
     // Exports for public API
     exports io.github.makbn.jlmap.vaadin;
+    exports io.github.makbn.jlmap.vaadin.element.menu;
+
+    // Service providers
+    provides io.github.makbn.jlmap.element.menu.JLContextMenuMediator
+            with io.github.makbn.jlmap.vaadin.element.menu.VaadinContextMenuMediator;
 
     // Opens for reflection (if needed by frameworks)
     opens io.github.makbn.jlmap.vaadin to com.vaadin.flow.server;

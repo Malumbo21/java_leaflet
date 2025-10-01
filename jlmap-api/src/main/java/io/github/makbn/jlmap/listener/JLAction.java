@@ -71,7 +71,11 @@ public enum JLAction {
     /**
      * Fired when the map is resized.
      */
-    RESIZE("resize");
+    RESIZE("resize"),
+    /**
+     * Fired when a context menu is requested.
+     */
+    CONTEXT_MENU("contextmenu");
 
     String jsEventName;
 }

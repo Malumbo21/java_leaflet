@@ -12,8 +12,10 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Represents the basic layer.
@@ -48,7 +50,12 @@ public abstract class JLLayer implements LeafletLayer {
         return new JLJavaFxServerToClientTransporter() {
             @Override
             public Function<JLTransportRequest, Object> serverToClientTransport() {
-                return transport -> engine.executeScript(transport.function());
+                return transport -> {
+                    // Generate JavaScript method call: this.objectId.methodName(param1,param2,...)
+                    String script = "this.%1$s.%2$s(%3$s)".formatted(transport.self().getJLId(), transport.function(),
+                            transport.params().length > 0 ? Arrays.stream(transport.params()).map(String::valueOf).collect(Collectors.joining(",")) : "");
+                    return engine.executeScript(script);
+                };
             }
         };
     }

@@ -84,17 +84,35 @@ public class LeafletTestJFX extends Application {
         addPolyline(map);
         addPolygon(map);
 
-        map.getUiLayer()
+        // Add marker with context menu
+        JLMarker calgaryMarker = map.getUiLayer()
                 .addMarker(JLLatLng.builder()
-                        .lat(35.63)
-                        .lng(51.45)
-                        .build(), "Tehran", true)
-                .setOnActionListener(getListener());
+                        .lat(51.0447)
+                        .lng(-114.0719)
+                        .build(), "Calgary", true);
+
+        // Add context menu to the marker
+        calgaryMarker.addContextMenu()
+                .addItem("delete", "Delete Marker", "https://img.icons8.com/material-outlined/24/000000/trash--v1.png")
+                .addItem("info", "Show Info", "https://img.icons8.com/material-outlined/24/000000/info--v1.png")
+                .setOnMenuItemListener(item -> {
+                    log.info("Context menu item selected: {}", item.getText());
+                    switch (item.getId()) {
+                        case "delete" -> calgaryMarker.remove();
+                        case "info" -> map.getUiLayer().addPopup(
+                                JLLatLng.builder().lat(51.0447).lng(-114.0719).build(),
+                                "Calgary - AB",
+                                JLOptions.builder().autoClose(true).build()
+                        );
+                    }
+                });
+
+        calgaryMarker.setOnActionListener(getListener());
 
         map.getVectorLayer()
                 .addCircleMarker(JLLatLng.builder()
-                        .lat(35.63)
-                        .lng(40.45)
+                        .lat(51.0447)
+                        .lng(-114.0719)
                         .build());
 
         map.getVectorLayer()

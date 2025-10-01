@@ -55,6 +55,7 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
                     jlCallbackBuilder.on(JLAction.REMOVE);
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                    jlCallbackBuilder.on(JLAction.CONTEXT_MENU);
                 })
                 .withOptions(JLOptions.DEFAULT.toBuilder().draggable(draggable).build());
 
@@ -98,6 +99,7 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                    jlCallbackBuilder.on(JLAction.CONTEXT_MENU);
                     jlCallbackBuilder.on(JLAction.ADD);
                     jlCallbackBuilder.on(JLAction.REMOVE);
                 })
@@ -153,6 +155,7 @@ public class JLUiLayer extends JLLayer implements LeafletUILayerInt {
                 .withCallbacks(jlCallbackBuilder -> {
                     jlCallbackBuilder.on(JLAction.CLICK);
                     jlCallbackBuilder.on(JLAction.DOUBLE_CLICK);
+                    jlCallbackBuilder.on(JLAction.CONTEXT_MENU);
                     jlCallbackBuilder.on(JLAction.ADD);
                     jlCallbackBuilder.on(JLAction.REMOVE);
                 })

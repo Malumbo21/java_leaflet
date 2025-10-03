@@ -63,8 +63,8 @@ public class MyTripToCanada extends VerticalLayout {
             .iconAnchor(new JLPoint(24, 24))
             .build();
 
-    private final JLIcon RED_AIRPLANE_ICON = JLIcon.builder()
-            .iconUrl("https://cdn-icons-png.flaticon.com/512/1077/1077903.png")
+    private final JLIcon BALLOON = JLIcon.builder()
+            .iconUrl("https://cdn-icons-png.flaticon.com/512/1926/1926313.png")
             .iconSize(new JLPoint(64, 64))
             .iconAnchor(new JLPoint(24, 24))
             .build();
@@ -227,7 +227,7 @@ public class MyTripToCanada extends VerticalLayout {
         log.info("Starting journey animation");
         resetJourney();
 
-        addMessage("🎬", "Journey begins! Buckle up for an adventure!", "#9C27B0");
+        addMessage("🎬", "Journey begins! Buckle up for an adventure!", "Driver");
         log.info("About to animate first segment: Sari to Tehran");
 
         // Step 1: Car from Sari to Tehran (3 seconds)
@@ -241,12 +241,12 @@ public class MyTripToCanada extends VerticalLayout {
                 "Sari, Iran",
                 "Tehran, Iran",
                 () -> {
-                    addMessage("🚗", "Departed from beautiful Sari! Driving through scenic routes to Tehran...", "#FF5722");
+                    addMessage("🚗", "Departed from beautiful Sari! Driving through scenic routes to Tehran...", "Driver");
                     // Step 2: Briefcase and passport (1.5 seconds)
-                    addMessage("🏙️", "Arrived in Tehran! Time to pack my bags and grab my passport!", "#FF9800");
+                    addMessage("🏙️", "Arrived in Tehran! Time to pack my bags and grab my passport!", "Driver");
                     showTransition(TEHRAN, BRIEFCASE_ICON, 1500, () -> {
                         // Step 3: Airplane Tehran to Doha (4 seconds)
-                        addMessage("✈️", "Taking off from Tehran! Soaring through the clouds to Doha...", "#2196F3");
+                        addMessage("✈️", "Taking off from Tehran! Soaring through the clouds to Doha...", "Qatar Airways");
                         animateSegment(
                                 TEHRAN,
                                 DOHA,
@@ -258,10 +258,10 @@ public class MyTripToCanada extends VerticalLayout {
                                 "Doha, Qatar",
                                 () -> {
                                     // Step 4: Transit in Doha (1.5 seconds)
-                                    addMessage("🛬", "Landed in Doha! Quick layover for coffee and passport check ☕", "#00BCD4");
+                                    addMessage("🛬", "Landed in Doha! Quick layover for coffee and passport check ☕", "Doha Airport");
                                     showTransition(DOHA, PASSPORT_ICON, 1500, () -> {
                                         // Step 5: Airplane Doha to Montreal (5 seconds)
-                                        addMessage("🌍", "Crossing the Atlantic! Long flight ahead but Canada awaits! 🇨🇦", "#2196F3");
+                                        addMessage("🌍", "Crossing the Atlantic! Long flight ahead but Canada awaits! 🇨🇦", "Qatar Airways");
                                         animateSegment(
                                                 DOHA,
                                                 MONTREAL,
@@ -273,24 +273,24 @@ public class MyTripToCanada extends VerticalLayout {
                                                 "Montreal, Canada",
                                                 () -> {
                                                     // Step 6: Customs in Montreal (1.5 seconds)
-                                                    addMessage("🍁", "Bonjour Montreal! Going through customs and immigration...", "#4CAF50");
+                                                    addMessage("🍁", "Bonjour Montreal! Going through customs and immigration...", "YUL Airport");
                                                     showTransition(MONTREAL, DOCUMENT_ICON, 1500, () -> {
                                                         // Step 7: Domestic flight to Calgary (4 seconds)
-                                                        addMessage("🛫", "Domestic flight time! Heading west to the Rockies!", "#E91E63");
+                                                        addMessage("🛫", "Domestic flight time! Heading west to the Rockies!", "Air Canada");
                                                         animateSegment(
                                                                 MONTREAL,
                                                                 CALGARY,
-                                                                RED_AIRPLANE_ICON,
+                                                                BALLOON,
                                                                 "#E91E63",
-                                                                4000,
+                                                                8000,
                                                                 6,
                                                                 "Montreal, Canada",
                                                                 "Calgary, Canada",
                                                                 () -> {
                                                                     // Step 8: Arrived in Calgary
-                                                                    addMessage("🏠", "FINALLY HOME in Calgary! What an amazing journey! 🎉", "#4CAF50");
+                                                                    addMessage("🏠", "FINALLY HOME in Calgary! What an amazing journey! 🎉", "YYC Airport");
                                                                     showTransition(CALGARY, HOUSE_ICON, 2000, () -> {
-                                                                        addMessage("🎊", "Journey complete! Time to rest and enjoy the Rockies! 🏔️", "#9C27B0");
+                                                                        addMessage("🎊", "Journey complete! Time to mow your lawn and shovel the snow! 🏔️", "HOA manager");
                                                                         Notification.show("🎉 Welcome to Calgary, Canada! Journey Complete!",
                                                                                 5000,
                                                                                 Notification.Position.TOP_CENTER);
@@ -459,17 +459,46 @@ public class MyTripToCanada extends VerticalLayout {
 
         for (int i = 0; i < points; i++) {
             double t = (double) i / (points - 1);
+
+            // Bezier point
             double lat = Math.pow(1 - t, 2) * start.getLat() +
                     2 * (1 - t) * t * control.getLat() +
                     Math.pow(t, 2) * end.getLat();
             double lng = Math.pow(1 - t, 2) * start.getLng() +
                     2 * (1 - t) * t * control.getLng() +
                     Math.pow(t, 2) * end.getLng();
-            path[i] = new JLLatLng(lat, lng);
+
+            // Bezier derivative (tangent vector)
+            double dLat = 2 * (1 - t) * (control.getLat() - start.getLat()) +
+                    2 * t * (end.getLat() - control.getLat());
+            double dLng = 2 * (1 - t) * (control.getLng() - start.getLng()) +
+                    2 * t * (end.getLng() - control.getLng());
+
+            // Perpendicular vector (normal)
+            double normalLat = -dLng;
+            double normalLng = dLat;
+
+            // Normalize the normal vector
+            double length = Math.sqrt(normalLat * normalLat + normalLng * normalLng);
+            if (length != 0) {
+                normalLat /= length;
+                normalLng /= length;
+            }
+            double distance = start.distanceTo(end) / 100000; // Adjust for map scale
+            // Add a sinusoidal offset for wiggle
+            double wiggleAmplitude = 0.2 * Math.log(distance); // Adjust amplitude
+            double wiggleFrequency = 1.5 * Math.log(distance);    // Number of wiggles along the path
+            double wiggle = Math.sin(t * Math.PI * wiggleFrequency) * wiggleAmplitude;
+
+            double finalLat = lat + normalLat * wiggle;
+            double finalLng = lng + normalLng * wiggle;
+
+            path[i] = new JLLatLng(finalLat, finalLng);
         }
 
         return path;
     }
+
 
     private void resetJourney() {
         if (currentMarker != null) {
@@ -485,12 +514,12 @@ public class MyTripToCanada extends VerticalLayout {
         mapView.getControlLayer().flyTo(SARI, 4);
     }
 
-    private void addMessage(String icon, String message, String color) {
+    private void addMessage(String icon, String message, String username) {
         UI.getCurrent().access(() -> {
             MessageListItem item = new MessageListItem(
                     icon + " " + message,
                     Instant.now(),
-                    "Journey Bot"
+                    username
             );
 
             messages.add(item);

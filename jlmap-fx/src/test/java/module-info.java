@@ -29,4 +29,5 @@ module io.github.makbn.jlmap.fx.test {
     opens io.github.makbn.jlmap.fx.test.internal to org.junit.platform.commons, org.mockito;
     opens io.github.makbn.jlmap.fx.test.layer to org.junit.platform.commons, org.mockito;
     opens io.github.makbn.jlmap.fx.test.engine to org.junit.platform.commons, org.mockito;
+    opens io.github.makbn.jlmap.fx.test.element.menu to org.junit.platform.commons, org.mockito;
 }

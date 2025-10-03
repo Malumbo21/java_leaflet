@@ -8,6 +8,7 @@ import io.github.makbn.jlmap.geojson.JLGeoJsonContent;
 import io.github.makbn.jlmap.geojson.JLGeoJsonFile;
 import io.github.makbn.jlmap.geojson.JLGeoJsonURL;
 import io.github.makbn.jlmap.model.JLGeoJson;
+import netscape.javascript.JSObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,11 +51,21 @@ class JLGeoJsonLayerTest {
     private JLGeoJsonURL mockGeoJsonURL;
     @Mock
     private JLGeoJsonContent mockGeoJsonContent;
+    @Mock
+    private JSObject mockWindow;
     private JLGeoJsonLayer geoJsonLayer;
 
     @BeforeEach
     void setUp() {
+        // Mock the window object for JavaFX bridge initialization
+        // Use lenient() to allow stubbing that may not always be called
+        lenient().when(engine.executeScript(anyString())).thenReturn(null);
+        when(engine.executeScript("window")).thenReturn(mockWindow);
+
         geoJsonLayer = new JLGeoJsonLayer(engine, callbackHandler);
+
+        // Clear invocations from the constructor (bridge initialization)
+        clearInvocations(engine, callbackHandler);
 
         // Use reflection to inject mocks for testing
         try {
@@ -77,18 +88,23 @@ class JLGeoJsonLayerTest {
     // === Constructor Tests ===
 
     @Test
-    void constructor_withNullEngine_shouldAcceptNullEngine() {
-        // When/Then - Constructor validation is not implemented in the actual class
-        // This test documents the current behavior
-        JLGeoJsonLayer layer = new JLGeoJsonLayer(null, callbackHandler);
-        assertThat(layer).isNotNull();
+    void constructor_withNullEngine_shouldThrowNullPointerException() {
+        // When/Then - Bridge initialization requires a non-null engine
+        assertThatThrownBy(() -> new JLGeoJsonLayer(null, callbackHandler))
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void constructor_withNullCallbackHandler_shouldAcceptNullHandler() {
+        // Given - need to mock engine for bridge initialization
+        JLWebEngine<Object> mockEngine = mock(JLWebEngine.class);
+        JSObject mockWin = mock(JSObject.class);
+        lenient().when(mockEngine.executeScript(anyString())).thenReturn(null);
+        when(mockEngine.executeScript("window")).thenReturn(mockWin);
+
         // When/Then - Constructor validation is not implemented in the actual class
         // This test documents the current behavior
-        JLGeoJsonLayer layer = new JLGeoJsonLayer(engine, null);
+        JLGeoJsonLayer layer = new JLGeoJsonLayer(mockEngine, null);
         assertThat(layer).isNotNull();
     }
 

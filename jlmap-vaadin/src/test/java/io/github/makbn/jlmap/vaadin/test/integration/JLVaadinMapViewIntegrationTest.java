@@ -320,4 +320,411 @@ class JLVaadinMapViewIntegrationTest {
             throw new TimeoutException("Timed out waiting for GeoJSON addition");
         }
     }
+
+    @Test
+    void jlMapView_markerWithContextMenu_shouldHaveContextMenu() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        final io.github.makbn.jlmap.model.JLMarker[] markerRef = new io.github.makbn.jlmap.model.JLMarker[1];
+
+        Runnable markerWithContextMenu = () -> {
+            io.github.makbn.jlmap.model.JLMarker marker = map.getUiLayer().addMarker(
+                    JLLatLng.builder()
+                            .lat(ThreadLocalRandom.current().nextDouble(-90.0, 90.0))
+                            .lng(ThreadLocalRandom.current().nextDouble(-180.0, 180.0))
+                            .build(),
+                    "Test Marker", false);
+
+            marker.addContextMenu()
+                    .addItem("edit", "Edit Marker")
+                    .addItem("delete", "Delete Marker")
+                    .addItem("info", "Show Info");
+
+            markerRef[0] = marker;
+            latch.countDown();
+        };
+
+        markerWithContextMenu.run();
+
+        if (latch.await(5, TimeUnit.SECONDS)) {
+            Runnable verification = () -> {
+                io.github.makbn.jlmap.model.JLMarker marker = markerRef[0];
+                assertThat(marker.hasContextMenu()).isTrue();
+                assertThat(marker.isContextMenuEnabled()).isTrue();
+                assertThat(marker.getContextMenu()).isNotNull();
+                assertThat(marker.getContextMenu().getItemCount()).isEqualTo(3);
+            };
+            verification.run();
+        } else {
+            throw new TimeoutException("Timed out waiting for marker with context menu");
+        }
+    }
+
+    @Test
+    void jlMapView_markerContextMenu_shouldSupportEnableDisable() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        final io.github.makbn.jlmap.model.JLMarker[] markerRef = new io.github.makbn.jlmap.model.JLMarker[1];
+
+        Runnable markerContextMenuToggle = () -> {
+            io.github.makbn.jlmap.model.JLMarker marker = map.getUiLayer().addMarker(
+                    JLLatLng.builder()
+                            .lat(ThreadLocalRandom.current().nextDouble(-90.0, 90.0))
+                            .lng(ThreadLocalRandom.current().nextDouble(-180.0, 180.0))
+                            .build(),
+                    "Test Marker", false);
+
+            marker.addContextMenu()
+                    .addItem("edit", "Edit Marker");
+
+            marker.setContextMenuEnabled(false);
+            markerRef[0] = marker;
+            latch.countDown();
+        };
+
+        markerContextMenuToggle.run();
+
+        if (latch.await(5, TimeUnit.SECONDS)) {
+            Runnable verification = () -> {
+                io.github.makbn.jlmap.model.JLMarker marker = markerRef[0];
+                assertThat(marker.isContextMenuEnabled()).isFalse();
+
+                marker.setContextMenuEnabled(true);
+                assertThat(marker.isContextMenuEnabled()).isTrue();
+            };
+            verification.run();
+        } else {
+            throw new TimeoutException("Timed out waiting for marker context menu enable/disable test");
+        }
+    }
+
+    @Test
+    void jlMapView_markerContextMenu_shouldSupportAddingRemovingItems() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        final io.github.makbn.jlmap.model.JLMarker[] markerRef = new io.github.makbn.jlmap.model.JLMarker[1];
+
+        Runnable markerContextMenuOperations = () -> {
+            io.github.makbn.jlmap.model.JLMarker marker = map.getUiLayer().addMarker(
+                    JLLatLng.builder()
+                            .lat(ThreadLocalRandom.current().nextDouble(-90.0, 90.0))
+                            .lng(ThreadLocalRandom.current().nextDouble(-180.0, 180.0))
+                            .build(),
+                    "Test Marker", false);
+
+            io.github.makbn.jlmap.element.menu.JLContextMenu<io.github.makbn.jlmap.model.JLMarker> contextMenu =
+                    marker.addContextMenu();
+            contextMenu.addItem("edit", "Edit Marker")
+                    .addItem("delete", "Delete Marker")
+                    .addItem("info", "Show Info");
+
+            markerRef[0] = marker;
+            latch.countDown();
+        };
+
+        markerContextMenuOperations.run();
+
+        if (latch.await(5, TimeUnit.SECONDS)) {
+            Runnable verification = () -> {
+                io.github.makbn.jlmap.model.JLMarker marker = markerRef[0];
+                io.github.makbn.jlmap.element.menu.JLContextMenu<io.github.makbn.jlmap.model.JLMarker> contextMenu =
+                        marker.getContextMenu();
+
+                assertThat(contextMenu.getItemCount()).isEqualTo(3);
+
+                contextMenu.removeItem("edit");
+                assertThat(contextMenu.getItemCount()).isEqualTo(2);
+                assertThat(contextMenu.getItem("edit")).isNull();
+
+                contextMenu.addItem("new", "New Item");
+                assertThat(contextMenu.getItemCount()).isEqualTo(3);
+                assertThat(contextMenu.getItem("new")).isNotNull();
+
+                contextMenu.clearItems();
+                assertThat(contextMenu.getItemCount()).isZero();
+                assertThat(marker.hasContextMenu()).isFalse();
+            };
+            verification.run();
+        } else {
+            throw new TimeoutException("Timed out waiting for marker context menu operations test");
+        }
+    }
+
+    @Test
+    void jlMapView_markerContextMenu_shouldSupportMenuItemVisibility() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        final io.github.makbn.jlmap.model.JLMarker[] markerRef = new io.github.makbn.jlmap.model.JLMarker[1];
+
+        Runnable markerContextMenuVisibility = () -> {
+            io.github.makbn.jlmap.model.JLMarker marker = map.getUiLayer().addMarker(
+                    JLLatLng.builder()
+                            .lat(ThreadLocalRandom.current().nextDouble(-90.0, 90.0))
+                            .lng(ThreadLocalRandom.current().nextDouble(-180.0, 180.0))
+                            .build(),
+                    "Test Marker", false);
+
+            io.github.makbn.jlmap.element.menu.JLContextMenu<io.github.makbn.jlmap.model.JLMarker> contextMenu =
+                    marker.addContextMenu();
+
+            // Add visible item
+            contextMenu.addItem(io.github.makbn.jlmap.element.menu.JLMenuItem.builder()
+                    .id("visible")
+                    .text("Visible Item")
+                    .visible(true)
+                    .build());
+
+            // Add hidden item
+            contextMenu.addItem(io.github.makbn.jlmap.element.menu.JLMenuItem.builder()
+                    .id("hidden")
+                    .text("Hidden Item")
+                    .visible(false)
+                    .build());
+
+            markerRef[0] = marker;
+            latch.countDown();
+        };
+
+        markerContextMenuVisibility.run();
+
+        if (latch.await(5, TimeUnit.SECONDS)) {
+            Runnable verification = () -> {
+                io.github.makbn.jlmap.model.JLMarker marker = markerRef[0];
+                io.github.makbn.jlmap.element.menu.JLContextMenu<io.github.makbn.jlmap.model.JLMarker> contextMenu =
+                        marker.getContextMenu();
+
+                assertThat(contextMenu.getItemCount()).isEqualTo(2);
+                assertThat(contextMenu.getVisibleItemCount()).isEqualTo(1);
+                assertThat(contextMenu.hasVisibleItems()).isTrue();
+            };
+            verification.run();
+        } else {
+            throw new TimeoutException("Timed out waiting for marker context menu visibility test");
+        }
+    }
+
+    @Test
+    void jlMapView_markerContextMenu_shouldSupportMenuItemUpdate() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        final io.github.makbn.jlmap.model.JLMarker[] markerRef = new io.github.makbn.jlmap.model.JLMarker[1];
+
+        Runnable markerContextMenuUpdate = () -> {
+            io.github.makbn.jlmap.model.JLMarker marker = map.getUiLayer().addMarker(
+                    JLLatLng.builder()
+                            .lat(ThreadLocalRandom.current().nextDouble(-90.0, 90.0))
+                            .lng(ThreadLocalRandom.current().nextDouble(-180.0, 180.0))
+                            .build(),
+                    "Test Marker", false);
+
+            io.github.makbn.jlmap.element.menu.JLContextMenu<io.github.makbn.jlmap.model.JLMarker> contextMenu =
+                    marker.addContextMenu();
+            contextMenu.addItem("edit", "Edit Marker");
+
+            markerRef[0] = marker;
+            latch.countDown();
+        };
+
+        markerContextMenuUpdate.run();
+
+        if (latch.await(5, TimeUnit.SECONDS)) {
+            Runnable verification = () -> {
+                io.github.makbn.jlmap.model.JLMarker marker = markerRef[0];
+                io.github.makbn.jlmap.element.menu.JLContextMenu<io.github.makbn.jlmap.model.JLMarker> contextMenu =
+                        marker.getContextMenu();
+
+                // Update existing item
+                io.github.makbn.jlmap.element.menu.JLMenuItem updatedItem =
+                        io.github.makbn.jlmap.element.menu.JLMenuItem.builder()
+                                .id("edit")
+                                .text("Edit Properties")
+                                .icon("https://example.com/edit.png")
+                                .build();
+
+                contextMenu.updateItem(updatedItem);
+
+                io.github.makbn.jlmap.element.menu.JLMenuItem item = contextMenu.getItem("edit");
+                assertThat(item).isNotNull();
+                assertThat(item.getText()).isEqualTo("Edit Properties");
+                assertThat(item.getIcon()).isEqualTo("https://example.com/edit.png");
+            };
+            verification.run();
+        } else {
+            throw new TimeoutException("Timed out waiting for marker context menu update test");
+        }
+    }
+
+    @Test
+    void jlMapView_markerContextMenu_shouldSupportListenerCallback() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        final io.github.makbn.jlmap.model.JLMarker[] markerRef = new io.github.makbn.jlmap.model.JLMarker[1];
+        final boolean[] listenerInvoked = {false};
+
+        Runnable markerContextMenuListener = () -> {
+            io.github.makbn.jlmap.model.JLMarker marker = map.getUiLayer().addMarker(
+                    JLLatLng.builder()
+                            .lat(ThreadLocalRandom.current().nextDouble(-90.0, 90.0))
+                            .lng(ThreadLocalRandom.current().nextDouble(-180.0, 180.0))
+                            .build(),
+                    "Test Marker", false);
+
+            io.github.makbn.jlmap.element.menu.JLContextMenu<io.github.makbn.jlmap.model.JLMarker> contextMenu =
+                    marker.addContextMenu();
+            contextMenu.addItem("test", "Test Item")
+                    .setOnMenuItemListener(item -> {
+                        listenerInvoked[0] = true;
+                    });
+
+            markerRef[0] = marker;
+            latch.countDown();
+        };
+
+        markerContextMenuListener.run();
+
+        if (latch.await(5, TimeUnit.SECONDS)) {
+            Runnable verification = () -> {
+                io.github.makbn.jlmap.model.JLMarker marker = markerRef[0];
+                io.github.makbn.jlmap.element.menu.JLContextMenu<io.github.makbn.jlmap.model.JLMarker> contextMenu =
+                        marker.getContextMenu();
+
+                // Simulate menu item selection
+                io.github.makbn.jlmap.element.menu.JLMenuItem item = contextMenu.getItem("test");
+                contextMenu.handleMenuItemSelection(item);
+
+                assertThat(listenerInvoked[0]).isTrue();
+            };
+            verification.run();
+        } else {
+            throw new TimeoutException("Timed out waiting for marker context menu listener test");
+        }
+    }
+
+    @Test
+    void jlMapView_multipleMarkersWithContextMenu_shouldMaintainIndependentMenus() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        final io.github.makbn.jlmap.model.JLMarker[] marker1Ref = new io.github.makbn.jlmap.model.JLMarker[1];
+        final io.github.makbn.jlmap.model.JLMarker[] marker2Ref = new io.github.makbn.jlmap.model.JLMarker[1];
+
+        Runnable multipleMarkersContextMenu = () -> {
+            io.github.makbn.jlmap.model.JLMarker marker1 = map.getUiLayer().addMarker(
+                    JLLatLng.builder()
+                            .lat(ThreadLocalRandom.current().nextDouble(-90.0, 90.0))
+                            .lng(ThreadLocalRandom.current().nextDouble(-180.0, 180.0))
+                            .build(),
+                    "Marker 1", false);
+
+            io.github.makbn.jlmap.model.JLMarker marker2 = map.getUiLayer().addMarker(
+                    JLLatLng.builder()
+                            .lat(ThreadLocalRandom.current().nextDouble(-90.0, 90.0))
+                            .lng(ThreadLocalRandom.current().nextDouble(-180.0, 180.0))
+                            .build(),
+                    "Marker 2", false);
+
+            marker1.addContextMenu()
+                    .addItem("edit", "Edit Marker 1")
+                    .addItem("delete", "Delete Marker 1");
+
+            marker2.addContextMenu()
+                    .addItem("view", "View Marker 2")
+                    .addItem("share", "Share Marker 2");
+
+            marker1Ref[0] = marker1;
+            marker2Ref[0] = marker2;
+            latch.countDown();
+        };
+
+        multipleMarkersContextMenu.run();
+
+        if (latch.await(5, TimeUnit.SECONDS)) {
+            Runnable verification = () -> {
+                io.github.makbn.jlmap.model.JLMarker marker1 = marker1Ref[0];
+                io.github.makbn.jlmap.model.JLMarker marker2 = marker2Ref[0];
+
+                assertThat(marker1.hasContextMenu()).isTrue();
+                assertThat(marker2.hasContextMenu()).isTrue();
+
+                assertThat(marker1.getContextMenu().getItemCount()).isEqualTo(2);
+                assertThat(marker2.getContextMenu().getItemCount()).isEqualTo(2);
+
+                assertThat(marker1.getContextMenu().getItem("edit")).isNotNull();
+                assertThat(marker1.getContextMenu().getItem("view")).isNull();
+
+                assertThat(marker2.getContextMenu().getItem("view")).isNotNull();
+                assertThat(marker2.getContextMenu().getItem("edit")).isNull();
+            };
+            verification.run();
+        } else {
+            throw new TimeoutException("Timed out waiting for multiple markers context menu test");
+        }
+    }
+
+    @Test
+    void jlMapView_markerContextMenu_withIconsAndVariousStates() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        final io.github.makbn.jlmap.model.JLMarker[] markerRef = new io.github.makbn.jlmap.model.JLMarker[1];
+
+        Runnable markerContextMenuWithStates = () -> {
+            io.github.makbn.jlmap.model.JLMarker marker = map.getUiLayer().addMarker(
+                    JLLatLng.builder()
+                            .lat(ThreadLocalRandom.current().nextDouble(-90.0, 90.0))
+                            .lng(ThreadLocalRandom.current().nextDouble(-180.0, 180.0))
+                            .build(),
+                    "Test Marker", false);
+
+            io.github.makbn.jlmap.element.menu.JLContextMenu<io.github.makbn.jlmap.model.JLMarker> contextMenu =
+                    marker.addContextMenu();
+
+            // Item with icon
+            contextMenu.addItem(io.github.makbn.jlmap.element.menu.JLMenuItem.builder()
+                    .id("edit")
+                    .text("Edit")
+                    .icon("https://img.icons8.com/material-outlined/24/000000/edit--v1.png")
+                    .enabled(true)
+                    .visible(true)
+                    .build());
+
+            // Disabled item
+            contextMenu.addItem(io.github.makbn.jlmap.element.menu.JLMenuItem.builder()
+                    .id("delete")
+                    .text("Delete")
+                    .enabled(false)
+                    .visible(true)
+                    .build());
+
+            // Hidden item
+            contextMenu.addItem(io.github.makbn.jlmap.element.menu.JLMenuItem.builder()
+                    .id("admin")
+                    .text("Admin Action")
+                    .enabled(true)
+                    .visible(false)
+                    .build());
+
+            markerRef[0] = marker;
+            latch.countDown();
+        };
+
+        markerContextMenuWithStates.run();
+
+        if (latch.await(5, TimeUnit.SECONDS)) {
+            Runnable verification = () -> {
+                io.github.makbn.jlmap.model.JLMarker marker = markerRef[0];
+                io.github.makbn.jlmap.element.menu.JLContextMenu<io.github.makbn.jlmap.model.JLMarker> contextMenu =
+                        marker.getContextMenu();
+
+                assertThat(contextMenu.getItemCount()).isEqualTo(3);
+                assertThat(contextMenu.getVisibleItemCount()).isEqualTo(2);
+
+                io.github.makbn.jlmap.element.menu.JLMenuItem editItem = contextMenu.getItem("edit");
+                assertThat(editItem.isEnabled()).isTrue();
+                assertThat(editItem.isVisible()).isTrue();
+                assertThat(editItem.getIcon()).isNotNull();
+
+                io.github.makbn.jlmap.element.menu.JLMenuItem deleteItem = contextMenu.getItem("delete");
+                assertThat(deleteItem.isEnabled()).isFalse();
+                assertThat(deleteItem.isVisible()).isTrue();
+
+                io.github.makbn.jlmap.element.menu.JLMenuItem adminItem = contextMenu.getItem("admin");
+                assertThat(adminItem.isEnabled()).isTrue();
+                assertThat(adminItem.isVisible()).isFalse();
+            };
+            verification.run();
+        } else {
+            throw new TimeoutException("Timed out waiting for marker context menu with various states test");
+        }
+    }
 }

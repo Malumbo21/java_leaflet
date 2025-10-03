@@ -121,10 +121,10 @@ class JLFxMapRendererTest {
         String html = renderer.render(option);
 
         // Then
-        assertThat(html).contains("function getCenterOfElement(element)");
-        assertThat(html).contains("function getMapBounds()");
-        assertThat(html).contains("this.map.getBounds().getNorthEast().lat");
-        assertThat(html).contains("this.map.getBounds().getSouthWest().lng");
+        assertThat(html).contains("function getCenterOfElement(event, mapElement)");
+        assertThat(html).contains("function getMapBounds(mapElement)");
+        assertThat(html).contains("mapElement.getBounds().getNorthEast().lat");
+        assertThat(html).contains("mapElement.getBounds().getSouthWest().lng");
     }
 
     @Test

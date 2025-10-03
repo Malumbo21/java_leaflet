@@ -64,7 +64,13 @@ class JLVaadinGeoJsonLayerTest {
 
     @BeforeEach
     void setUp() {
+        // Mock the bridge initialization
+        lenient().when(engine.executeScript(anyString())).thenReturn(mockJavaScriptResult);
+
         geoJsonLayer = new JLVaadinGeoJsonLayer(engine, callbackHandler);
+
+        // Clear invocations from the constructor (bridge initialization)
+        clearInvocations(engine, callbackHandler);
 
         // Use reflection to inject mocks for testing
         try {
@@ -85,14 +91,22 @@ class JLVaadinGeoJsonLayerTest {
     }
 
     @Test
-    void constructor_withNullEngine_shouldAcceptNullEngine() {
-        JLVaadinGeoJsonLayer layer = new JLVaadinGeoJsonLayer(null, callbackHandler);
-        assertThat(layer).isNotNull();
+    void constructor_withNullEngine_shouldThrowNullPointerException() {
+        // When/Then - Bridge initialization requires a non-null engine
+        assertThatThrownBy(() -> new JLVaadinGeoJsonLayer(null, callbackHandler))
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void constructor_withNullCallbackHandler_shouldAcceptNullHandler() {
-        JLVaadinGeoJsonLayer layer = new JLVaadinGeoJsonLayer(engine, null);
+        // Given - need to mock engine for bridge initialization
+        JLWebEngine<PendingJavaScriptResult> mockEngine = mock(JLWebEngine.class);
+        PendingJavaScriptResult mockResult = mock(PendingJavaScriptResult.class);
+        lenient().when(mockEngine.executeScript(anyString())).thenReturn(mockResult);
+
+        // When/Then - Constructor validation is not implemented in the actual class
+        // This test documents the current behavior
+        JLVaadinGeoJsonLayer layer = new JLVaadinGeoJsonLayer(mockEngine, null);
         assertThat(layer).isNotNull();
     }
 

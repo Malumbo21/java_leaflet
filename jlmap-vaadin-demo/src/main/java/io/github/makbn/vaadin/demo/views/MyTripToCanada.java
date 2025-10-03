@@ -2,10 +2,13 @@ package io.github.makbn.vaadin.demo.views;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.messages.MessageList;
+import com.vaadin.flow.component.messages.MessageListItem;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import io.github.makbn.jlmap.map.JLMapProvider;
@@ -14,6 +17,9 @@ import io.github.makbn.jlmap.vaadin.JLMapView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -89,14 +95,18 @@ public class MyTripToCanada extends VerticalLayout {
     private JLMapView mapView;
     private JLMarker currentMarker;
     private JLPolyline currentPath;
+    private final List<MessageListItem> messages = new ArrayList<>();
+    private MessageList messageList;
 
     public MyTripToCanada() {
-        setWidthFull();
-        setHeight("100px");
+        setSizeFull();
+        setPadding(false);
+        setSpacing(false);
 
-
-        // Title
-        H2 title = new H2("JL-Map Vaadin Demo");
+        // Main content layout with map
+        FlexLayout mainContent = new FlexLayout();
+        mainContent.setSizeFull();
+        mainContent.getStyle().set("position", "relative");
 
         // Create the map view
         mapView = JLMapView.builder()
@@ -105,44 +115,122 @@ public class MyTripToCanada extends VerticalLayout {
                         .parameter(new JLMapOption.Parameter("initialZoom", "4"))
                         .build())
                 .startCoordinate(SARI)
-                .showZoomController(true)
+                .showZoomController(false)
                 .build();
-        mapView.getStyle().set("border-radius", "16px");
+        mapView.setSizeFull();
 
-        // Control panel
-        HorizontalLayout controlPanel = new HorizontalLayout();
-        controlPanel.setSpacing(true);
-        controlPanel.setHeight("280px");
+        // Create menu overlay (similar to HomeView)
+        VerticalLayout menuWrapper = new VerticalLayout();
+        menuWrapper.setClassName("jlmap-menu");
 
+        menuWrapper.setPadding(false);
+        menuWrapper.setSpacing(false);
+        menuWrapper.setWidth(null);
+        menuWrapper.setMaxHeight("450px");
+        menuWrapper.setMinWidth("280px");
+        menuWrapper.setMaxWidth("350px");
+        menuWrapper.setHeight(null);
+        menuWrapper.getStyle()
+                .set("position", "absolute")
+                .set("bottom", "20px")
+                .set("top", "80% !important")
+                .set("left", "20px")
+                .set("z-index", "1000")
+                .set("background", "rgba(255, 255, 255, 0.95)")
+                .set("border-radius", "8px")
+                .set("box-shadow", "0 4px 12px rgba(0,0,0,0.15)")
+                .set("padding", "16px");
+
+        // Menu content
+        VerticalLayout menuContent = new VerticalLayout();
+        menuContent.setPadding(false);
+        menuContent.setSpacing(false);
+        menuContent.setWidthFull();
+
+        // Title
+        Span menuTitle = new Span("Java Leaflet: Vaadin");
+        menuTitle.getStyle()
+                .set("font-size", "1.1em")
+                .set("font-weight", "600")
+                .set("color", "var(--lumo-header-text-color)")
+                .set("display", "block")
+                .set("margin-bottom", "12px");
+
+        // Buttons
         Button startButton = new Button("✈️ Start Journey");
+        startButton.setWidthFull();
+        startButton.getStyle().set("margin-bottom", "8px");
         startButton.addClickListener(e -> {
             startButton.setEnabled(false);
+            clearMessages();
             startJourney();
         });
-        startButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button resetButton = new Button("🔄 Reset");
-        resetButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
+        resetButton.setWidthFull();
         resetButton.addClickListener(e -> {
             resetJourney();
+            clearMessages();
             startButton.setEnabled(true);
         });
 
-        controlPanel.add(title, startButton, resetButton);
+        // GitHub footer
+        Anchor githubLink = new Anchor("https://github.com/makbn/java_leaflet", "");
+        githubLink.setTarget("_blank");
+        githubLink.getStyle()
+                .set("display", "flex")
+                .set("align-items", "center")
+                .set("justify-content", "center")
+                .set("margin-top", "12px")
+                .set("padding-top", "12px")
+                .set("border-top", "1px solid var(--lumo-contrast-10pct)")
+                .set("color", "var(--lumo-secondary-text-color)")
+                .set("text-decoration", "none")
+                .set("font-size", "0.875em");
+        githubLink.getElement().setProperty("innerHTML",
+                "<svg width='16' height='16' viewBox='0 0 16 16' fill='currentColor' style='margin-right: 6px;'><path d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z'/></svg>" +
+                        "<span>View on GitHub</span>");
 
-        add(controlPanel);
-        addAndExpand(mapView);
+        menuContent.add(menuTitle, startButton, resetButton, githubLink);
+        menuWrapper.add(menuContent);
+
+        // Message list panel
+        VerticalLayout messagePanel = new VerticalLayout();
+        messagePanel.setWidth("380px");
+        messagePanel.getStyle()
+                .set("border-left", "1px solid var(--lumo-contrast-10pct)");
+        messagePanel.setPadding(false);
+        messagePanel.setSpacing(false);
+
+        H3 messageTitle = new H3("📝 Journey Log");
+        messageTitle.getStyle()
+                .set("margin", "0")
+                .set("padding", "var(--lumo-space-m)");
+
+        messageList = new MessageList();
+        messageList.setItems(messages);
+
+        messagePanel.add(messageTitle, messageList);
+        messagePanel.expand(messageList);
+
+        // Add components to main content
+        mainContent.add(mapView, messagePanel);
+        mainContent.expand(mapView);
+
+        // Add menu overlay on top of map
+        mapView.getElement().appendChild(menuWrapper.getElement());
+
+        add(mainContent);
     }
 
     private void startJourney() {
         log.info("Starting journey animation");
         resetJourney();
 
-        Notification.show("Starting journey from Sari, Iran...", 2000, Notification.Position.BOTTOM_CENTER);
+        addMessage("🎬", "Journey begins! Buckle up for an adventure!", "#9C27B0");
         log.info("About to animate first segment: Sari to Tehran");
 
-        // Step 1: Car from Sari to Tehran (5 seconds)
+        // Step 1: Car from Sari to Tehran (3 seconds)
         animateSegment(
                 SARI,
                 TEHRAN,
@@ -153,11 +241,12 @@ public class MyTripToCanada extends VerticalLayout {
                 "Sari, Iran",
                 "Tehran, Iran",
                 () -> {
-                    // Step 2: Briefcase and passport (1 second)
-                    Notification.show("Arriving in Tehran - Getting ready to fly...", 2000, Notification.Position.BOTTOM_CENTER);
+                    addMessage("🚗", "Departed from beautiful Sari! Driving through scenic routes to Tehran...", "#FF5722");
+                    // Step 2: Briefcase and passport (1.5 seconds)
+                    addMessage("🏙️", "Arrived in Tehran! Time to pack my bags and grab my passport!", "#FF9800");
                     showTransition(TEHRAN, BRIEFCASE_ICON, 1500, () -> {
-                        // Step 3: Airplane Tehran to Doha (3 seconds)
-                        Notification.show("Flying to Doha...", 2000, Notification.Position.BOTTOM_CENTER);
+                        // Step 3: Airplane Tehran to Doha (4 seconds)
+                        addMessage("✈️", "Taking off from Tehran! Soaring through the clouds to Doha...", "#2196F3");
                         animateSegment(
                                 TEHRAN,
                                 DOHA,
@@ -168,11 +257,11 @@ public class MyTripToCanada extends VerticalLayout {
                                 "Tehran, Iran",
                                 "Doha, Qatar",
                                 () -> {
-                                    // Step 4: Change airplane animation (same position)
-                                    Notification.show("Transit in Doha...", 2000, Notification.Position.BOTTOM_CENTER);
+                                    // Step 4: Transit in Doha (1.5 seconds)
+                                    addMessage("🛬", "Landed in Doha! Quick layover for coffee and passport check ☕", "#00BCD4");
                                     showTransition(DOHA, PASSPORT_ICON, 1500, () -> {
                                         // Step 5: Airplane Doha to Montreal (5 seconds)
-                                        Notification.show("Flying to Montreal, Canada...", 2000, Notification.Position.BOTTOM_CENTER);
+                                        addMessage("🌍", "Crossing the Atlantic! Long flight ahead but Canada awaits! 🇨🇦", "#2196F3");
                                         animateSegment(
                                                 DOHA,
                                                 MONTREAL,
@@ -183,11 +272,11 @@ public class MyTripToCanada extends VerticalLayout {
                                                 "Doha, Qatar",
                                                 "Montreal, Canada",
                                                 () -> {
-                                                    // Step 6: Paper document (1 second)
-                                                    Notification.show("Customs in Montreal...", 2000, Notification.Position.BOTTOM_CENTER);
+                                                    // Step 6: Customs in Montreal (1.5 seconds)
+                                                    addMessage("🍁", "Bonjour Montreal! Going through customs and immigration...", "#4CAF50");
                                                     showTransition(MONTREAL, DOCUMENT_ICON, 1500, () -> {
-                                                        // Step 7: Red airplane Montreal to Calgary (4 seconds)
-                                                        Notification.show("Domestic flight to Calgary...", 2000, Notification.Position.BOTTOM_CENTER);
+                                                        // Step 7: Domestic flight to Calgary (4 seconds)
+                                                        addMessage("🛫", "Domestic flight time! Heading west to the Rockies!", "#E91E63");
                                                         animateSegment(
                                                                 MONTREAL,
                                                                 CALGARY,
@@ -198,12 +287,14 @@ public class MyTripToCanada extends VerticalLayout {
                                                                 "Montreal, Canada",
                                                                 "Calgary, Canada",
                                                                 () -> {
-                                                                    // Step 8: House at Calgary
-                                                                    showTransition(CALGARY, HOUSE_ICON, 2000, () ->
-                                                                            Notification.show("🎉 Welcome to Calgary, Canada! Journey Complete!",
-                                                                                    5000,
-                                                                                    Notification.Position.TOP_CENTER)
-                                                                    );
+                                                                    // Step 8: Arrived in Calgary
+                                                                    addMessage("🏠", "FINALLY HOME in Calgary! What an amazing journey! 🎉", "#4CAF50");
+                                                                    showTransition(CALGARY, HOUSE_ICON, 2000, () -> {
+                                                                        addMessage("🎊", "Journey complete! Time to rest and enjoy the Rockies! 🏔️", "#9C27B0");
+                                                                        Notification.show("🎉 Welcome to Calgary, Canada! Journey Complete!",
+                                                                                5000,
+                                                                                Notification.Position.TOP_CENTER);
+                                                                    });
                                                                 }
                                                         );
                                                     });
@@ -221,6 +312,13 @@ public class MyTripToCanada extends VerticalLayout {
                                 int duration, int zoomLevel, String departureName, String destinationName,
                                 Runnable onComplete) {
         log.info("Animating segment from {} to {} with icon {}", start, end, icon);
+        // Fly to show the route
+        JLLatLng midPoint = new JLLatLng(
+                (start.getLat() + end.getLat()) / 2,
+                (start.getLng() + end.getLng()) / 2
+        );
+        log.info("Flying to midpoint: {}", midPoint);
+        mapView.getControlLayer().flyTo(midPoint, zoomLevel);
 
         // Add popup at departure
         JLPopup departurePopup = mapView.getUiLayer().addPopup(start,
@@ -236,26 +334,6 @@ public class MyTripToCanada extends VerticalLayout {
         JLLatLng[] pathPoints = createCurvedPath(start, end, 300);
         log.info("Created path with {} points", pathPoints.length);
 
-        currentPath = mapView.getVectorLayer().addPolyline(
-                pathPoints,
-                JLOptions.DEFAULT.toBuilder()
-                        .color(JLColor.fromHex(pathColor))
-                        .fillColor(JLColor.fromHex("#00FFFFFF"))
-                        .color(JLColor.fromHex("#00FFFFFF"))
-                        .fill(false)
-                        .weight(4)
-                        .opacity(0.7)
-                        .build()
-        );
-        log.info("Added polyline to map");
-
-        // Fly to show the route
-        JLLatLng midPoint = new JLLatLng(
-                (start.getLat() + end.getLat()) / 2,
-                (start.getLng() + end.getLng()) / 2
-        );
-        log.info("Flying to midpoint: {}", midPoint);
-        mapView.getControlLayer().flyTo(midPoint, zoomLevel);
 
         // Add popup at destination
         JLPopup destinationPopup = mapView.getUiLayer().addPopup(end,
@@ -299,6 +377,21 @@ public class MyTripToCanada extends VerticalLayout {
 
         executor.scheduleAtFixedRate(() -> {
             int step = currentStep.getAndIncrement();
+            if (step == 1) {
+                ui.access(() -> {
+                    currentPath = mapView.getVectorLayer().addPolyline(
+                            path,
+                            JLOptions.DEFAULT.toBuilder()
+                                    .fillColor(JLColor.fromHex("#00FFFFFF"))
+                                    .color(JLColor.fromHex("#00FFFFFF"))
+                                    .fill(false)
+                                    .weight(4)
+                                    .opacity(0.7)
+                                    .build()
+                    );
+                    log.info("Added polyline to map");
+                });
+            }
 
             if (step <= totalSteps) {
                 // Calculate which point in the path to use
@@ -323,7 +416,7 @@ public class MyTripToCanada extends VerticalLayout {
                     ui.access(onComplete::run);
                 }
             }
-        }, 0, delayPerStep, TimeUnit.MILLISECONDS);
+        }, 1000, delayPerStep, TimeUnit.MILLISECONDS);
     }
 
     private void showTransition(JLLatLng position, JLIcon icon, int duration, Runnable onComplete) {
@@ -390,5 +483,23 @@ public class MyTripToCanada extends VerticalLayout {
 
         // Reset view to starting position
         mapView.getControlLayer().flyTo(SARI, 4);
+    }
+
+    private void addMessage(String icon, String message, String color) {
+        UI.getCurrent().access(() -> {
+            MessageListItem item = new MessageListItem(
+                    icon + " " + message,
+                    Instant.now(),
+                    "Journey Bot"
+            );
+
+            messages.add(item);
+            messageList.setItems(messages);
+        });
+    }
+
+    private void clearMessages() {
+        messages.clear();
+        messageList.setItems(messages);
     }
 }

@@ -47,13 +47,17 @@ import java.util.Set;
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JLMapProvider implements JLMapProviderInt {
-    /** Built-in provider for OpenStreetMap standard tiles - no API key required */
+    /**
+     * Built-in provider for OpenStreetMap standard tiles - no API key required
+     */
     public static final JLMapProvider.JLMapProviderBuilder OSM_MAPNIK = new JLMapProvider("OpenStreetMap.Mapnik",
             "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
             "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
             JLProperties.DEFAULT_MAX_ZOOM,
             new HashSet<>()).toBuilder();
-    /** Built-in provider for MapTiler - requires API key parameter */
+    /**
+     * Built-in provider for MapTiler - requires API key parameter
+     */
     public static final JLMapProvider.JLMapProviderBuilder MAP_TILER = new JLMapProvider("MapTiler",
             "https://api.maptiler.com/maps/aquarelle/256/{z}/{x}/{y}.png",
             "<a href=\"https://www.maptiler.com/copyright/\" target=\"_blank\">&copy; " +
@@ -66,12 +70,19 @@ public class JLMapProvider implements JLMapProviderInt {
      * Human-readable name of the map provider (e.g., "OpenStreetMap.Mapnik")
      */
     String name;
-    /** Tile server URL template with {z}, {x}, {y} placeholders for zoom, x, and y coordinates */
+    public static final JLMapProvider.JLMapProviderBuilder WATER_COLOR = new JLMapProvider("Stamen.WaterColor",
+            "https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg",
+            "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+            JLProperties.DEFAULT_MAX_ZOOM,
+            new HashSet<>()).toBuilder();
+    /**
+     * Tile server URL template with {z}, {x}, {y} placeholders for zoom, x, and y coordinates
+     */
     String url;
-    /** Attribution text to display on the map (typically copyright and data source information) */
+    /**
+     * Attribution text to display on the map (typically copyright and data source information)
+     */
     String attribution;
-    /** Maximum zoom level supported by this tile provider */
-    int maxZoom;
 
     public JLMapProvider(String name, String url, String attribution, int maxZoom, Set<JLMapOption.Parameter> parameters, Set<String> requiredParameter) {
         this.name = name;
@@ -85,15 +96,21 @@ public class JLMapProvider implements JLMapProviderInt {
     public JLMapProvider(String name, String url, String attribution, int maxZoom, Set<JLMapOption.Parameter> parameters) {
         this(name, url, attribution, maxZoom, parameters, Collections.emptySet());
     }
-    /** Set of optional parameters (e.g., API keys) required by the tile provider */
-    @Singular
-    Set<JLMapOption.Parameter> parameters;
+    /**
+     * Maximum zoom level supported by this tile provider
+     */
+    int maxZoom;
 
     public static final JLMapProvider.JLMapProviderBuilder OSM_GERMAN = new JLMapProvider("OpenStreetMap.German",
             "https://tile.openstreetmap.de/{z}/{x}/{y}.png",
             "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
             JLProperties.DEFAULT_MAX_ZOOM,
             new HashSet<>()).toBuilder();
+    /**
+     * Set of optional parameters (e.g., API keys) required by the tile provider
+     */
+    @Singular
+    Set<JLMapOption.Parameter> parameters;
 
     public static final JLMapProvider.JLMapProviderBuilder OSM_FRENCH = new JLMapProvider("OpenStreetMap.French",
             "https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png",
@@ -127,7 +144,9 @@ public class JLMapProvider implements JLMapProviderInt {
                     "(<a href=\"https://creativecommons.org/licenses/by-sa/3.0/\">CC-BY-SA</a>)",
             JLProperties.DEFAULT_MAX_ZOOM,
             new HashSet<>()).toBuilder();
-    /** Set of required parameter names that must be provided for this provider to function */
+    /**
+     * Set of required parameter names that must be provided for this provider to function
+     */
     Set<String> requiredParameter;
 
     /**

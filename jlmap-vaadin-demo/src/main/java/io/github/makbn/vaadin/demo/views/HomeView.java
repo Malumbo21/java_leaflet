@@ -154,7 +154,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
                             circle.addContextMenu()
                                     .addItem("Remove", "Remove this circle")
                                     .setOnMenuItemListener(item -> {
-                                        if ("remove".equals(item.getId())) {
+                                        if ("Remove".equals(item.getId())) {
                                             circle.remove();
                                             Notification.show("Circle removed from map");
                                         }
@@ -184,7 +184,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
                             circleMarker.addContextMenu()
                                     .addItem("Remove", "Remove this circle marker")
                                     .setOnMenuItemListener(item -> {
-                                        if ("remove".equals(item.getId())) {
+                                        if ("Remove".equals(item.getId())) {
                                             circleMarker.remove();
                                             Notification.show("Circle marker removed from map");
                                         }
@@ -198,7 +198,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             polyline.addContextMenu()
                     .addItem("Remove", "Remove this polyline")
                     .setOnMenuItemListener(item -> {
-                        if ("remove".equals(item.getId())) {
+                        if ("Remove".equals(item.getId())) {
                             polyline.remove();
                             Notification.show("Polyline removed from map");
                         }
@@ -214,7 +214,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             polyline.addContextMenu()
                     .addItem("Remove", "Remove this custom polyline")
                     .setOnMenuItemListener(item -> {
-                        if ("remove".equals(item.getId())) {
+                        if ("Remove".equals(item.getId())) {
                             polyline.remove();
                             Notification.show("Custom polyline removed from map");
                         }
@@ -228,7 +228,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             multiPolyline.addContextMenu()
                     .addItem("Remove", "Remove this multi-polyline")
                     .setOnMenuItemListener(item -> {
-                        if ("remove".equals(item.getId())) {
+                        if ("Remove".equals(item.getId())) {
                             multiPolyline.remove();
                             Notification.show("Multi-polyline removed from map");
                         }
@@ -263,7 +263,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             polygon.addContextMenu()
                     .addItem("Remove", "Remove this custom polygon")
                     .setOnMenuItemListener(item -> {
-                        if ("remove".equals(item.getId())) {
+                        if ("Remove".equals(item.getId())) {
                             polygon.remove();
                             Notification.show("Custom polygon removed from map");
                         }
@@ -277,7 +277,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             donutPolygon.addContextMenu()
                     .addItem("Remove", "Remove this donut polygon")
                     .setOnMenuItemListener(item -> {
-                        if ("remove".equals(item.getId())) {
+                        if ("Remove".equals(item.getId())) {
                             donutPolygon.remove();
                             Notification.show("Donut polygon removed from map");
                         }
@@ -290,7 +290,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             demoCircle.addContextMenu()
                     .addItem("Remove", "Remove demo circle")
                     .setOnMenuItemListener(item -> {
-                        if ("remove".equals(item.getId())) {
+                        if ("Remove".equals(item.getId())) {
                             demoCircle.remove();
                             Notification.show("Demo circle removed from map");
                         }
@@ -300,7 +300,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             demoCircleMarker.addContextMenu()
                     .addItem("Remove", "Remove demo circle marker")
                     .setOnMenuItemListener(item -> {
-                        if ("remove".equals(item.getId())) {
+                        if ("Remove".equals(item.getId())) {
                             demoCircleMarker.remove();
                             Notification.show("Demo circle marker removed from map");
                         }
@@ -311,7 +311,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             demoPolyline.addContextMenu()
                     .addItem("Remove", "Remove demo polyline")
                     .setOnMenuItemListener(item -> {
-                        if ("remove".equals(item.getId())) {
+                        if ("Remove".equals(item.getId())) {
                             demoPolyline.remove();
                             Notification.show("Demo polyline removed from map");
                         }
@@ -322,7 +322,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             demoPolygon.addContextMenu()
                     .addItem("Remove", "Remove demo polygon")
                     .setOnMenuItemListener(item -> {
-                        if ("remove".equals(item.getId())) {
+                        if ("Remove".equals(item.getId())) {
                             demoPolygon.remove();
                             Notification.show("Demo polygon removed from map");
                         }
@@ -346,7 +346,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
                                     geoJson.addContextMenu()
                                             .addItem("Remove", "Remove this GeoJSON layer")
                                             .setOnMenuItemListener(item -> {
-                                                if ("remove".equals(item.getId())) {
+                                                if ("Remove".equals(item.getId())) {
                                                     geoJson.remove();
                                                     Notification.show("GeoJSON layer removed from map");
                                                 }
@@ -362,7 +362,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
                 usOutlineGeoJson.addContextMenu()
                         .addItem("Remove", "Remove US outline GeoJSON")
                         .setOnMenuItemListener(item -> {
-                            if ("remove".equals(item.getId())) {
+                            if ("Remove".equals(item.getId())) {
                                 usOutlineGeoJson.remove();
                                 Notification.show("US outline GeoJSON removed from map");
                             }
@@ -422,7 +422,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             geoJson.addContextMenu()
                     .addItem("Remove", "Remove styled GeoJSON layer")
                     .setOnMenuItemListener(item -> {
-                        if ("remove".equals(item.getId())) {
+                        if ("Remove".equals(item.getId())) {
                             geoJson.remove();
                             Notification.show("Styled GeoJSON layer removed from map");
                         }
@@ -460,7 +460,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
                             marker.addContextMenu()
                                     .addItem("Remove", "Remove this marker")
                                     .setOnMenuItemListener(item -> {
-                                        if ("remove".equals(item.getId())) {
+                                        if ("Remove".equals(item.getId())) {
                                             marker.remove();
                                             Notification.show("Marker removed from map");
                                         }
@@ -484,7 +484,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
             imageOverlay.addContextMenu()
                     .addItem("Remove", "Remove Eiffel Tower overlay")
                     .setOnMenuItemListener(item -> {
-                        if ("remove".equals(item.getId())) {
+                        if ("Remove".equals(item.getId())) {
                             imageOverlay.remove();
                             Notification.show("Eiffel Tower overlay removed from map");
                         }

@@ -133,9 +133,9 @@ public class LeafletTestJFX extends Application {
         );
 
         // map zoom functionalities
-        map.getControlLayer().setZoom(5);
+        map.getControlLayer().setZoom(3);
         map.getControlLayer().zoomIn(2);
-        map.getControlLayer().zoomOut(1);
+        map.getControlLayer().zoomOut(3);
 
         JLGeoJson geoJsonObject = map.getGeoJsonLayer()
                 .addFromUrl("https://pkgstore.datahub.io/examples/geojson-tutorial/example/data/db696b3bf628d9a273ca9907adcea5c9/example.geojson", JLGeoJsonOptions.builder()

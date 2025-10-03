@@ -2,7 +2,8 @@ package io.github.makbn.vaadin.demo.views;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -90,10 +91,12 @@ public class MyTripToCanada extends VerticalLayout {
     private JLPolyline currentPath;
 
     public MyTripToCanada() {
-        setSizeFull();
+        setWidthFull();
+        setHeight("100px");
+
 
         // Title
-        H1 title = new H1("🌍 My Trip to Canada");
+        H2 title = new H2("JL-Map Vaadin Demo");
 
         // Create the map view
         mapView = JLMapView.builder()
@@ -104,6 +107,7 @@ public class MyTripToCanada extends VerticalLayout {
                 .startCoordinate(SARI)
                 .showZoomController(true)
                 .build();
+        mapView.getStyle().set("border-radius", "16px");
 
         // Control panel
         HorizontalLayout controlPanel = new HorizontalLayout();
@@ -115,8 +119,10 @@ public class MyTripToCanada extends VerticalLayout {
             startButton.setEnabled(false);
             startJourney();
         });
+        startButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         Button resetButton = new Button("🔄 Reset");
+        resetButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         resetButton.addClickListener(e -> {
             resetJourney();
@@ -144,6 +150,8 @@ public class MyTripToCanada extends VerticalLayout {
                 "#FF5722",
                 3000,
                 7,
+                "Sari, Iran",
+                "Tehran, Iran",
                 () -> {
                     // Step 2: Briefcase and passport (1 second)
                     Notification.show("Arriving in Tehran - Getting ready to fly...", 2000, Notification.Position.BOTTOM_CENTER);
@@ -157,6 +165,8 @@ public class MyTripToCanada extends VerticalLayout {
                                 "#2196F3",
                                 4000,
                                 5,
+                                "Tehran, Iran",
+                                "Doha, Qatar",
                                 () -> {
                                     // Step 4: Change airplane animation (same position)
                                     Notification.show("Transit in Doha...", 2000, Notification.Position.BOTTOM_CENTER);
@@ -170,6 +180,8 @@ public class MyTripToCanada extends VerticalLayout {
                                                 "#2196F3",
                                                 5000,
                                                 3,
+                                                "Doha, Qatar",
+                                                "Montreal, Canada",
                                                 () -> {
                                                     // Step 6: Paper document (1 second)
                                                     Notification.show("Customs in Montreal...", 2000, Notification.Position.BOTTOM_CENTER);
@@ -183,6 +195,8 @@ public class MyTripToCanada extends VerticalLayout {
                                                                 "#E91E63",
                                                                 4000,
                                                                 6,
+                                                                "Montreal, Canada",
+                                                                "Calgary, Canada",
                                                                 () -> {
                                                                     // Step 8: House at Calgary
                                                                     showTransition(CALGARY, HOUSE_ICON, 2000, () ->
@@ -204,8 +218,13 @@ public class MyTripToCanada extends VerticalLayout {
     }
 
     private void animateSegment(JLLatLng start, JLLatLng end, JLIcon icon, String pathColor,
-                                int duration, int zoomLevel, Runnable onComplete) {
+                                int duration, int zoomLevel, String departureName, String destinationName,
+                                Runnable onComplete) {
         log.info("Animating segment from {} to {} with icon {}", start, end, icon);
+
+        // Add popup at departure
+        JLPopup departurePopup = mapView.getUiLayer().addPopup(start,
+                "<div style='font-weight: bold; color: #FF5722;'>📍 Departure: " + departureName + "</div>");
 
         // Remove previous path if exists
         if (currentPath != null) {
@@ -238,10 +257,23 @@ public class MyTripToCanada extends VerticalLayout {
         log.info("Flying to midpoint: {}", midPoint);
         mapView.getControlLayer().flyTo(midPoint, zoomLevel);
 
+        // Add popup at destination
+        JLPopup destinationPopup = mapView.getUiLayer().addPopup(end,
+                "<div style='font-weight: bold; color: #4CAF50;'>🎯 Destination: " + destinationName + "</div>");
+
         // Animate marker along path
         log.info("Starting marker animation");
         UI.getCurrent().push();
-        animateMarkerAlongPath(icon, pathPoints, duration, onComplete);
+        animateMarkerAlongPath(icon, pathPoints, duration, () -> {
+            // Remove popups after animation
+            departurePopup.remove();
+            destinationPopup.remove();
+
+            // Call the original onComplete callback
+            if (onComplete != null) {
+                onComplete.run();
+            }
+        });
     }
 
     private void animateMarkerAlongPath(JLIcon icon, JLLatLng[] path, int duration, Runnable onComplete) {
@@ -256,10 +288,10 @@ public class MyTripToCanada extends VerticalLayout {
         // Create the marker once at starting position
         if (currentMarker == null) {
             currentMarker = mapView.getUiLayer().addMarker(path[0], null, false);
-            setMarkerIconDirect(currentMarker, icon);
+            currentMarker.setIcon(icon);
         } else {
             currentMarker.setLatLng(path[0]);
-            setMarkerIconDirect(currentMarker, icon);
+            currentMarker.setIcon(icon);
         }
 
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
@@ -302,10 +334,10 @@ public class MyTripToCanada extends VerticalLayout {
         // Just update the marker position and icon, don't remove
         if (currentMarker == null) {
             currentMarker = mapView.getUiLayer().addMarker(position, null, false);
-            setMarkerIconDirect(currentMarker, icon);
+            currentMarker.setIcon(icon);
         } else {
             currentMarker.setLatLng(position);
-            setMarkerIconDirect(currentMarker, icon);
+            currentMarker.setIcon(icon);
         }
 
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
@@ -358,30 +390,5 @@ public class MyTripToCanada extends VerticalLayout {
 
         // Reset view to starting position
         mapView.getControlLayer().flyTo(SARI, 4);
-    }
-
-    /**
-     * Helper method to set marker icon using direct JavaScript execution
-     * This bypasses the toString() issue with JLIcon parameter serialization
-     */
-    private void setMarkerIconDirect(JLMarker marker, JLIcon icon) {
-        String iconScript = String.format("""
-                        var icon = L.icon({
-                            iconUrl: '%s',
-                            iconSize: [%d, %d],
-                            iconAnchor: [%d, %d]
-                        });
-                        this.%s.setIcon(icon);
-                        """,
-                icon.getIconUrl(),
-                (int) icon.getIconSize().getX(),
-                (int) icon.getIconSize().getY(),
-                (int) icon.getIconAnchor().getX(),
-                (int) icon.getIconAnchor().getY(),
-                marker.getJLId()
-        );
-
-        mapView.getElement().executeJs(iconScript);
-        log.debug("Set icon for marker {} using direct JS", marker.getJLId());
     }
 }

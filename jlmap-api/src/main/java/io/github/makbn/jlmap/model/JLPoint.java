@@ -19,6 +19,6 @@ public class JLPoint {
 
     @Override
     public String toString() {
-        return '[' + getX() + ", " + getY() + ']';
+        return "[" + getX() + ", " + getY() + "]";
     }
 }

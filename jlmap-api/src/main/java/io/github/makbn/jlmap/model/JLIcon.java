@@ -25,14 +25,14 @@ public class JLIcon {
 
     @Override
     public String toString() {
-        return "JLIcon{" +
+        return "L.icon({" +
                 "iconUrl: '" + getIconUrl() + '\'' +
-                ", shadowUrl: '" + getShadowUrl() + '\'' +
+                (getShadowUrl() != null ? ", shadowUrl: '" + getShadowUrl() + '\'' : "") +
                 ", iconSize: " + getIconSize() +
                 ", iconAnchor: " + getIconAnchor() +
                 ", popupAnchor: " + getPopupAnchor() +
                 ", shadowSize: " + getShadowSize() +
                 ", shadowAnchor: " + getShadowAnchor() +
-                '}';
+                "})";
     }
 }

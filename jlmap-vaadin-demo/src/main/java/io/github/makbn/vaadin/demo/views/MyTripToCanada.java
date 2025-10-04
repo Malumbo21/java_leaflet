@@ -33,70 +33,72 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Route("my-trip-to-canada")
 public class MyTripToCanada extends VerticalLayout {
-    public static final String MAP_API_KEY = "rNGhTaIpQWWH7C6QGKzF";
+    private static final String MAP_API_KEY = "rNGhTaIpQWWH7C6QGKzF";
     private static final Logger log = LoggerFactory.getLogger(MyTripToCanada.class);
+    private static final String TRANSPARENT = "#00FFFFFF";
 
     // Journey coordinates
-    private final JLLatLng SARI = new JLLatLng(36.5633, 53.0601);
-    private final JLLatLng TEHRAN = new JLLatLng(35.6892, 51.3890);
-    private final JLLatLng DOHA = new JLLatLng(25.2854, 51.5310);
-    private final JLLatLng MONTREAL = new JLLatLng(45.5017, -73.5673);
-    private final JLLatLng CALGARY = new JLLatLng(51.0447, -114.0719);
+    private static final JLLatLng SARI = new JLLatLng(36.5633, 53.0601);
+    private static final JLLatLng TEHRAN = new JLLatLng(35.6892, 51.3890);
+    private static final JLLatLng DOHA = new JLLatLng(25.2854, 51.5310);
+    private static final JLLatLng MONTREAL = new JLLatLng(45.5017, -73.5673);
+    private static final JLLatLng CALGARY = new JLLatLng(51.0447, -114.0719);
 
     // Custom icons for different stages of the journey
-    private final JLIcon CAR_ICON = JLIcon.builder()
+    private static final JLIcon CAR_ICON = JLIcon.builder()
             .iconUrl("https://cdn-icons-png.flaticon.com/512/3097/3097220.png")
             .iconSize(new JLPoint(64, 64))
             .iconAnchor(new JLPoint(24, 24))
             .build();
 
-    private final JLIcon AIRPLANE_ICON = JLIcon.builder()
+    private static final JLIcon AIRPLANE_ICON = JLIcon.builder()
             .iconUrl("https://cdn-icons-png.flaticon.com/512/3182/3182857.png")
             .iconSize(new JLPoint(64, 64))
             .shadowAnchor(new JLPoint(26, 26))
             .iconAnchor(new JLPoint(24, 24))
             .build();
-    private final JLIcon EAST_AIRPLANE_ICON = JLIcon.builder()
+    private static final JLIcon EAST_AIRPLANE_ICON = JLIcon.builder()
             .iconUrl("https://cdn-icons-png.flaticon.com/512/1058/1058318.png")
             .iconSize(new JLPoint(64, 64))
             .shadowAnchor(new JLPoint(26, 26))
             .iconAnchor(new JLPoint(24, 24))
             .build();
 
-    private final JLIcon BALLOON = JLIcon.builder()
+    private static final JLIcon BALLOON = JLIcon.builder()
             .iconUrl("https://cdn-icons-png.flaticon.com/512/1926/1926313.png")
             .iconSize(new JLPoint(64, 64))
             .iconAnchor(new JLPoint(24, 24))
             .build();
 
-    private final JLIcon BRIEFCASE_ICON = JLIcon.builder()
+    private static final JLIcon BRIEFCASE_ICON = JLIcon.builder()
             .iconUrl("https://cdn-icons-png.flaticon.com/512/5376/5376980.png")
             .iconSize(new JLPoint(64, 64))
             .iconAnchor(new JLPoint(24, 24))
             .build();
 
-    private final JLIcon DOCUMENT_ICON = JLIcon.builder()
+    private static final JLIcon DOCUMENT_ICON = JLIcon.builder()
             .iconUrl("https://cdn-icons-png.flaticon.com/512/3127/3127363.png")
             .iconSize(new JLPoint(64, 64))
             .iconAnchor(new JLPoint(24, 24))
             .build();
-    private final JLIcon PASSPORT_ICON = JLIcon.builder()
+    private static final JLIcon PASSPORT_ICON = JLIcon.builder()
             .iconUrl("https://cdn-icons-png.flaticon.com/512/18132/18132911.png")
             .iconSize(new JLPoint(64, 64))
             .iconAnchor(new JLPoint(24, 24))
             .build();
 
-    private final JLIcon HOUSE_ICON = JLIcon.builder()
+    private static final JLIcon HOUSE_ICON = JLIcon.builder()
             .iconUrl("https://cdn-icons-png.flaticon.com/512/3750/3750400.png")
             .iconSize(new JLPoint(64, 64))
             .iconAnchor(new JLPoint(24, 48))
             .build();
 
-    private JLMapView mapView;
-    private JLMarker currentMarker;
-    private JLPolyline currentPath;
     private final List<MessageListItem> messages = new ArrayList<>();
-    private MessageList messageList;
+    private final JLMapView mapView;
+    private final MessageList messageList;
+
+    private transient JLMarker currentMarker;
+    private transient JLPolyline currentPath;
 
     public MyTripToCanada() {
         setSizeFull();
@@ -347,7 +349,7 @@ public class MyTripToCanada extends VerticalLayout {
         // Animate marker along path
         log.info("Starting marker animation");
         UI.getCurrent().push();
-        animateMarkerAlongPath(icon, pathPoints, duration, () -> {
+        animateMarkerAlongPath(icon, pathPoints, pathColor, duration, () -> {
             // Remove popups after animation
             departurePopup.remove();
             destinationPopup.remove();
@@ -359,7 +361,7 @@ public class MyTripToCanada extends VerticalLayout {
         });
     }
 
-    private void animateMarkerAlongPath(JLIcon icon, JLLatLng[] path, int duration, Runnable onComplete) {
+    private void animateMarkerAlongPath(JLIcon icon, JLLatLng[] path, String pathColor, int duration, Runnable onComplete) {
         UI ui = UI.getCurrent();
 
         // Increase animation steps to 200 for smoother animation (10x more than before)
@@ -387,8 +389,9 @@ public class MyTripToCanada extends VerticalLayout {
                     currentPath = mapView.getVectorLayer().addPolyline(
                             path,
                             JLOptions.DEFAULT.toBuilder()
-                                    .fillColor(JLColor.fromHex("#00FFFFFF"))
-                                    .color(JLColor.fromHex("#00FFFFFF"))
+                                    .fillColor(JLColor.fromHex(TRANSPARENT))
+                                    .color(JLColor.fromHex(pathColor))
+                                    .stroke(true)
                                     .fill(false)
                                     .weight(4)
                                     .opacity(0.7)

@@ -84,7 +84,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
                     if ("Refresh Map".equals(item.getId())) {
                         Notification.show("Map refresh triggered");
                     } else if ("Developer".equals(item.getId())) {
-                        Notification.show("Map developed by Matt Akbarian (@makbn)");
+                        Notification.show("Map developed by Matt Akbarian (@makbn)", NOTIFICATION_DURATION, Notification.Position.BOTTOM_END);
                     } else {
                         getUI().ifPresent(ui -> ui.getPage().open(GITHUB_URL, "_blank"));
                     }
@@ -125,7 +125,7 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
 
         addTileProviderComponent(menuContent);
         addJourneyDemoButton(menuContent, section);
-        addCpntrolSection(menuContent, section);
+        addControlSection(menuContent, section);
         addUiSection(menuContent, section);
         addGeoJsonSection(menuContent, section);
         addVectorSection(menuContent, section);
@@ -443,19 +443,19 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
 
             JLGeoJson geoJson = mapView.getGeoJsonLayer().addFromFile(((Set<File>) event.get("uploadedFiles")).iterator().next(), options);
             geoJson.setOnActionListener((jlGeoJson, event1) ->
-                    Notification.show("GeoJSON Feature clicked: " + event1));
+                    Notification.show("GeoJSON Feature clicked: " + event1, NOTIFICATION_DURATION, Notification.Position.BOTTOM_END));
 
             geoJson.addContextMenu()
                     .addItem("Remove", "Remove styled GeoJSON layer")
                     .setOnMenuItemListener(item -> {
                         if ("Remove".equals(item.getId())) {
                             geoJson.remove();
-                            Notification.show("Styled GeoJSON layer removed from map");
+                            Notification.show("Styled GeoJSON layer removed from map", NOTIFICATION_DURATION, Notification.Position.BOTTOM_END);
                         }
                     });
 
         } catch (Exception ex) {
-            Notification.show("Failed to add GeoJSON: " + ex.getMessage());
+            Notification.show("Failed to add GeoJSON: " + ex.getMessage(), NOTIFICATION_DURATION, Notification.Position.BOTTOM_END);
             log.error("Failed to add styled GeoJSON", ex);
         }
     }
@@ -475,20 +475,20 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
 
                             marker.setOnActionListener((jlMarker, event1) -> {
                                 if (event1 instanceof MoveEvent) {
-                                    Notification.show("Marker moved: " + jlMarker + " -> " + event1.action());
+                                    Notification.show("Marker moved: " + jlMarker + " -> " + event1.action(), NOTIFICATION_DURATION, Notification.Position.BOTTOM_END);
                                 } else if (event1 instanceof ClickEvent) {
-                                    Notification.show("Marker clicked: " + jlMarker);
+                                    Notification.show("Marker clicked: " + jlMarker, NOTIFICATION_DURATION, Notification.Position.BOTTOM_END);
                                 }
                             });
                             marker.getPopup().setOnActionListener((jlPopup, jlEvent) ->
-                                    Notification.show(String.format("Marker's Popup '%s' Event: %s", jlPopup, jlEvent)));
+                                    Notification.show(String.format("Marker's Popup '%s' Event: %s", jlPopup, jlEvent), NOTIFICATION_DURATION, Notification.Position.BOTTOM_END));
 
                             marker.addContextMenu()
                                     .addItem("Remove", "Remove this marker")
                                     .setOnMenuItemListener(item -> {
                                         if ("Remove".equals(item.getId())) {
                                             marker.remove();
-                                            Notification.show("Marker removed from map");
+                                            Notification.show("Marker removed from map", NOTIFICATION_DURATION, Notification.Position.BOTTOM_END);
                                         }
                                     });
                         }));
@@ -514,24 +514,36 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
                     .setOnMenuItemListener(item -> {
                         if ("Remove".equals(item.getId())) {
                             imageOverlay.remove();
-                            Notification.show("Eiffel Tower overlay removed from map");
+                            Notification.show("Eiffel Tower overlay removed from map", NOTIFICATION_DURATION, Notification.Position.BOTTOM_END);
                         }
                     });
 
-            Notification.show("Eiffel Tower overlay added!");
+            Notification.show("Eiffel Tower overlay added!", NOTIFICATION_DURATION, Notification.Position.BOTTOM_END);
         });
         addEiffelOverlay.setClassName(MENU_ITEM_CLASS);
 
         menuContent.add(section.apply("UI Layer", new Button[]{addMarker, addEiffelOverlay}));
     }
 
-    private void addCpntrolSection(VerticalLayout menuContent, BiFunction<String, Button[], VerticalLayout> section) {
+    private void addControlSection(VerticalLayout menuContent, BiFunction<String, Button[], VerticalLayout> section) {
         Button zoomIn = new Button("Zoom in", e -> mapView.getControlLayer().setZoom(defaultZoomLevel.addAndGet(1)));
         Button zoomOut = new Button("Zoom out", e -> mapView.getControlLayer().setZoom(defaultZoomLevel.addAndGet(-1)));
         Button fitWorld = new Button("Fit World", e -> mapView.getControlLayer().fitWorld());
-        Button maxZoom = new Button("Max Zoom", e -> DialogBuilder.builder().numberField("Max zoom level").get(event -> mapView.getControlLayer().setMaxZoom((Integer) event.get("Max zoom level"))));
-        Button minZoom = new Button("Min Zoom", e -> DialogBuilder.builder().numberField("Min zoom level").get(event -> mapView.getControlLayer().setMinZoom((Integer) event.get("Min zoom level"))));
-        Button flyTo = new Button("Fly to", e -> DialogBuilder.builder().decimalField(LATITUDE).decimalField(LONGITUDE).numberField("Zoom level").get(event -> mapView.getControlLayer().flyTo(JLLatLng.builder().lat((Double) event.get(LATITUDE)).lng((Double) event.get(LONGITUDE)).build(), (Integer) event.get("Zoom level"))));
+        Button maxZoom = new Button("Max Zoom", e ->
+                DialogBuilder.builder().numberField("Max zoom level").get(event ->
+                        mapView.getControlLayer().setMaxZoom((Integer) event.get("Max zoom level"))));
+
+        Button minZoom = new Button("Min Zoom", e ->
+                DialogBuilder.builder().numberField("Min zoom level").get(event ->
+                        mapView.getControlLayer().setMinZoom((Integer) event.get("Min zoom level"))));
+        Button flyTo = new Button("Fly to", e ->
+                DialogBuilder.builder()
+                        .decimalField(LATITUDE)
+                        .decimalField(LONGITUDE)
+                        .numberField("Zoom level")
+                        .get(event ->
+                                mapView.getControlLayer().flyTo(JLLatLng.builder().lat((Double) event.get(LATITUDE)).lng((Double) event.get(LONGITUDE)).build(), (Integer) event.get("Zoom level"))));
+
         for (Button b : new Button[]{zoomIn, zoomOut, fitWorld, maxZoom, minZoom, flyTo})
             b.setClassName(MENU_ITEM_CLASS);
         menuContent.add(section.apply("Control Layer", new Button[]{zoomIn, zoomOut, fitWorld, maxZoom, minZoom, flyTo}));
@@ -566,6 +578,6 @@ public class HomeView extends FlexLayout implements OnJLActionListener<JLMap<Pen
 
     @Override
     public void onAction(JLMap<PendingJavaScriptResult> source, Event event) {
-        Notification.show("Map event: " + event);
+        Notification.show("Map event: " + event, NOTIFICATION_DURATION, Notification.Position.BOTTOM_END);
     }
 }

@@ -6,6 +6,7 @@ Now supporting both **JavaFX** and **Vaadin** implementations with a unified API
 * Current version: **v2.0.0**
 
 Project Source Code: https://github.com/makbn/java_leaflet
+Project Wiki: https://github.com/makbn/java_leaflet/wiki
 
 ![Java-Leaflet Test](https://github.com/makbn/java_leaflet/blob/master/.github/doc/app.png?raw=true)
 
@@ -14,15 +15,6 @@ Project Source Code: https://github.com/makbn/java_leaflet
 > Leaflet is designed with simplicity, performance and usability in mind. It works efficiently across all major desktop
 > and mobile platforms, can be extended with lots of plugins, has a beautiful, easy to use and well-documented API and a
 > simple, readable source code that is a joy to contribute to.
-
-## 🚀 New in Version 2.0.0
-
-- **Multi-Module Architecture**: Clean separation between API, JavaFX, and Vaadin implementations
-- **Vaadin Support**: New Vaadin component implementation alongside existing JavaFX support
-- **Unified API**: Consistent interface across different UI frameworks
-- **Enhanced Modularity**: Better separation of concerns and extensibility
-- **Modern Java**: Full Java 17+ and JPMS support
-- **Comprehensive Documentation**: Complete JavaDoc coverage with usage examples and technical details
 
 ## 🏗️ Project Structure
 
@@ -49,14 +41,18 @@ java_leaflet/
 - **Multi-Framework Support**: JavaFX and Vaadin implementations
 - **Java Platform Module System (JPMS) Compatible**: Fully modularized for Java 17+
 - **Unified API**: Consistent interface across different UI frameworks
-- **Multiple Map Providers**: Support for OpenStreetMap, Mapnik, and other tile providers
+- **Multiple Map Providers**: Support for OpenStreetMap, Mapnik, and other tile providers with the ability to add custom
+  providers
 - **Interactive Features**: Markers, polygons, polylines, circles, and more
-- **Event Handling**: Comprehensive event system for map interactions
-- **GeoJSON Support**: Load and display GeoJSON data
+- **Event Handling**: Comprehensive bi-directional event system for map interactions, receiving events from client and
+  sending commands to the map
+- **GeoJSON Support**: Load and display GeoJSON data with support for custom styling and filtering
 - **Customizable**: Extensive customization options for map appearance and behavior
 - **Fluent API**: Builder pattern and method chaining for easy configuration
+- **Context Menus**: Support for native context menus on map and objects for both implementations
 
-The goal is to match all the features across both implementations while maintaining a clean and modular architecture.
+The goal is to match almost all the native Leaflet features across both implementations while maintaining a clean and
+modular architecture.
 However, some features may be available at the moment. To see which features are supported in each implementation,
 refer to the [Feature Comparison Table](Feature.md).
 
@@ -65,7 +61,7 @@ refer to the [Feature Comparison Table](Feature.md).
 - **Java**: 17 or higher
 - **Maven**: 3.6+ (for building)
 - **JavaFX**: 19.0.2.1 or higher (for JavaFX implementation)
-- **Vaadin**: 24.8.6 or higher (for Vaadin implementation)
+- **Vaadin**: 24 or higher (for Vaadin implementation)
 
 ## 🚀 Quick Start
 
@@ -74,6 +70,7 @@ refer to the [Feature Comparison Table](Feature.md).
 Add the JavaFX dependency to your `pom.xml`:
 
 ```xml
+
 <dependency>
     <groupId>io.github.makbn</groupId>
     <artifactId>jlmap-fx</artifactId>
@@ -86,6 +83,7 @@ Add the JavaFX dependency to your `pom.xml`:
 Add the Vaadin dependency to your `pom.xml`:
 
 ```xml
+
 <dependency>
     <groupId>io.github.makbn</groupId>
     <artifactId>jlmap-vaadin</artifactId>
@@ -170,14 +168,32 @@ public class VaadinMapExample extends VerticalLayout {
 ```java
 // Change the current coordinate
 map.setView(JLLatLng.builder()
-        .lng(10)
-        .lat(10)
-        .build());
+        .
+
+lng(10)
+        .
+
+lat(10)
+        .
+
+build());
 
 // Map zoom functionalities
-map.getControlLayer().setZoom(5);
-map.getControlLayer().zoomIn(2);
-map.getControlLayer().zoomOut(1);
+        map.
+
+getControlLayer().
+
+setZoom(5);
+map.
+
+getControlLayer().
+
+zoomIn(2);
+map.
+
+getControlLayer().
+
+zoomOut(1);
 ```
 
 ### Adding Markers
@@ -185,33 +201,49 @@ map.getControlLayer().zoomOut(1);
 ```java
 // Add a marker to the UI layer
 JLMarker marker = map.getUiLayer()
-        .addMarker(JLLatLng.builder()
-                .lat(35.63)
-                .lng(51.45)
-                .build(), "Tehran", true);
+                .addMarker(JLLatLng.builder()
+                        .lat(35.63)
+                        .lng(51.45)
+                        .build(), "Tehran", true);
 
 // Add event listeners
-marker.setOnActionListener((jlMarker, event) -> {
-    if (event instanceof ClickEvent) {
-        System.out.println("Marker clicked: " + jlMarker);
+marker.
+
+setOnActionListener((jlMarker, event) ->{
+        if(event instanceof ClickEvent){
+        System.out.
+
+println("Marker clicked: "+jlMarker);
     }
-});
+            });
+
+            marker.
+
+remove(); // Remove the marker
 ```
 
-### Adding Shapes
+### Adding GeoJSON
 
 ```java
-// Add a circle
-map.getVectorLayer()
-    .addCircle(JLLatLng.builder()
-            .lat(35.63)
-            .lng(51.45)
-            .build(),
-        30000,
-        JLOptions.builder()
-                .color(JLColor.BLACK)
-                .build());
+import io.github.makbn.jlmap.model.JLGeoJsonOptions;
+
+// Load GeoJSON with custom styling
+JLGeoJsonOptions options = JLGeoJsonOptions.builder()
+        .styleFunction(features -> JLOptions.builder()
+                .fill(true)
+                .fillColor(JLColor.fromHex((String) features.get(0).get("fill")))
+                .fillOpacity((Double) features.get(0).get("fill-opacity"))
+                .stroke(true)
+                .color(JLColor.fromHex((String) features.get(0).get("stroke")))
+                .build())
+        .build();
+
+        JLGeoJson styledGeoJson = map.getGeoJsonLayer()
+                .addFromUrl("https://example.com/data.geojson", options);
 ```
+
+Read more about examples in
+the [Examples and Tutorials](https://github.com/makbn/java_leaflet/wiki/Examples-and-Tutorials) page.
 
 ### Layer Management
 
@@ -266,51 +298,6 @@ mvn test
 mvn package
 ```
 
-### Module-Aware Building
-
-The project uses Maven's module-aware compilation. Each module has its own `module-info.java` file defining the module
-structure and dependencies.
-
-## Module Dependencies
-
-### API Module (`jlmap-api`)
-
-**Exports:**
-
-- `io.github.makbn.jlmap` - Main package
-- `io.github.makbn.jlmap.layer` - Layer management
-- `io.github.makbn.jlmap.layer.leaflet` - Leaflet-specific layer interfaces
-- `io.github.makbn.jlmap.listener` - Event listeners
-- `io.github.makbn.jlmap.model` - Data models
-- `io.github.makbn.jlmap.exception` - Custom exceptions
-- `io.github.makbn.jlmap.geojson` - GeoJSON support
-- `io.github.makbn.jlmap.engine` - Web engine abstractions
-
-**Dependencies:**
-
-- SLF4J for logging
-- Gson and Jackson for JSON processing
-- JetBrains annotations
-- JUnit for testing
-
-### JavaFX Module (`jlmap-fx`)
-
-**Dependencies:**
-
-- `jlmap-api` module
-- JavaFX modules (controls, base, swing, web, graphics)
-- JDK modules (jsobject)
-
-### Vaadin Module (`jlmap-vaadin`)
-
-**Dependencies:**
-
-- `jlmap-api` module
-- Vaadin Spring Boot Starter
-- Vaadin Core components
-
-## Migration from Version 1.x
-
 If you're migrating from version 1.x:
 
 1. **Update Dependencies**: Change from `jlmap` to `jlmap-fx` or `jlmap-vaadin`
@@ -326,6 +313,7 @@ v2.0.0
 **Before (v1.x):**
 
 ```xml
+
 <dependency>
     <groupId>io.github.makbn</groupId>
     <artifactId>jlmap</artifactId>
@@ -343,11 +331,11 @@ v2.0.0
     <version>2.0.0</version>
 </dependency>
 
-<!-- For Vaadin -->
+        <!-- For Vaadin -->
 <dependency>
-    <groupId>io.github.makbn</groupId>
-    <artifactId>jlmap-vaadin</artifactId>
-    <version>2.0.0</version>
+<groupId>io.github.makbn</groupId>
+<artifactId>jlmap-vaadin</artifactId>
+<version>2.0.0</version>
 </dependency>
 ```
 
@@ -387,29 +375,6 @@ the [LICENSE](LICENSE) file for details.
 
 **Matt Akbarian** (@makbn)
 
-## Changelog
-
-### Version 2.0.0
-
-- **Major**: Refactored to multi-module Maven project
-- **Major**: Added Vaadin component implementation
-- **Major**: Separated API from implementations
-- **Major**: Enhanced modularity with JPMS support
-- **Enhancement**: Unified API across different UI frameworks & Improved Fluent API
-- **Enhancement**: Improved separation of concerns
-- **Enhancement**: Added comprehensive demo applications
-- **Enhancement**: Complete JavaDoc documentation with usage examples and technical details
-- **Fix**: Resolved module system compatibility issues
-
-### Version 1.9.5
-
-- **Major**: Upgraded to Java Platform Module System (JPMS)
-- **Major**: Updated to Java 17 compatibility
-- **Major**: Removed internal JavaFX API dependencies
-- **Enhancement**: Improved module structure and encapsulation
-- **Enhancement**: Updated Maven configuration for module support
-- **Fix**: Resolved Lombok annotation processing in module environment
-
 ## Roadmap
 
 - [X] Multi-module architecture
@@ -420,10 +385,11 @@ the [LICENSE](LICENSE) file for details.
 - [X] Better map provider support
 - [X] Support receiving events on Map and Objects
 - [X] Support calling methods on JLObjects to set or update value on Js side
+- [ ] Publish to Vaadin Directory
 - [ ] SVG support
 - [ ] Animation support
-- [ ] Performance optimizations
 - [ ] implement object specific `JLOptions`
+- [ ] Performance optimizations
 
 ## Additional Resources
 
@@ -431,8 +397,3 @@ the [LICENSE](LICENSE) file for details.
 - **JavaFX Examples**: See the `jlmap-fx` module for JavaFX usage
 - **Vaadin Examples**: See the `jlmap-vaadin-demo` for Vaadin usage
 - **Leaflet Documentation**: [https://leafletjs.com/](https://leafletjs.com/)
-
----
-
-**Disclaimer**: This project was originally implemented for academic research in geo-visualization. While not actively
-maintained, it provides a solid foundation for Java-based mapping applications with multiple UI framework support.

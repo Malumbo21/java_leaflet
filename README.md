@@ -149,10 +149,10 @@ public class VaadinMapExample extends VerticalLayout {
         setSizeFull();
 
         // Create a map view
-        JLMapView map = JLMapView.builder()
-                .jlMapProvider(JLMapProvider.OSM_MAPNIK.build())
+        mapView = JLMapView.builder()
+                .jlMapProvider(JLMapProvider.MAP_TILER.parameter(new JLMapOption.Parameter("key", MAP_API_KEY)).build())
                 .startCoordinate(new JLLatLng(48.864716, 2.349014)) // Paris
-                .showZoomController(true)
+                .showZoomController(false)
                 .build();
 
         add(map);
@@ -165,81 +165,58 @@ public class VaadinMapExample extends VerticalLayout {
 
 ### Map Control
 
-```java
+```jshelllanguage
 // Change the current coordinate
-map.setView(JLLatLng.builder()
-        .
+    mapView.setView(JLLatLng.builder()
+            .lng(48.864716)
+            .lat(2.349014)
+            .build());
+    // Map zoom functionalities
+    map.
 
-lng(10)
-        .
-
-lat(10)
-        .
-
-build());
-
-// Map zoom functionalities
-        map.
-
-getControlLayer().
-
-setZoom(5);
-map.
-
-getControlLayer().
-
-zoomIn(2);
-map.
-
-getControlLayer().
-
-zoomOut(1);
+            getControlLayer().setZoom(5);
+    map.getControlLayer().zoomIn(2);
+    map.getControlLayer().zoomOut(1);
 ```
 
 ### Adding Markers
 
-```java
+```jshelllanguage
 // Add a marker to the UI layer
-JLMarker marker = map.getUiLayer()
-                .addMarker(JLLatLng.builder()
-                        .lat(35.63)
-                        .lng(51.45)
-                        .build(), "Tehran", true);
+    JLMarker marker = map.getUiLayer()
+            .addMarker(JLLatLng.builder()
+                    .lat(35.63)
+                    .lng(51.45)
+                    .build(), "Tehran", true);
 
 // Add event listeners
-marker.
+    marker.setOnActionListener((jlMarker, event) -> {
+        if (event instanceof ClickEvent) {
+            log.info("Marker clicked");
+        }
+    });
 
-setOnActionListener((jlMarker, event) ->{
-        if(event instanceof ClickEvent){
-        System.out.
-
-println("Marker clicked: "+jlMarker);
-    }
-            });
-
-            marker.
-
-remove(); // Remove the marker
+    marker.remove(); // Remove the marker
 ```
 
 ### Adding GeoJSON
 
-```java
+```jshelllanguage
 import io.github.makbn.jlmap.model.JLGeoJsonOptions;
 
 // Load GeoJSON with custom styling
-JLGeoJsonOptions options = JLGeoJsonOptions.builder()
-        .styleFunction(features -> JLOptions.builder()
-                .fill(true)
-                .fillColor(JLColor.fromHex((String) features.get(0).get("fill")))
-                .fillOpacity((Double) features.get(0).get("fill-opacity"))
-                .stroke(true)
-                .color(JLColor.fromHex((String) features.get(0).get("stroke")))
-                .build())
-        .build();
+    JLGeoJsonOptions options = JLGeoJsonOptions.builder()
+            .styleFunction(features -> JLOptions.builder()
+                    .fill(true)
+                    .fillColor(JLColor.fromHex((String) features.get(0).get("fill")))
+                    .fillOpacity((Double) features.get(0).get("fill-opacity"))
+                    .stroke(true)
+                    .color(JLColor.fromHex((String) features.get(0).get("stroke")))
+                    .build())
+            .build();
 
-        JLGeoJson styledGeoJson = map.getGeoJsonLayer()
-                .addFromUrl("https://example.com/data.geojson", options);
+    JLGeoJson styledGeoJson = map.getGeoJsonLayer()
+            .addFromUrl("https://example.com/data.geojson", options);
 ```
 
 Read more about examples in

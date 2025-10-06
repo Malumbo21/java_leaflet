@@ -47,13 +47,13 @@ import java.util.Set;
  *
  * @author Matt Akbarian  (@makbn)
  */
+
+@NpmPackage(value = "leaflet", version = "1.9.4")
 @Slf4j
 @Tag("jl-map-view")
 @JsModule("leaflet/dist/leaflet.js")
-@NpmPackage(value = "leaflet", version = "1.9.4")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @StyleSheet("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css")
-@NpmPackage(value = "@maptiler/leaflet-maptilersdk", version = "4.1.0")
 @JavaScript("https://unpkg.com/leaflet-providers@latest/leaflet-providers.js")
 public class JLMapView extends VerticalLayout implements JLMap<PendingJavaScriptResult> {
     transient JLMapOption mapOption;

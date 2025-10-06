@@ -1,0 +1,305 @@
+package io.github.makbn.jlmap.vaadin;
+
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.ClientCallable;
+import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.dependency.NpmPackage;
+import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.orderedlayout.BoxSizing;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.page.PendingJavaScriptResult;
+import io.github.makbn.jlmap.JLMap;
+import io.github.makbn.jlmap.JLMapEventHandler;
+import io.github.makbn.jlmap.element.menu.JLContextMenu;
+import io.github.makbn.jlmap.engine.JLWebEngine;
+import io.github.makbn.jlmap.layer.leaflet.LeafletLayer;
+import io.github.makbn.jlmap.listener.JLAction;
+import io.github.makbn.jlmap.listener.OnJLActionListener;
+import io.github.makbn.jlmap.listener.event.MapEvent;
+import io.github.makbn.jlmap.map.JLMapProvider;
+import io.github.makbn.jlmap.model.JLLatLng;
+import io.github.makbn.jlmap.model.JLMapOption;
+import io.github.makbn.jlmap.vaadin.engine.JLVaadinClientToServerTransporter;
+import io.github.makbn.jlmap.vaadin.engine.JLVaadinEngine;
+import io.github.makbn.jlmap.vaadin.layer.JLVaadinControlLayer;
+import io.github.makbn.jlmap.vaadin.layer.JLVaadinGeoJsonLayer;
+import io.github.makbn.jlmap.vaadin.layer.JLVaadinUiLayer;
+import io.github.makbn.jlmap.vaadin.layer.JLVaadinVectorLayer;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Set;
+
+/**
+ * A Vaadin component that displays a Leaflet map.
+ * This component implements the JLMapController interface to provide
+ * a consistent API across different UI frameworks.
+ *
+ * @author Matt Akbarian  (@makbn)
+ */
+
+@NpmPackage(value = "leaflet", version = "1.9.4")
+@Slf4j
+@Tag("jl-map-view")
+@JsModule("leaflet/dist/leaflet.js")
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@StyleSheet("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css")
+@JavaScript("https://unpkg.com/leaflet-providers@latest/leaflet-providers.js")
+public class JLMapView extends VerticalLayout implements JLMap<PendingJavaScriptResult> {
+    transient JLMapOption mapOption;
+    transient JLMapEventHandler jlMapCallbackHandler;
+    transient JLWebEngine<PendingJavaScriptResult> jlWebEngine;
+    @Getter
+    transient HashMap<Class<? extends LeafletLayer>, LeafletLayer> layers;
+    @NonFinal
+    transient boolean controllerAdded = false;
+    @NonFinal
+    transient boolean contextMenuEnabled = true;
+    @NonFinal
+    @Nullable
+    transient OnJLActionListener<JLMap<PendingJavaScriptResult>> mapListener;
+    @NonFinal
+    transient JLContextMenu<JLMap<PendingJavaScriptResult>> contextMenu;
+
+    /**
+     * Creates a new JLMapView with the specified map type, starting coordinates, and zoom controller visibility.
+     *
+     * @param jlMapProvider      the type of map to display
+     * @param startCoordinate    the initial latLng coordinates of the map
+     * @param showZoomController whether to show the zoom controller
+     */
+    @Builder
+    public JLMapView(@NonNull JLMapProvider jlMapProvider,
+                     @NonNull JLLatLng startCoordinate, boolean showZoomController) {
+        super();
+        setSizeFull();
+        setMinHeight("100%");
+        setMargin(false);
+        setSpacing(false);
+        setAlignItems(Alignment.CENTER);
+        setJustifyContentMode(JustifyContentMode.CENTER);
+        setBoxSizing(BoxSizing.CONTENT_BOX);
+        this.mapOption = JLMapOption.builder()
+                .startCoordinate(startCoordinate)
+                .jlMapProvider(jlMapProvider)
+                .additionalParameter(Set.of(new JLMapOption.Parameter("zoomControl",
+                        Objects.toString(showZoomController))))
+                .build();
+        this.jlWebEngine = new JLVaadinEngine(this::getElement);
+        this.jlMapCallbackHandler = new JLMapEventHandler();
+        this.layers = new HashMap<>();
+    }
+
+    /**
+     * Initializes the map when the component is attached to the DOM.
+     *
+     * @param attachEvent the attachment event
+     */
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        log.debug("onAttach: {}", attachEvent);
+        getElement().executeJs(generateInitializeFunctionCall());
+        initializeLayers();
+        addControllerToDocument();
+        if (mapListener != null) {
+            mapListener.onAction(this, new MapEvent(JLAction.MAP_LOADED));
+        }
+    }
+
+    @NonNull
+    @Override
+    public JLContextMenu<JLMap<PendingJavaScriptResult>> addContextMenu() {
+        if (contextMenu == null) {
+            contextMenu = new JLContextMenu<>(this);
+        }
+        return contextMenu;
+    }
+
+    @Nullable
+    @Override
+    public JLContextMenu<JLMap<PendingJavaScriptResult>> getContextMenu() {
+        return contextMenu;
+    }
+
+    @Override
+    public void setContextMenu(@NonNull JLContextMenu<JLMap<PendingJavaScriptResult>> contextMenu) {
+        this.contextMenu = contextMenu;
+    }
+
+    @Override
+    public boolean hasContextMenu() {
+        return getContextMenu() != null;
+    }
+
+    @Override
+    public boolean isContextMenuEnabled() {
+        return contextMenuEnabled;
+    }
+
+    @Override
+    public void setContextMenuEnabled(boolean enabled) {
+        this.contextMenuEnabled = enabled;
+    }
+
+    /**
+     * Generates the JavaScript function call to initialize the map.
+     *
+     * @return the JavaScript initialization string
+     */
+    @SuppressWarnings("all")
+    private String generateInitializeFunctionCall() {
+        String call = """
+                function getCenterOfElement(event, mapElement) {
+                   return JSON.stringify(event.latlng ? event.latlng: {
+                           lat: mapElement.getCenter().lat,
+                           lng: mapElement.getCenter().lng
+                   });
+                }
+                
+                function getMapBounds(mapElement) {
+                   return JSON.stringify({
+                                   "northEast": {
+                                       "lat": mapElement.getBounds().getNorthEast().lat,
+                                       "lng": mapElement.getBounds().getNorthEast().lng,
+                                   },
+                                   "southWest": {
+                                       "lat": mapElement.getBounds().getSouthWest().lat,
+                                       "lng": mapElement.getBounds().getSouthWest().lng,
+                                   }
+                               });
+                   }
+                   this.jlMapElement = document.querySelector('jl-map-view');
+                   this.map = L.map(this.jlMapElement, {zoomControl: %b}).setView([%s, %s], %d);
+                
+                   L.tileLayer('%s')
+                   .addTo(this.map);
+                
+                   console.log('Map initialized with center: ', this.map.getCenter(), ' and zoom: ', this.map.getZoom());
+                
+                   this.map.on('click', e => this.jlMapElement.$server.eventHandler('click', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('move', e => this.jlMapElement.$server.eventHandler('move', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('movestart', e => this.jlMapElement.$server.eventHandler('movestart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('moveend', e => this.jlMapElement.$server.eventHandler('moveend', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('zoom', e => this.jlMapElement.$server.eventHandler('zoom', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('zoomstart', e => this.jlMapElement.$server.eventHandler('zoomstart', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('zoomend', e => this.jlMapElement.$server.eventHandler('zoomend', 'map', 'main_map', this.map.getZoom(), getCenterOfElement(e, this.map), getMapBounds(this.map)));
+                   this.map.on('resize', e => this.jlMapElement.$server.eventHandler('resize', 'map', 'main_map', this.map.getZoom(), JSON.stringify({"oldWidth": e.oldSize.x, "oldHeight": e.oldSize.y, "newWidth": e.newSize.x, "newHeight": e.newSize.y}), getMapBounds(this.map)));
+                   this.map.on('contextmenu', e => {
+                        this.jlMapElement.$server.eventHandler('contextmenu', 'map', 'main_map', this.map.getZoom(), JSON.stringify({"x": e.containerPoint.x, "y": e.containerPoint.y, "lat": e.latlng.lat, "lng": e.latlng.lng}), getMapBounds(this.map));
+                        L.DomEvent.stopPropagation(e);
+                    });
+                """;
+
+        return call.formatted(mapOption.zoomControlEnabled(),
+                mapOption.getStartCoordinate().getLat(),
+                mapOption.getStartCoordinate().getLng(),
+                mapOption.getInitialZoom(),
+                mapOption.getJlMapProvider().getMapProviderAddress());
+    }
+
+    /**
+     * Initializes the map layers.
+     */
+    private void initializeLayers() {
+        layers.clear();
+
+        layers.put(JLVaadinVectorLayer.class, new JLVaadinVectorLayer(jlWebEngine, jlMapCallbackHandler));
+        layers.put(JLVaadinUiLayer.class, new JLVaadinUiLayer(jlWebEngine, jlMapCallbackHandler));
+        layers.put(JLVaadinControlLayer.class, new JLVaadinControlLayer(jlWebEngine, jlMapCallbackHandler));
+        layers.put(JLVaadinGeoJsonLayer.class, new JLVaadinGeoJsonLayer(jlWebEngine, jlMapCallbackHandler));
+    }
+
+    /**
+     * Called when the map is loaded successfully from JavaScript.
+     * Handles events from the client side.
+     *
+     * @param function         the function name
+     * @param jlType           the JL type
+     * @param uuid             the unique identifier
+     * @param additionalParam1 additional parameter 1
+     * @param additionalParam2 additional parameter 2
+     * @param additionalParam3 additional parameter 3
+     */
+    @ClientCallable
+    @SuppressWarnings("unused")
+    public void eventHandler(String function, String jlType, String uuid, String additionalParam1,
+                             String additionalParam2, String additionalParam3) {
+        jlMapCallbackHandler.functionCalled(this, String.valueOf(function), jlType, uuid, additionalParam1, additionalParam2, additionalParam3);
+    }
+
+    /**
+     * Bridge method called from JavaScript to invoke Java methods on registered objects.
+     * This enables the JavaScript-to-Java bridge functionality.
+     *
+     * @param callId     unique identifier for this call
+     * @param objectId   the ID of the object to call
+     * @param methodName the method to invoke
+     * @param argsJson   JSON-encoded arguments
+     */
+    @ClientCallable
+    @SuppressWarnings("unused")
+    public String jlObjectBridgeCall(String callId, String objectId, String methodName, String argsJson) {
+        JLVaadinGeoJsonLayer geoJsonLayer = (JLVaadinGeoJsonLayer) layers.get(JLVaadinGeoJsonLayer.class);
+        if (geoJsonLayer != null && geoJsonLayer.getClientToServer() != null) {
+            return ((JLVaadinClientToServerTransporter) geoJsonLayer.getClientToServer())
+                    .jlObjectBridgeCall(callId, objectId, methodName, argsJson);
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public JLWebEngine<PendingJavaScriptResult> getJLEngine() {
+        return jlWebEngine;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addControllerToDocument() {
+        if (!controllerAdded) {
+            jlWebEngine.executeScript("window.jlController = this;");
+            //language=JavaScript
+            jlWebEngine.executeScript("""
+                    if (typeof Event === 'function') {
+                      window.dispatchEvent(new Event('resize'));
+                    } else {
+                      // fallback for older browsers
+                      var evt = document.createEvent('UIEvents');
+                      evt.initUIEvent('resize', true, false, window, 0);
+                      window.dispatchEvent(evt);
+                    }
+                    """);
+            controllerAdded = true;
+        }
+    }
+
+    @Override
+    public OnJLActionListener<JLMap<PendingJavaScriptResult>> getOnActionListener() {
+        return mapListener;
+    }
+
+    /**
+     * Sets the listener for map view events.
+     *
+     * @param listener the listener
+     */
+    @Override
+    public void setOnActionListener(OnJLActionListener<JLMap<PendingJavaScriptResult>> listener) {
+        this.mapListener = listener;
+    }
+}

@@ -1,0 +1,86 @@
+package io.github.makbn.jlmap.model;
+
+import io.github.makbn.jlmap.JLProperties;
+import io.github.makbn.jlmap.map.JLMapProvider;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * The {@code JLMapOption} class represents options for configuring a Leaflet
+ * map. It is designed to be used with the Builder pattern and immutability
+ * provided by Lombok's {@code @Builder} and {@code @Value} annotations.
+ * This class allows you to specify various map configuration parameters,
+ * such as the starting coordinates, map type, and additional parameters.
+ *
+ * @author Matt Akbarian  (@makbn)
+ */
+@Builder
+@Value
+public class JLMapOption {
+
+    /**
+     * The starting geographical coordinates (latitude and longitude)
+     * for the map.
+     * Default value is (0.00, 0.00).
+     */
+    @Builder.Default
+    @NonNull
+    JLLatLng startCoordinate = JLLatLng.builder()
+            .lat(JLProperties.DEFAULT_INITIAL_LATITUDE)
+            .lng(JLProperties.DEFAULT_INITIAL_LONGITUDE)
+            .build();
+    /**
+     * The map type for configuring the map's appearance and behavior.
+     * Default value is the default map type.
+     */
+    @Builder.Default
+    @NonNull
+    JLMapProvider jlMapProvider = JLMapProvider.getDefault();
+
+    /**
+     * Additional parameters to include in the map configuration.
+     */
+    @Builder.Default
+    Set<Parameter> additionalParameter = new HashSet<>();
+
+    /**
+     * Gets the map-specific parameters based on the selected map type.
+     *
+     * @return A set of map-specific parameters.
+     */
+    public Set<Parameter> getParameters() {
+        return getJlMapProvider().getParameters();
+    }
+
+    public boolean zoomControlEnabled() {
+        return getAdditionalParameter().stream()
+                .anyMatch(param -> param.key().equals("zoomControl") &&
+                        param.value().equals("true"));
+    }
+
+    public int getInitialZoom() {
+        return getAdditionalParameter().stream()
+                .filter(param -> param.key().equals("initialZoom"))
+                .map(Parameter::value)
+                .mapToInt(Integer::valueOf)
+                .findFirst()
+                .orElse(JLProperties.DEFAULT_INITIAL_ZOOM);
+    }
+
+    /**
+     * Represents a key-value pair used for additional parameters in the map
+     * configuration.
+     */
+    public record Parameter(String key, String value) {
+        @Override
+        public @NotNull String toString() {
+            return String.format("%s=%s", key, value);
+        }
+    }
+}
+

@@ -91,6 +91,16 @@ Add the Vaadin dependency to your `pom.xml`:
 </dependency>
 ```
 
+Also rememebr to allow the module in your properties file:
+
+```properties
+# For more information https://vaadin.com/docs/latest/flow/integrations/spring/configuration#special-configuration-parameters
+vaadin.allowed-packages=io.github.makbn.jlmap.vaadin
+```
+
+Read more about Vaadin
+configuration [here!](https://vaadin.com/docs/latest/flow/integrations/spring/configuration#configure-the-scanning-of-packages)
+
 ## 📖 Usage Examples
 
 ### JavaFX Implementation

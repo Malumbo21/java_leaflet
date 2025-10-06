@@ -57,6 +57,13 @@ marker.setActionListener(new OnJLObjectActionListener() {
 });
 ```
 
+In some cases adding map directly to `HtmlContainer` or `com.vaadin.flow.component.html.Main` deos not work as expected.
+In such cases, you can wrap the map in a `com.vaadin.flow.component.orderedlayout.*` or as an example `VerticalLayout`!
+Read more
+here: [Vaadin Examples!](https://github.com/makbn/java_leaflet/wiki/Examples-and-Tutorials#vaadin-implementation).
+
+```java
+
 ### Map Events
 
 You can listen for map events by implementing the `OnJLMapViewListener` interface:

@@ -1,66 +1,306 @@
 # Java Leaflet (JLeaflet)
 
-A Java library for integrating Leaflet maps into JavaFX applications with full Java Platform Module System (JPMS) support.
+A Java library for integrating Leaflet maps into Java applications with full Java Platform Module System (JPMS) support.
+Now supporting both **JavaFX** and **Vaadin** implementations with a unified API.
 
-* Current version: **v1.9.5**
-* Next version (Vaadin and JavaFx): **v2.0.0** https://github.com/makbn/java_leaflet/tree/dev/v2.0.0
+* Current version: **v2.0.0**
 
 Project Source Code: https://github.com/makbn/java_leaflet
+Project Wiki: https://github.com/makbn/java_leaflet/wiki
 
 ![Java-Leaflet Test](https://github.com/makbn/java_leaflet/blob/master/.github/doc/app.png?raw=true)
 
-> Leaflet is the leading open-source JavaScript library for mobile-friendly interactive maps. Weighing just about 38 KB of JS, it has all the mapping features most > developers ever need.
-> Leaflet is designed with simplicity, performance and usability in mind. It works efficiently across all major desktop and mobile platforms, can be extended with > lots of plugins, has a beautiful, easy to use and well-documented API and a simple, readable source code that is a joy to contribute to.
+> Leaflet is the leading open-source JavaScript library for mobile-friendly interactive maps. Weighing just about 38 KB
+> of JS, it has all the mapping features most developers ever need.
+> Leaflet is designed with simplicity, performance and usability in mind. It works efficiently across all major desktop
+> and mobile platforms, can be extended with lots of plugins, has a beautiful, easy to use and well-documented API and a
+> simple, readable source code that is a joy to contribute to.
 
-## Features
+## 🏗️ Project Structure
 
+This project is now organized as a multi-module Maven project:
+
+```
+java_leaflet/
+├── jlmap-parent/          # Parent POM
+├── jlmap-api/             # Core API and abstractions
+├── jlmap-fx/              # JavaFX implementation
+├── jlmap-vaadin/          # Vaadin component implementation
+└── jlmap-vaadin-demo/     # Vaadin demo application
+```
+
+### Module Overview
+
+- **`jlmap-api`**: Core abstractions, interfaces, and models used by all implementations
+- **`jlmap-fx`**: JavaFX-specific implementation using WebView
+- **`jlmap-vaadin`**: Vaadin component implementation for web applications
+- **`jlmap-vaadin-demo`**: Complete Vaadin demo application showcasing the fluent API
+
+## ✨ Features
+
+- **Multi-Framework Support**: JavaFX and Vaadin implementations
 - **Java Platform Module System (JPMS) Compatible**: Fully modularized for Java 17+
-- **JavaFX Integration**: Native JavaFX WebView integration
-- **Multiple Map Providers**: Support for OpenStreetMap, Mapnik, and other tile providers
+- **Unified API**: Consistent interface across different UI frameworks
+- **Multiple Map Providers**: Support for OpenStreetMap, Mapnik, and other tile providers with the ability to add custom
+  providers
 - **Interactive Features**: Markers, polygons, polylines, circles, and more
-- **Event Handling**: Comprehensive event system for map interactions
-- **GeoJSON Support**: Load and display GeoJSON data
+- **Event Handling**: Comprehensive bi-directional event system for map interactions, receiving events from client and
+  sending commands to the map
+- **GeoJSON Support**: Load and display GeoJSON data with support for custom styling and filtering
 - **Customizable**: Extensive customization options for map appearance and behavior
+- **Fluent API**: Builder pattern and method chaining for easy configuration
+- **Context Menus**: Support for native context menus on map and objects for both implementations
 
-## Requirements
+The goal is to match almost all the native Leaflet features across both implementations while maintaining a clean and
+modular architecture.
+However, some features may be available at the moment. To see which features are supported in each implementation,
+refer to the [Feature Comparison Table](Feature.md).
+
+## 📋 Requirements
 
 - **Java**: 17 or higher
-- **JavaFX**: 19.0.2.1 or higher
 - **Maven**: 3.6+ (for building)
+- **JavaFX**: 19.0.2.1 or higher (for JavaFX implementation)
+- **Vaadin**: 24 or higher (for Vaadin implementation)
 
-## Module Information
+## 🚀 Quick Start
 
-This project is fully modularized using the Java Platform Module System (JPMS). The module name is `io.github.makbn.jlmap`.
+### JavaFX Implementation
 
-### Module Dependencies
-
-The module requires the following dependencies:
-
-- **JavaFX Modules**: `javafx.controls`, `javafx.base`, `javafx.swing`, `javafx.web`, `javafx.graphics`
-- **JDK Modules**: `jdk.jsobject`
-- **Logging**: `org.apache.logging.log4j`, `org.apache.logging.log4j.core`
-- **JSON Processing**: `com.google.gson`, `com.fasterxml.jackson.databind`
-- **Annotations**: `org.jetbrains.annotations`, `lombok`
-
-### Module Exports
-
-The following packages are exported for public use:
-
-- `io.github.makbn.jlmap` - Main package
-- `io.github.makbn.jlmap.layer` - Layer management
-- `io.github.makbn.jlmap.layer.leaflet` - Leaflet-specific layer interfaces
-- `io.github.makbn.jlmap.listener` - Event listeners
-- `io.github.makbn.jlmap.model` - Data models
-- `io.github.makbn.jlmap.exception` - Custom exceptions
-- `io.github.makbn.jlmap.geojson` - GeoJSON support
-
-## Installation
-
-### Maven
-
-Add the following dependency to your `pom.xml`:
+Add the JavaFX dependency to your `pom.xml`:
 
 ```xml
+
+<dependency>
+    <groupId>io.github.makbn</groupId>
+    <artifactId>jlmap-fx</artifactId>
+    <version>2.0.0</version>
+</dependency>
+```
+
+### Vaadin Implementation
+
+Add the Vaadin dependency to your `pom.xml`:
+
+```xml
+
+<dependency>
+    <groupId>io.github.makbn</groupId>
+    <artifactId>jlmap-vaadin</artifactId>
+    <version>2.0.0</version>
+</dependency>
+```
+
+Also rememebr to allow the module in your properties file:
+
+```properties
+# For more information https://vaadin.com/docs/latest/flow/integrations/spring/configuration#special-configuration-parameters
+vaadin.allowed-packages=io.github.makbn.jlmap.vaadin
+```
+
+Read more about Vaadin
+configuration [here!](https://vaadin.com/docs/latest/flow/integrations/spring/configuration#configure-the-scanning-of-packages)
+
+## 📖 Usage Examples
+
+### JavaFX Implementation
+
+```java
+import io.github.makbn.jlmap.fx.JLMapView;
+import io.github.makbn.jlmap.JLProperties;
+import io.github.makbn.jlmap.model.JLLatLng;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+
+public class JavaFXMapExample extends Application {
+
+    @Override
+    public void start(Stage stage) {
+        // Create a map view
+        JLMapView map = JLMapView.builder()
+                .jlMapProvider(JLMapProvider.MAP_TILER.parameter(new JLMapOption.Parameter("key", MAP_API_KEY)).build())
+                .startCoordinate(JLLatLng.builder()
+                        .lat(51.044)
+                        .lng(114.07)
+                        .build())
+                .showZoomController(true)
+                .build();
+
+        // Create the scene
+        AnchorPane root = new AnchorPane(map);
+        Scene scene = new Scene(root, 800, 600);
+
+        stage.setTitle("Java Leaflet Map (JavaFX)");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+```
+
+### Vaadin Implementation
+
+```java
+import io.github.makbn.jlmap.vaadin.JLMapView;
+import io.github.makbn.jlmap.JLProperties;
+import io.github.makbn.jlmap.model.JLLatLng;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.Route;
+
+@Route("")
+public class VaadinMapExample extends VerticalLayout {
+
+    public VaadinMapExample() {
+        setSizeFull();
+
+        // Create a map view
+        mapView = JLMapView.builder()
+                .jlMapProvider(JLMapProvider.MAP_TILER.parameter(new JLMapOption.Parameter("key", MAP_API_KEY)).build())
+                .startCoordinate(new JLLatLng(48.864716, 2.349014)) // Paris
+                .showZoomController(false)
+                .build();
+
+        add(map);
+        expand(map);
+    }
+}
+```
+
+## 🎯 Core API Features
+
+### Map Control
+
+```jshelllanguage
+// Change the current coordinate
+    mapView.setView(JLLatLng.builder()
+            .lng(48.864716)
+            .lat(2.349014)
+            .build());
+    // Map zoom functionalities
+    map.
+
+            getControlLayer().setZoom(5);
+    map.getControlLayer().zoomIn(2);
+    map.getControlLayer().zoomOut(1);
+```
+
+### Adding Markers
+
+```jshelllanguage
+// Add a marker to the UI layer
+    JLMarker marker = map.getUiLayer()
+            .addMarker(JLLatLng.builder()
+                    .lat(35.63)
+                    .lng(51.45)
+                    .build(), "Tehran", true);
+
+// Add event listeners
+    marker.setOnActionListener((jlMarker, event) -> {
+        if (event instanceof ClickEvent) {
+            log.info("Marker clicked");
+        }
+    });
+
+    marker.remove(); // Remove the marker
+```
+
+### Adding GeoJSON
+
+```jshelllanguage
+import io.github.makbn.jlmap.model.JLGeoJsonOptions;
+
+// Load GeoJSON with custom styling
+    JLGeoJsonOptions options = JLGeoJsonOptions.builder()
+            .styleFunction(features -> JLOptions.builder()
+                    .fill(true)
+                    .fillColor(JLColor.fromHex((String) features.get(0).get("fill")))
+                    .fillOpacity((Double) features.get(0).get("fill-opacity"))
+                    .stroke(true)
+                    .color(JLColor.fromHex((String) features.get(0).get("stroke")))
+                    .build())
+            .build();
+
+    JLGeoJson styledGeoJson = map.getGeoJsonLayer()
+            .addFromUrl("https://example.com/data.geojson", options);
+```
+
+Read more about examples in
+the [Examples and Tutorials](https://github.com/makbn/java_leaflet/wiki/Examples-and-Tutorials) page.
+
+### Layer Management
+
+The API provides access to different map layers:
+
+- **`map.getUiLayer()`**: UI elements like markers, popups
+- **`map.getVectorLayer()`**: Vector graphics (polygons, polylines, circles)
+- **`map.getControlLayer()`**: Map controls (zoom, pan, bounds)
+- **`map.getGeoJsonLayer()`**: GeoJSON data loading and display
+
+## 🏃‍♂️ Running the Demos
+
+### JavaFX Demo
+
+```bash
+cd jlmap-fx
+mvn javafx:run
+```
+
+### Vaadin Demo
+
+```bash
+cd jlmap-vaadin-demo
+mvn spring-boot:run
+```
+
+Then open your browser to `http://localhost:8080`
+
+## 🔧 Building from Source
+
+### Prerequisites
+
+- Java 17 or higher
+- Maven 3.6+
+- Node.js (for Vaadin frontend compilation)
+
+### Build Commands
+
+```bash
+# Build all modules
+mvn clean install
+
+# Build specific module
+mvn clean install -pl jlmap-api
+mvn clean install -pl jlmap-fx
+mvn clean install -pl jlmap-vaadin
+
+# Run tests
+mvn test
+
+# Package
+mvn package
+```
+
+If you're migrating from version 1.x:
+
+1. **Update Dependencies**: Change from `jlmap` to `jlmap-fx` or `jlmap-vaadin`
+2. **Package Updates**: Update imports to use the new module structure
+3. **Module Declaration**: Ensure your project has proper module configuration
+4. **Build Configuration**: Update Maven configuration for the new dependencies
+
+** [Complete Migration Guide](MIGRATION_GUIDE.md)** - Detailed step-by-step instructions for migrating from v1.x to
+v2.0.0
+
+### Example Migration
+
+**Before (v1.x):**
+
+```xml
+
 <dependency>
     <groupId>io.github.makbn</groupId>
     <artifactId>jlmap</artifactId>
@@ -68,164 +308,32 @@ Add the following dependency to your `pom.xml`:
 </dependency>
 ```
 
-### Module Path
+**After (v2.0.0):**
 
-When running your application, ensure you include the module in your module path:
+```xml
+<!-- For JavaFX -->
+<dependency>
+    <groupId>io.github.makbn</groupId>
+    <artifactId>jlmap-fx</artifactId>
+    <version>2.0.0</version>
+</dependency>
 
-```bash
-mvn javafx:run
+        <!-- For Vaadin -->
+<dependency>
+<groupId>io.github.makbn</groupId>
+<artifactId>jlmap-vaadin</artifactId>
+<version>2.0.0</version>
+</dependency>
 ```
-
-## Quick Start
-
-### Basic Map Setup
-
-```java
-import io.github.makbn.jlmap.*;
-import io.github.makbn.jlmap.model.JLLatLng;
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
-
-public class MapExample extends Application {
-    
-    @Override
-    public void start(Stage stage) {
-        // Create a map view
-        JLMapView map = JLMapView.builder()
-                .mapType(JLProperties.MapType.OSM_MAPNIK)
-                .startCoordinate(JLLatLng.builder()
-                        .lat(51.044)
-                        .lng(114.07)
-                        .build())
-                .showZoomController(true)
-                .build();
-        
-        // Create the scene
-        AnchorPane root = new AnchorPane(map);
-        Scene scene = new Scene(root, 800, 600);
-        
-        stage.setTitle("Java Leaflet Map");
-        stage.setScene(scene);
-        stage.show();
-    }
-    
-    public static void main(String[] args) {
-        launch(args);
-    }
-}
-```
-
-Based on Leaflet JS, you can interact with map in different layers. in this project, you can access different functions with this layer:
-
-* `map` for direct changes on map
-* `map.getUiLayer()` for changes on UI layer like markers.
-* `map.getVectorLayer()` represents the Vector layer on Leaflet map.
-* `map.getControlLayer()` represents the control layer for setting the zoom level.
-* `map.getGeoJsonLayer()` represents the GeoJson layer.
-
-### Adding Markers
-
-```java
-// Add a marker to the UI layer
-map.getUiLayer()
-    .addMarker(JLLatLng.builder()
-        .lat(35.63)
-        .lng(51.45)
-        .build(), "Tehran", true);
-```
-
-
-Controlling map's zoom level and coordinate:
-```java
-// change the current coordinate
-map.setView(JLLatLng.builder()
-        .lng(10)
-        .lat(10)
-        .build());
-
-// map zoom functionalities
-map.getControlLayer().setZoom(5);
-map.getControlLayer().zoomIn(2);
-map.getControlLayer().zoomOut(1);
-```
-
-### Adding Shapes
-
-```java
-// Add a circle
-map.getVectorLayer()
-    .addCircle(JLLatLng.builder()
-        .lat(35.63)
-        .lng(51.45)
-        .build(), 
-        30000, 
-        JLOptions.builder()
-                .color(Color.BLACK)
-                .build());
-```
-
-you can add a listener for some Objects on the map:
-
-```java
-marker.setOnActionListener(new OnJLObjectActionListener<JLMarker>() {
-       @Override
-       public void click(JLMarker object, Action action) {
-           System.out.println("object click listener for marker:" + object);
-       }
-
-       @Override
-       public void move(JLMarker object, Action action) {
-           System.out.println("object move listener for marker:" + object);
-       }
-   });
-```
-
-## Building from Source
-
-### Prerequisites
-
-- Java 17 or higher
-- Maven 3.6+
-
-### Build Commands
-
-```bash
-# Clean and compile
-mvn clean compile
-
-# Run tests
-mvn test
-
-# Package
-mvn package
-
-# Install to local repository
-mvn install
-```
-
-### Module-Aware Building
-
-The project uses Maven's module-aware compilation. The `module-info.java` file defines the module structure and dependencies.
-
-
-## Migration from Non-Modular Version
-
-If you're migrating from a non-modular version:
-
-1. **Update Dependencies**: Ensure all dependencies are module-compatible
-2. **Module Declaration**: Add `module-info.java` to your project
-3. **Import Updates**: Update any internal JavaFX imports
-4. **Build Configuration**: Update Maven configuration for module support
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Module Not Found**: Ensure the module is in your module path
-2. **Internal API Access**: Some JavaFX internal APIs are no longer accessible
-3. **Lombok Issues**: Ensure annotation processing is properly configured
+1. **Module Not Found**: Ensure the correct module is in your dependencies
+2. **JavaFX Issues**: Verify JavaFX is properly configured for your Java version
+3. **Vaadin Issues**: Ensure Node.js is installed for frontend compilation
+4. **Lombok Issues**: Verify annotation processing is properly configured
 
 ### Module Path Issues
 
@@ -233,7 +341,8 @@ If you encounter module path issues, verify:
 
 ```bash
 # Check if the module is properly packaged
-jar --describe-module --file target/jlmap-1.9.5.jar
+jar --describe-module --file target/jlmap-fx-2.0.0.jar
+jar --describe-module --file target/jlmap-vaadin-2.0.0.jar
 ```
 
 ## Contributing
@@ -246,33 +355,32 @@ jar --describe-module --file target/jlmap-1.9.5.jar
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+Since v2.0.0 This project is licensed under the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1 - see
+the [LICENSE](LICENSE) file for details.
 
 ## Author
 
-**Mehdi Akbarian Rastaghi** (@makbn)
+**Matt Akbarian** (@makbn)
 
-## Changelog
+## Roadmap
 
-### Version 1.9.5
-- **Major**: Upgraded to Java Platform Module System (JPMS)
-- **Major**: Updated to Java 17 compatibility
-- **Major**: Removed internal JavaFX API dependencies
-- **Enhancement**: Improved module structure and encapsulation
-- **Enhancement**: Updated Maven configuration for module support
-- **Fix**: Resolved Lombok annotation processing in module environment
+- [X] Multi-module architecture
+- [X] Vaadin implementation
+- [X] Unified API design
+- [X] Enhanced modularity
+- [X] Enhanced GeoJSON support
+- [X] Better map provider support
+- [X] Support receiving events on Map and Objects
+- [X] Support calling methods on JLObjects to set or update value on Js side
+- [ ] Publish to Vaadin Directory
+- [ ] SVG support
+- [ ] Animation support
+- [ ] implement object specific `JLOptions`
+- [ ] Performance optimizations
 
-## TODO
+## Additional Resources
 
-- [X] Adding GeoJson Support
-- [ ] Adding better support for Map providers
-- [ ] Adding SVG support
-- [ ] Adding animation support
-- [ ] Separating JS and HTML
-- [ ] Publishing package on GitHub
-
-
-**Disclaimer**: I've implemented this project for one of my academic paper in the area of geo-visualization. So, im not contributing actively! One more thing, I'm not a Javascript developer!
-
-### Previous Versions
-See the [GitHub Branches](https://github.com/makbn/java_leaflet/branches) for previous version information.
+- **API Documentation**: See the `jlmap-api` module for core interfaces
+- **JavaFX Examples**: See the `jlmap-fx` module for JavaFX usage
+- **Vaadin Examples**: See the `jlmap-vaadin-demo` for Vaadin usage
+- **Leaflet Documentation**: [https://leafletjs.com/](https://leafletjs.com/)
